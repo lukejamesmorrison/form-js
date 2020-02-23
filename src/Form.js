@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Errors from 'Errors';
+import Errors from './Errors';
 
 /**
  * 

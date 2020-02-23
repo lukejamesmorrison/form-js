@@ -1,11 +1,12 @@
 {
   "name": "@lukejm/form-js",
-  "version": "0.1.0",
-  "description": "A utility for creating and managing javascript forms",
-  "main": "index.js",
+  "version": "0.1.12",
+  "description": "A lightweight form package supporting files and HTTP requests",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest",
-    "test-watch": "jest --watch"
+    "test-watch": "jest --watch",
+    "build": "webpack --mode production"
   },
   "dependencies": {
     "axios": "^0.19.2"
@@ -13,16 +14,26 @@
   "devDependencies": {
     "@babel/core": "^7.8.4",
     "@babel/preset-env": "^7.8.4",
+    "babel-loader": "^8.0.6",
+    "webpack": "^4.35.2",
+    "webpack-cli": "^3.3.5",
     "babel-jest": "^25.1.0",
     "jest": "^24.9.0",
     "moxios": "^0.4.0",
     "sinon": "^9.0.0"
   },
+  "files": [
+    "dist/**/*"
+  ],
   "jest": {
     "moduleDirectories": [
       "node_modules",
       "src"
     ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukejamesmorrison/form-js.git"
   },
   "keywords": [
     "form",

@@ -1,6 +1,6 @@
 # Form-js
 
-Form-js is a lightweight form package supporting files and HTTP requests. 
+A lightweight form package supporting files and HTTP requests. 
 
 <!-- Form-js designed to work with Vue.js so there may be compatibility errors throughout. -->
 
@@ -15,7 +15,7 @@ npm install form-js
 And importing by adding:
 
 ```javascript
-import Form from 'Form.js's
+import Form from '@lukejm/form-js'
 ```
 
 ## Working with Data
