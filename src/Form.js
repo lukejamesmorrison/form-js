@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Errors from './Errors';
+import Validator from './Validator';
 
 /**
  * 
@@ -14,10 +15,13 @@ class Form {
      *	@param (object) data The attributes to be added to the form data.
      */
 	constructor(data) {
-		this.originalData = data;
+		this.originalData = {};
 		this.errors = new Errors();
+		this.validator = new Validator();
 		this.headers = {};
 		this.files = {};
+		this.rules = {};
+		this.isValid = false;
 		this.hasFiles = false;
 		this.formData = new FormData();
 		this.submitting = false;
@@ -27,10 +31,56 @@ class Form {
 		this.afterSuccessCallback = null;
 		this.afterFailCallback = null;
 
+
+		// Cast values to originalData object, create properties on form object and add rules.
 		for (let field in data) {
-			this[field] = data[field];
+			if (typeof (data[field]) == 'string') {
+				this._setPropertyFromString(field, data[field]);
+			} else {
+				this._setPropertyFromObject(field, data[field]);
+				this._setRulesForProperty(field, data[field]);
+			};	
 		};
 	};
+
+	/**
+	 * Set property on form object if property is a String.
+	 * 
+	 * @param {string} name The name of the property.
+	 * @param {string} field The value of the field.
+	 */
+	_setPropertyFromString(name, field)
+	{
+		this.originalData[name] = field;
+		this[name] = field;
+	}
+
+	/**
+	 * Set property on form object if property is an Object.
+	 * 
+ 	 * @param {string} name The name of the property.
+	 * @param {object} field The value of the field.
+	 */
+	_setPropertyFromObject(name, field)
+	{
+		this.originalData[name] = field.value;
+		this[name] = field.value;
+	}
+
+	/**
+	 * Set rule on form object for property if rules key exists.
+	 * 
+	 * @param {string} name The name of the property.
+	 * @param {object} field The value of the field.
+	 */
+	_setRulesForProperty(name, field)
+	{
+		if (field.rules) {
+			this.rules[name] = typeof (field.rules) == 'string' 
+				? field.rules.split('|') 
+				: field.rules;
+		};
+	}
 
 	/**
 	*  Fetch all relevant data for the form.
@@ -46,7 +96,7 @@ class Form {
 	};
 
 	/**
-   *	Add file to FormData object.  Required for each
+   *	Add file to FormData object. Required for each
    *	form input in form using @change event and
    *	$event object.
    *
@@ -62,6 +112,11 @@ class Form {
 
 	};
 
+	/**
+	 * Get form files.
+	 * 
+	 * @return Object
+	 */
 	getFiles()
 	{
 		return this.files;
@@ -257,6 +312,35 @@ class Form {
 		this.submitting = false;
 		this.errors.record(errors);
 	};
+
+	validate() {
+
+		if(!Object.keys(this.rules).length)
+		{
+			this.isValid = true;
+			return true;
+		};
+
+		let validations = {};
+		// let errors = {};
+
+		Object.keys(this.data()).forEach(property => {
+
+			let validationForProperty = this.validator.validate(this[property], this.rules[property]);
+			validations[property] = validationForProperty;
+
+			if (!validationForProperty.valid) {
+				// Add errors property to returned object
+			}
+		})
+
+		let valid = Object.values(validations).every(validation => {
+			return validation.valid == true
+		});
+
+		this.isValid = valid;
+		return {valid, validations};
+	}
 }
 
 export default Form;

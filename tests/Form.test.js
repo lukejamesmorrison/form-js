@@ -1,9 +1,10 @@
 import Form from 'Form';
 import Errors from 'Errors';
+import Validator from 'Validator';
 import moxios from 'moxios';
 import sinon from 'sinon';
 
-describe('Form', () => {
+describe.skip('Form', () => {
 
     beforeEach(function () {
         // import and pass your custom axios instance to this method
@@ -15,32 +16,92 @@ describe('Form', () => {
         moxios.uninstall()
     });
 
-	/**
-     * The form can store original data.
-     * 
-     * @return void
-     */
-    test("it can store its original data", () => {
+    test("it can store its original data from an object", () => {
+        let form = new Form({
+            name: {
+                value: 'Test'
+            }
+        });
+        expect(form.originalData.name).toBe('Test');
+    });
+
+    test("it can store its original data from a string", () => {
         let form = new Form({
             name: 'Test'
         });
 
         expect(form.originalData.name).toBe('Test');
-        // console.log(form.originalData);
     });
 
-	/**
-     * The form can receive custom properties.
-     * 
-     * @return void
-     */
     test("it can receive custom properties", () => {
         let form = new Form({
-            name: 'Test'
+            name: {
+                value: 'Test'
+            }
         });
 
         expect(form.name).toBe('Test');
-        // console.log(form.name);
+    });
+
+    test('it can store rules for a property', () => {
+        let form = new Form({
+            name: {
+                value: 'Test',
+                rules: 'string|max:8'
+            }
+        });
+
+        expect(form.rules['name']).toEqual(['string', 'max:8']);
+    })
+
+    test('it can validate a rule for a property', () => {
+        let form = new Form({
+            name: {
+                value: 'Test',
+                rules: 'string'
+            }
+        });
+
+        expect(form.validate().valid).toBeTruthy();
+    })
+
+    test('it can validate multiple rules for a property', () => {
+        let form = new Form({
+            name: {
+                value: 'Test',
+                rules: 'string|max:5'
+            }
+        });
+
+        expect(form.validate().valid).toBeTruthy();
+    })
+
+    test('it can validate multiple properties', () => {
+        let form = new Form({
+            name: {
+                value: 'Test',
+                rules: 'string|max:5'
+            },
+            age: {
+                value: 10,
+                rules: ['min:9']
+            }
+        });
+
+        expect(form.validate().valid).toBeTruthy();
+    })
+
+
+    /**
+     * The form has a Validator object.
+     * 
+     * @return void
+     */
+    test("it has a validator object", () => {
+        let form = new Form;
+
+        expect(form.validator).toBeInstanceOf(Validator);
+        // console.log(form.errors);
     });
 
 	/**
@@ -128,10 +189,8 @@ describe('Form', () => {
             .then(onFulfilled)
 
         moxios.wait(function () {
-            // console.log(onFulfilled);
-            let response = onFulfilled.getCall(0).args[0];
+            // let response = onFulfilled.getCall(0).args[0];
             expect(testInt).toBe(1);
-            // console.log(response);
             done()
         })
     })

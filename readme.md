@@ -1,6 +1,8 @@
 # Form-js
-
 A lightweight form package supporting files and HTTP requests. 
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+![npm (scoped)](https://img.shields.io/npm/v/@lukejm/form-js.svg)
 
 <!-- Form-js designed to work with Vue.js so there may be compatibility errors throughout. -->
 
@@ -60,7 +62,7 @@ In order to work with files, you must use a listener to call the `addFiles(event
 
 ### Vue
 ```html
-    <input type="file" name="avatar" @change="addFile(event)">
+    <input type="file" name="avatar" @change="addFile($event)">
 ```
 
 To check if a form has files:
@@ -116,16 +118,45 @@ Form-js handles request logic internally.  The `response` received is the collec
     }
 ```
 
+## Errors
+
 ### Catching Errors
 
-Form-js handles request logic internally.  The `errors` arguement received is an array of error objects.  
+Form-js handles request logic internally.  You should ensure that errors returned from the server are a keyed-array (object) of error objects.  
+
 ```javascript
-    errors = [
-        {
-            name: 'first_name_required',
-            message: 'The first name field is required'
-        }
-    ]
+    errors = {
+        "first_name": [
+            "The first name field is required",
+            "The first name field should be of type String"
+        ]
+    }
+```
+
+### Accessing Errors
+
+To see if the form has any errors, you can use the following function:
+
+```javascript
+    let hasErrors = form.errors.any(); // Boolean
+```
+
+If you wish to see if the form has an error with a specific key:
+
+```javascript
+    let hasError = form.errors.has('first_name') // Boolean
+```
+
+To access an error by key:
+
+```javascript
+    let error = form.errors.get('first_name') // Object
+```
+
+To access all errors:
+
+```javascript
+    let errors = form.errors.all(); // Object
 ```
 
 ## Flags

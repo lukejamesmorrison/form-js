@@ -51,6 +51,14 @@ class Errors {
     }
 
     /**
+     *  Retreive all errors.
+     */
+    all()
+    {
+        return this.errors;
+    }
+
+    /**
      *  Record the new errors.
      *
      *  @param (object) errors
