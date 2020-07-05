@@ -2,7 +2,7 @@ import Validator from 'Validator.js';
 
 let validator = new Validator;
 
-describe.only('Validator', () => {
+describe('Validator', () => {
 
     test('it can validate a value based on a rule', () => {
         let validString = validator.validateSingleRule('This is a string', 'string');
@@ -30,7 +30,7 @@ describe.only('Validator', () => {
         expect(validator._getRuleParameters(rule)).toEqual(['12', '45']);
     })
 
-    test.only('it can validate all rules', () => {
+    test('it can validate all rules', () => {
 
         /**
          * Tests should be truthy to prove that the correct rule is applied and validated.

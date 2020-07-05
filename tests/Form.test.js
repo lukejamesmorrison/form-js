@@ -4,7 +4,7 @@ import Validator from 'Validator';
 import moxios from 'moxios';
 import sinon from 'sinon';
 
-describe.skip('Form', () => {
+describe('Form', () => {
 
     beforeEach(function () {
         // import and pass your custom axios instance to this method
