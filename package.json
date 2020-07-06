@@ -1,6 +1,6 @@
 {
   "name": "@lukejm/form-js",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A lightweight form package supporting files and HTTP requests",
   "main": "dist/index.js",
   "scripts": {

@@ -39,8 +39,9 @@ class Form {
 		*/
 		for (let field in data) {
 			if (typeof (data[field]) == 'string') {
-				// this._setPropertyFromString(field, data[field]);
-				this._setPropertyFromString(data[field], null);
+				this._setPropertyFromString(field, data[field]);
+				// this._setPropertyFromString(data[field], null);
+
 			} else {
 				this._setPropertyFromObject(field, data[field]);
 				this._setRulesForProperty(field, data[field]);
