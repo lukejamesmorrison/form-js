@@ -37,7 +37,7 @@ class Form {
 		 * they are created as null properties.
 		*/
 		for (let field in data) {
-			if (typeof (data[field]) == 'string') {
+			if (typeof (data[field]) == 'string' || typeof (data[field]) == 'number') {
 				this._setPropertyFromString(field, data[field]);
 				// this._setPropertyFromString(data[field], null);
 
