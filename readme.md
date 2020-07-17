@@ -68,12 +68,12 @@ In order to work with files, you must use a listener to call the `addFiles(event
 To check if a form has files:
 
 ```javascript
-    let hasFiles = form.hasFiles(); // boolean
+    let hasFiles = form.hasFiles(); // Boolean
 ```
 
 To access the forms file:
 ```javascript
-    let files = form.getFiles(); // array[object]
+    let files = form.getFiles(); // Array[Object]
 ```
 
 
@@ -109,14 +109,7 @@ Form-js extends Axios and many of the native methods have been maintained.
 
 ### The Response
 
-Form-js handles request logic internally.  The `response` received is the collection of response data send from the API stripped of request metadata.  
-
-```javascript
-    response = {
-        first_name: 'john',
-        last_name: 'smith'
-    }
-```
+Form-js handles request logic internally.  The `response` received is in the same format as an Axios response object.
 
 ## Errors
 
@@ -194,14 +187,14 @@ Several hooks are available based on form state.  A `callback` should be passed 
         .then(response => {
             console.log('response')
         })
-        .catch(errror => {
-            console.log('errors')
+        .catch(error => {
+            console.log('error')
         })
 
         //  beforeSubmit
         //  afterSubmit
         //  afterSuccess || afterFail
-        //  response || errors
+        //  response || error
 ```
 
 ## Thanks

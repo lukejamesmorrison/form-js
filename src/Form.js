@@ -340,12 +340,16 @@ class Form {
 
 		Object.keys(this.data()).forEach(property => {
 
-			let validationForProperty = this.validator.validate(this[property], this.rules[property]);
-			validations[property] = validationForProperty;
+			// Only attempt property validation if rules for property exist
+			if(this.rules[property]) {
+				let validationForProperty = this.validator.validate(this[property], this.rules[property]);
+				validations[property] = validationForProperty;
 
-			if (!validationForProperty.valid) {
-				// Add errors property to returned object
+				if (!validationForProperty.valid) {
+					// Add errors property to returned object
+				}
 			}
+			
 		})
 
 		let valid = Object.values(validations).every(validation => {

@@ -70,6 +70,9 @@ describe('Form', () => {
             name: {
                 value: 'Test',
                 rules: 'string|max:5'
+            },
+            address: {
+                value: '123 Street'
             }
         });
 
