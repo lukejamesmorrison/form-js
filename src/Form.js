@@ -30,8 +30,7 @@ class Form {
 		this.afterSubmitCallback = null;
 		this.afterSuccessCallback = null;
 		this.afterFailCallback = null;
-
-
+	
 		/**
 		 * Cast values to originalData object, create properties on
 		 * form object and add rules. If strings areprovided,
@@ -262,7 +261,7 @@ class Form {
 		};
 
 		// Validate form
-		this.validate(this.data());
+		this.validate();
 		if(!this.isValid) {
 			console.log('Form is not valid.');
 			return;

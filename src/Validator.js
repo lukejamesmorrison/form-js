@@ -2,10 +2,10 @@ import Rules from './Rules';
 
 class Validator {
 
-    constructor(formData = {})
+    constructor()
     {
-        this.formData = formData;
-        this.rules = new Rules;
+        this.formData = {};
+        this.rules = new Rules();
         this.errors = {};
     }
 
@@ -34,17 +34,6 @@ class Validator {
     {
         let ruleName = this._getRuleName(rule);
         let ruleParameters = this._getRuleParameters(rule);
-
-        // let ruleSet = {
-        //     string: this.rules.validateString(value),
-        //     integer: this.rules.validateInteger(value),
-        //     boolean: this.rules.validateBoolean(value),
-        //     required: this.rules.validateRequired(value),
-        //     null: this.rules.validateNull(value),
-        //     max: this.rules.validateMax(value, ruleParameters[0]),
-        //     min: this.rules.validateMin(value, ruleParameters[0]),
-        //     length: this.rules.validateLength(value, ruleParameters[0])
-        // };
 
         if (ruleName == 'string') {
             return this.rules.validateString(value);
@@ -134,7 +123,6 @@ class Validator {
 
         return parameters;
     }
-
 }
 
 export default Validator;
