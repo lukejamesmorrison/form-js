@@ -261,6 +261,16 @@ class Form {
 			return;
 		};
 
+		// Validate form
+		this.validate(this.data());
+		if(!this.isValid) {
+			console.log('Form is not valid.');
+			return;
+		}
+
+		// Clear errors
+		this.errors.clear();
+
 		// Set submitting to true
 		this.submitting = true;
 
@@ -320,7 +330,6 @@ class Form {
 	};
 
 	validate() {
-
 		if(!Object.keys(this.rules).length)
 		{
 			this.isValid = true;

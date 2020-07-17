@@ -2,8 +2,9 @@ import Rules from './Rules';
 
 class Validator {
 
-    constructor()
+    constructor(formData = {})
     {
+        this.formData = formData;
         this.rules = new Rules;
         this.errors = {};
     }
