@@ -4,6 +4,7 @@ This upgrade guide will help you keep up with Form-js development.
 
 ## 0.3.0
 
+### **High Impact Changes**
 **Estimated Upgrade Time: 1 Minute**
 
 `Errors.js`

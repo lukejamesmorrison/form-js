@@ -3,6 +3,7 @@ A lightweight form package supporting files and HTTP requests.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 ![npm (scoped)](https://img.shields.io/npm/v/@lukejm/form-js.svg)
+![CircleCI](https://img.shields.io/circleci/build/github/lukejamesmorrison/form-js)
 
 <!-- Form-js designed to work with Vue.js so there may be compatibility errors throughout. -->
 
