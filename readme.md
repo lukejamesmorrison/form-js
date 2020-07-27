@@ -23,7 +23,7 @@ A lightweight form package supporting files and HTTP requests.
 To intall run:
 
 ```
-npm install form-js
+npm install @lukejm/form-js
 ```
 
 And importing by adding:
