@@ -226,7 +226,7 @@ Form-js handles request logic internally.  You should ensure that errors are for
 ```javascript
 Response: {
     data: {
-        errors = {
+        errors: {
             first_name: [
                 "The first name field is required",
                 "The first name field should be of type String"
