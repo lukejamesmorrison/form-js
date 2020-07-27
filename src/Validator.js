@@ -1,35 +1,81 @@
 import Rules from './Rules';
+import DefaultMessages from './Messages';
 
+/**
+ * This class is responsible for validating form data.
+ */
 class Validator {
 
     constructor()
     {
+        this.rules = new Rules;
         this.formData = {};
-        this.rules = new Rules();
         this.errors = {};
     }
 
     /**
      * 
+     * Validate a value against its rules.
+     *
      * @param {mixed} value The value to be validated.
      * @param {array} rules The rules to be used for validation.
      */
-    validate(value, rules)
+    validate(name, value, rules, messages = {})
     {
         let validations = {};
 
         rules.forEach(rule => {
             let validationsForRule = this.validateSingleRule(value, rule);
-            validations[rule] = validationsForRule;
+            if(validationsForRule == false) {
+                let message = this._getMessageForRule(name, rule, messages);
+                validations[this._getRuleName(rule)] = message;
+            };
+
+            
         });
 
         let valid = Object.values(validations).every(validation => {
             return validation == true
         });
 
-        return {valid, validations};
+        return {valid, errors: validations};
     }
 
+    _getMessageForRule(name, rule, messages)
+    {
+        let ruleName = this._getRuleName(rule);
+        let ruleParameters = this._getRuleParameters(rule);
+
+        // If custom message exists
+        if(messages[ruleName])
+        {
+            return messages[ruleName];
+        };
+
+        // Else use default messages
+        let message = DefaultMessages[ruleName];
+
+        // Replace field name
+        message = message.replace(':field', name);
+
+        // Replace parameters
+        if(ruleParameters)
+        {    
+            ruleParameters.forEach((param, index) => {
+                message = message.replace(`:param${index}`, param);
+            })
+        }
+        
+        return message;
+    }
+
+    /**
+     * 
+     *  Validate a value against a single rule.
+     *
+     * @param {mixed} value 
+     * @param {mixed} rule 
+     */
     validateSingleRule(value, rule)
     {
         let ruleName = this._getRuleName(rule);
@@ -76,7 +122,7 @@ class Validator {
             return this.rules.validateArray(value);
         }
 
-        if (ruleName == 'equal') {
+        if (ruleName == 'equal' || ruleName == 'same') {
             return this.rules.validateEquals(value, ruleParameters[0]);
         }
 
@@ -104,14 +150,26 @@ class Validator {
             return this.rules.validateInArray(value, ruleParameters);
         }
 
-
+        console.warn(`Formjs does not currently support the '${ruleName}' rule.`)
         return false;
     }
 
+    /**
+     * 
+     * Parse rule name from rule string.
+     *
+     * @param {string} rule 
+     */
     _getRuleName(rule) {
         return rule.split(':')[0];
     }
 
+    /**
+     * 
+     * Parse rule parameters from rule string.
+     *
+     * @param {string} rule 
+     */
     _getRuleParameters(rule)
     {
         let parameters = null;

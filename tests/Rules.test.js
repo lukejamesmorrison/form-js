@@ -221,7 +221,7 @@ describe('Rules', () => {
     /**
      * In Array
      * 
-     * This validation only supports String and Number values
+     * This validation only supports String and Number values.
      */
     test('it can determine if a value is in an array', () => {
         expect(rules.validateInArray(2, [1,2,3])).toBeTruthy();

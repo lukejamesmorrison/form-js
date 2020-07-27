@@ -1,10 +1,11 @@
 import Form from 'Form';
-import Errors from 'Errors';
-import Validator from 'Validator';
-import moxios from 'moxios';
 import sinon from 'sinon';
+import Errors from 'Errors';
+import moxios from 'moxios';
+import Validator from 'Validator';
 
-describe('Form', () => {
+
+describe.only('Form', () => {
 
     beforeEach(function () {
         // import and pass your custom axios instance to this method
@@ -169,7 +170,7 @@ describe('Form', () => {
             .beforeSubmit(() => {
                 testInt++;
             })
-            .get('/')
+            .get('/');
 
         expect(testInt).toBe(1);
     })
@@ -183,18 +184,18 @@ describe('Form', () => {
             response: 'test'
         })
 
-        let onFulfilled = sinon.spy()
+        let onFulfilled = sinon.spy();
         form
             .afterSubmit(response => {
-                testInt = testInt + 1;
+                testInt++;
             })
             .get('/')
-            .then(onFulfilled)
+            .then(onFulfilled);
 
         moxios.wait(function () {
             // let response = onFulfilled.getCall(0).args[0];
             expect(testInt).toBe(1);
-            done()
+            done();
         })
     })
 
@@ -210,15 +211,15 @@ describe('Form', () => {
         let onFulfilled = sinon.spy()
         form
             .afterSuccess(response => {
-                testInt = testInt + 1;
+                testInt++;
             })
             .get('/')
-            .then(onFulfilled)
+            .then(onFulfilled);
 
         moxios.wait(function () {
             // let response = onFulfilled.getCall(0).args[0];
             expect(testInt).toBe(1);
-            done()
+            done();
         })
     })
 
@@ -231,20 +232,65 @@ describe('Form', () => {
             response: 'test'
         })
 
-        let onFulfilled = sinon.spy()
+        let onFulfilled = sinon.spy();
         form
             .afterFail(response => {
-                testInt = testInt + 1;
+                testInt++;
             })
-            .get('/')
             // Expected to fail - 404
-            .catch(onFulfilled)
+            .get('/').catch(onFulfilled);
 
         moxios.wait(function () {
             // let response = onFulfilled.getCall(0).args[0];
             expect(testInt).toBe(1);
-            done()
+            done();
         })
+    })
+
+    test('it can set a messages property with custom messages', () => {
+        let form = new Form({
+            first_name: {
+                value: 'Test',
+                rules: 'string|max:5',
+                messages: {
+                    string: 'This is the custom string message',
+                    max: 'This is the custom max message'
+                }
+            }
+        });
+
+        expect(Object.keys(form.messages.first_name).length).toBe(2);
+        expect(form.messages.first_name.string).toBe('This is the custom string message');
+        expect(form.messages.first_name.max).toBe('This is the custom max message');
+    })
+
+    test('it can display custom messages over default messages', () => {
+        let form = new Form({
+            first_name: {
+                value: 'Test',
+                rules: 'min:5',
+                messages: {
+                    min: 'This is the custom min message'
+                }
+            }
+        });
+        
+        form.validate();
+        expect(form.errors.getFirst('first_name')).toBe('This is the custom min message');
+    })
+
+    test('it can get submitting state', () => {
+        let form = new Form;
+
+        form.submitting = true;
+        expect(form.isSubmitting()).toBeTruthy();
+    })
+
+    test('it can get submittable state', () => {
+        let form = new Form;
+        
+        form.submittable = true;
+        expect(form.isSubmittable()).toBeTruthy();
     })
 
 });

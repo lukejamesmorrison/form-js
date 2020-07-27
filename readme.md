@@ -6,6 +6,17 @@ A lightweight form package supporting files and HTTP requests.
 
 <!-- Form-js designed to work with Vue.js so there may be compatibility errors throughout. -->
 
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Making Requests](#making-requests)
+- [Getting Responses](#getting-responses)
+- [Validation](#validation)
+- [Validation Rules](#validation-rules)
+- [Accessing Errors](#accessing-errors)
+- [Flags and Hooks](#flags-and-hooks)
+- [Options (Coming Soon)](#options)
+- [Upgrade Guide](/upgrade_guide.md)
+
 ## Installation
 
 To intall run:
@@ -20,24 +31,30 @@ And importing by adding:
 import Form from '@lukejm/form-js'
 ```
 
-## Working with Data
+## Getting Started
 
-A form should be instantiated like the following:
-
-```javascript
-let Form = new Form;
-```
-
-### Use with Vue
-If you are using Vue.js, you must pass an object with default values for each form field you wish to use to maintain reactivity.
+A form should be instantiated like the following, passing in default values, rules and error messages as required:
 
 ```javascript
 let Form = new Form({
-    first_name: null,
-    last_name: null,
-    //...
+    first_name: {
+        value: null,
+        rules: 'string',
+        messages: {
+            string: 'This is a custom error message for string validation on the first_name field'
+        }
+    }
 });
 ```
+
+If you do not wish to use client-side validation, you can simply declare your form fields as default values:
+```javascript
+let Form = new Form({
+    first_name: 'Steve'
+});
+```
+
+### Accessing Form Data
 
 At any time, you may use `form.data()` to access the forms current data properties:
 
@@ -53,7 +70,7 @@ If you are using files, use `form.getFormData()`:
 
 ## Working with Files
 
-In order to work with files, you must use a listener to call the `addFiles(event)` method when a file input is changed:
+In order to work with files, you must use a listener to call the `addFile(event)` method when a file input is changed:
 
 ### HTML
 ```html
@@ -62,7 +79,7 @@ In order to work with files, you must use a listener to call the `addFiles(event
 
 ### Vue
 ```html
-    <input type="file" name="avatar" @change="addFile($event)">
+    <input type="file" name="avatar" @change="addFile">
 ```
 
 To check if a form has files:
@@ -102,28 +119,121 @@ Form-js has helpers for the following HTTP request types:
 Form-js extends Axios and many of the native methods have been maintained.
 
 ```javascript
-    form.get('/users/john_smith')
+    form.get('/users/john_smith/posts')
     .then(response)
     .catch(errors);
 ```
 
 ### The Response
 
-Form-js handles request logic internally.  The `response` received is in the same format as an Axios response object.
+Form-js handles request logic internally.  The `response` received is in the same format as an [Axios response object](https://github.com/axios/axios#response-schema).
 
-## Errors
+## Validation
 
-### Catching Errors
+Form-js offers a mechanism for both client-side and server-side validation.  By defining rules on your form object, the appropriate fields will be validated before an AJAX request is sent.  If client-side validation passes, the Form object will then await a response from the server.  If further validation errors are persisted, the Form will register these as required.
 
-Form-js handles request logic internally.  You should ensure that errors returned from the server are a keyed-array (object) of error objects.  
+### Client-side Validation
+
+In order to leverage client-side validation, you should provide rules for the appropriate fields when instantiating a new Form object:
 
 ```javascript
-    errors = {
-        "first_name": [
-            "The first name field is required",
-            "The first name field should be of type String"
-        ]
+let Form = new Form({
+    first_name: {
+        value: null,
+        rules: 'string|required|min:3'
+    },
+    //...
+});
+```
+
+Rules may be defined as a string separating rules by a `|` character, or by defining them in an array:
+
+```javascript
+let Form = new Form({
+    first_name: {
+        value: null,
+        rules: ['string', 'required', 'min:3']
+    },
+    //...
+});
+```
+
+### Validation Rules
+Validation rules are influenced by many of [Laravel's validation rules](https://laravel.com/docs/7.x/validation#available-validation-rules). There are more validation rules on the way!
+
+#### array
+The field under validation must be a Javascript `array`.
+
+#### between:*min,max*
+The field under validation must have a size between the given min and max.s
+
+#### boolean
+The field under validation must be able to be cast as a `boolean`. Accepted input are `true`, `false`, `1`, `0`, `"1"`, and `"0"`.
+
+#### equal:*value*
+The given field must match the field under validation. Alias for `same`.
+
+#### gt:*value*
+The field under validation must be greater than the given field.
+
+#### gte:*value*
+The field under validation must be greater than or equal to the given field.
+
+#### in:*foo,bar*
+The field under validation must be included in the given list of values.
+
+#### integer
+The field under validation must be an `integer`.
+
+#### lt:*value*
+The field under validation must be less than the given field.
+
+#### lte:*value*
+The field under validation must be less than or equal to the given field.
+
+#### max:*value*
+The field under validation must be less than or equal to a maximum value.
+
+#### min:*value*
+The field under validation must be greater than or equal to a minimum value.
+
+#### object
+The field under validation must be an `object`.
+
+#### required
+The field under validation must be present in the input data and not empty. A field is considered "empty" if one of the following conditions are true:
+- The value is `null`.
+- The value is an empty `string`.
+- The value is an empty `array` (length of `0`).
+
+#### length:*value*
+The field under validation must have a length matching the given value. For `string` data, value corresponds to the number of characters. For `numeric` data, value corresponds to a given integer value (the attribute must also have the numeric or integer rule). For an `array`, size corresponds to the length of the array.
+
+#### null
+The field under validation should be null.
+
+#### same:*value*
+The given field must match the field under validation.
+
+#### string
+The field under validation must be a `string`.
+
+### Server-side Validation
+
+Form-js handles request logic internally.  You should ensure that errors are formatted as an object where field names are keys and the values are arrays of message strings specific to that error.  
+
+```javascript
+Response: {
+    data: {
+        errors = {
+            first_name: [
+                "The first name field is required",
+                "The first name field should be of type String"
+            ]
+        }
     }
+}
+    
 ```
 
 ### Accessing Errors
@@ -140,43 +250,60 @@ If you wish to see if the form has an error with a specific key:
     let hasError = form.errors.has('first_name') // Boolean
 ```
 
-To access an error by key:
+To access the first error for a given key (field):
 
 ```javascript
-    let error = form.errors.get('first_name') // Object
+    let error = form.errors.getFirst('first_name') // String
 ```
 
-To access all errors:
+To access all errors for a given key (field):
+```javascript
+    let error = form.errors.get('first_name') // Array[String]
+```
+
+To access all errors current registered in Form:
 
 ```javascript
     let errors = form.errors.all(); // Object
 ```
 
-## Flags
+## Flags and Hooks
 
 Several parameters are available to get and change form states:
 
-| Flag                  |Default        | Description                                                       |
-| -----                 | --------      | -------------                                                     |
-| `form.submitting`     |  `(bool) False`      | `True` when form is submitting an HTTP request                    |
-| `form.submittable`    | `(bool) True`        | Can the current form be submitted?                                |
-
-## Hooks
+| Flag                      | Default              | Description                                                       |
+| -----                     | --------             | -------------                                                     |
+| `form.isSubmitting()`     | `(bool) False`       | `True` when form is submitting an HTTP request                    |
+| `form.isSubmittable()`    | `(bool) True`        | Can the current form be submitted?                                |
 
 Several hooks are available based on form state.  A `callback` should be passed as a parameter.
 
-| Method                                | Description                                                       |
-| -----                                 | -------------                                                     |
-| `form.beforeSubmitting(callback)`     | Called ***before*** HTTP request is submitted                     |
-| `form.afterSubmitting(callback)`      | Called ***after*** HTTP request is submitted                      |
-| `form.afterSuccess(callback)`         | Called ***after*** HTTP request is successful                     |
-| `form.afterFail(callback)`            | Called ***after*** HTTP request is has failed                     |
+| Hook                                  | Description                                                   |
+| -----                                 | -------------                                                 |
+| `form.beforeSubmitting(callback)`     | Called *before* HTTP request is submitted                     |
+| `form.afterSubmitting(callback)`      | Called *after* HTTP request is submitted                      |
+| `form.afterSuccess(callback)`         | Called *after* HTTP request is successful                     |
+| `form.afterFail(callback)`            | Called *after* HTTP request has failed                        |
+
+
+### Options
+Coming Soon
+
+I am currently adding the ability to extend and modify Form-js.  Sit tight!
 
 ## Complete Example
 
 ```javascript
     let form = Form({
-        email: 'johnsmith@example.com'
+        email: {
+            value: 'johnsmith@example.com',
+            rules: 'required|string|email',
+            messages: {
+                string: 'Sorry but your email address is probably not that weird.',
+                email: 'Hmmm, this doesn\'t look like a real email address!'
+            }
+        },
+        //...
     })
 
     form.post('/users')

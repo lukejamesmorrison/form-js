@@ -1,3 +1,6 @@
+/**
+ * This class is responsible for managing a form's errors.
+ */
 class Errors {
 
     /**
@@ -18,6 +21,8 @@ class Errors {
 
     /**
      *  Determine if we have any errors.
+     *
+     * @return {boolean}
      */
     any() {
         return Object.keys(this.errors).length > 0;
@@ -25,17 +30,34 @@ class Errors {
 
     /**
      *  Determine the number of errors.
+     *
+     * @return {number}
      */
     size() {
         return Object.keys(this.errors).length;
     }
 
-    /**
-     *  Retreive the error message for the given field.
+     /**
+     *  Retreive all error messages for the given field.
      *
-     *  @param (string) field
+     * @param (string) field
+     * @return {string|null}
      */
     get(field) {
+        if(this.errors[field]) {
+            return this.errors[field];
+        }
+    }
+
+    /**
+     *  Retreive the first error message for the given field.
+     *
+     * @param (string) field
+     * @param (boolean) all
+     * @return {string|null}
+     */
+    getFirst(field)
+    {
         if(this.errors[field]) {
             return this.errors[field][0];
         }
@@ -43,6 +65,8 @@ class Errors {
 
     /**
      *  Retreive the first error message.
+     *
+     * @return {string|null}
      */
     first() {
         if(Object.values(this.errors).length > 0) {
@@ -52,6 +76,8 @@ class Errors {
 
     /**
      *  Retreive all errors.
+     *
+     * @return {object}
      */
     all()
     {
@@ -61,7 +87,7 @@ class Errors {
     /**
      *  Record the new errors.
      *
-     *  @param (object) errors
+     *  @param {object} errors
      */
     record(errors) {
         this.errors = errors;
@@ -70,9 +96,9 @@ class Errors {
     /**
      *  Clear one or all error fields.
      *
-     *  @param (string|null) field
+     *  @param {string|null} field
      */
-    clear(field) {
+    clear(field = null) {
         if (field) {
             delete this.errors[field];
             return;

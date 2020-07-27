@@ -1,11 +1,13 @@
 import axios from 'axios';
 import Errors from './Errors';
 import Validator from './Validator';
+import DefaultMessages from './Messages';
+import ErrorsParser from './ErrorsParser';
 
 /**
- * 
- * A Form class that supports files and HTTP requests.
- * 
+ * This class is responsible for managing form data and initiation HTTP 
+ * requests and validation.  It's errors property contains errors 
+ * generated on the client-side and from from HTTP responses.
  */
 class Form {
 
@@ -14,18 +16,24 @@ class Form {
      *
      *	@param (object) data The attributes to be added to the form data.
      */
-	constructor(data) {
+	constructor(data, options = {}) {
+		this.errors = new Errors;
+		this.validator = new Validator;
+		this.formData = new FormData;
+
 		this.originalData = {};
-		this.errors = new Errors();
-		this.validator = new Validator();
+		this.options = options;
 		this.headers = {};
 		this.files = {};
 		this.rules = {};
+		this.messages = {};
+
 		this.isValid = false;
 		this.hasFiles = false;
-		this.formData = new FormData();
+
 		this.submitting = false;
 		this.submittable = true;
+
 		this.beforeSubmitCallback = null;
 		this.afterSubmitCallback = null;
 		this.afterSuccessCallback = null;
@@ -33,17 +41,16 @@ class Form {
 	
 		/**
 		 * Cast values to originalData object, create properties on
-		 * form object and add rules. If strings areprovided,
+		 * form object and add rules. If strings are provided,
 		 * they are created as null properties.
 		*/
 		for (let field in data) {
 			if (typeof (data[field]) == 'string' || typeof (data[field]) == 'number') {
 				this._setPropertyFromString(field, data[field]);
-				// this._setPropertyFromString(data[field], null);
-
 			} else {
 				this._setPropertyFromObject(field, data[field]);
 				this._setRulesForProperty(field, data[field]);
+				this._setMessagesForProperty(field, data[field]);
 			};	
 		};
 	};
@@ -73,22 +80,40 @@ class Form {
 	}
 
 	/**
-	 * Set rule on form object for property if rules key exists.
+	 * Set rules on form object for property if rules key exists.  If rules 
+	 * are defined as a string, they will be reformatted into an array.
 	 * 
 	 * @param {string} name The name of the property.
 	 * @param {object} field The value of the field.
+	 * @return {array}
 	 */
 	_setRulesForProperty(name, field)
 	{
 		if (field.rules) {
 			this.rules[name] = typeof (field.rules) == 'string' 
-				? field.rules.split('|') 
-				: field.rules;
+				? field.rules.split('|') // string -> array
+				: field.rules; // array
+		};
+	}
+
+	/**
+	 * Set messages on form object for property if messages key exists.
+	 * 
+	 * @param {string} name The name of the property.
+	 * @param {object} field The value of the field.
+	 * @return {array}
+	 */
+	_setMessagesForProperty(name, field)
+	{
+		if (field.messages) {
+			this.messages[name] = field.messages; // Object
 		};
 	}
 
 	/**
 	*  Fetch all relevant data for the form.
+	*
+	* @return {object}
 	*/
 	data() {
 		let data = {};
@@ -101,14 +126,16 @@ class Form {
 	};
 
 	/**
-   *	Add file to FormData object. Required for each
-   *	form input in form using @change event and
-   *	$event object.
-   *
-   *	@param (object) event The DOM event object.
-   */
+    * Add file to FormData object. Required for each form input 
+	* in form triggered by a 'change' DOM event.
+	*
+	* For Vuejs: @change="addFile"
+	* For HTML: onChange="addFile(event)"
+    *
+    * @param (object) event The DOM event object.
+    */
 	addFile(event) {
-		//	Attach file to FormData objet
+		//	Attach file to FormData object
 		if (event.target.files[0]) {
 			this.formData.append(event.target.name, event.target.files[0]);
 			this.headers['Content-Type'] = 'multipart/form-data';
@@ -120,7 +147,7 @@ class Form {
 	/**
 	 * Get form files.
 	 * 
-	 * @return Object
+	 * @return {object}
 	 */
 	getFiles()
 	{
@@ -128,9 +155,12 @@ class Form {
 	};
 
 	/**
-	*	Consolidate DOM FormData object (this.formData) for form
-	* 	submission.  Required for submitting forms with
-	*	files.  Also resolves submitting arrays.
+	* Consolidate DOM FormData object (this.formData) for form submission. Required 
+	* for submitting forms with files. Also resolves submitting arrays.
+	*
+	* @see https://developer.mozilla.org/en-US/docs/Web/API/FormData
+	*
+	* @return {FormData}
 	*/
 	getFormData() {
 		let data = this.data();
@@ -148,7 +178,7 @@ class Form {
 
 			}
 
-			//	If null, not add to FormData object
+			//	If null, don't add to FormData object
 			else if (data[key] == null) {
 				return;
 			}
@@ -165,34 +195,36 @@ class Form {
 	*  Reset the form fields.
 	*/
 	reset() {
+		// Clear data fields
 		for (let field in this.originalData) {
 			this[field] = null;
 		};
+		// Clear errors
 		this.errors.clear();
 	};
 
 	/**
-	*  Call form submit for POST request.
+	* Call form submit for POST request.
 	*
-	*	@param (string) url
+	* @param (string) url
 	*/
 	post(url) {
 		return this.submit('post', url);
 	};
 
 	/**
-     *  Call form submit for GET request.
+     * Call form submit for GET request.
      *
-     *	@param (string) url
+     * @param (string) url
      */
 	get(url) {
 		return this.submit('get', url);
 	};
 
 	/**
-     *  Call form submit for PATCH request.
+     * Call form submit for PATCH request.
      *
-     *	@param (string) url
+     * @param (string) url
      */
 	patch(url) {
 		return this.submit('patch', url);
@@ -231,6 +263,7 @@ class Form {
 	 * Callback function to be executed if form submission succeeds.
 	 *
 	 * @param {callback} callback
+	 * @return {Form}
 	 */
 	afterSuccess(callback) {
 		this.afterSuccessCallback = callback;
@@ -241,6 +274,7 @@ class Form {
 	 * Callback function to be executed if form submission fails.
 	 *
 	 * @param {callback} callback
+	 * @return {Form}
 	 */
 	afterFail(callback) {
 		this.afterFailCallback = callback;
@@ -251,20 +285,23 @@ class Form {
 	*  Submit the form.
 	*
 	*  @param (string) requestType
-	*	@param (string) url
+	*  @param (string) url
 	*/
 	submit(requestType, url) {
 		//  Only submit if form is submittable
 		if (!this.submittable) {
-			console.log('Form cannot be submitted.');
+			console.warn('Form cannot be submitted.');
 			return;
 		};
 
 		// Validate form
 		this.validate();
+
 		if(!this.isValid) {
-			console.log('Form is not valid.');
-			return;
+			console.warn('Form is not valid.');
+			return (new Promise((resolve, reject) => {
+				reject(response);
+			}));
 		}
 
 		// Clear errors
@@ -299,7 +336,7 @@ class Form {
 	*
 	*  @param (object) response
 	*/
-	onSuccess(data) {
+	onSuccess(response) {
 		// Run after submit callback
 		if (this.afterSubmitCallback) {
 			this.afterSubmitCallback();
@@ -318,46 +355,79 @@ class Form {
    *
    *  @param (object) error
    */
-	onFail(errors) {
+	onFail(response) {
 		// Run after fail callback
 		if (this.afterFailCallback) {
 			this.afterFailCallback();
 		};
 
+		// Resolve submitting state
 		this.submitting = false;
-		this.errors.record(errors);
+
+		// Record errors in forms
+		let parsedErrors = (new ErrorsParser).getErrors(response);
+		this.errors.record(parsedErrors);
 	};
 
+	/**
+	 * Validate form fields based on provided rules.
+	 *
+	 */
 	validate() {
 		if(!Object.keys(this.rules).length)
 		{
-			this.isValid = true;
-			return true;
+			return this.isValid = true;
 		};
 
 		let validations = {};
-		// let errors = {};
+		let errors = {};
 
 		Object.keys(this.data()).forEach(property => {
 
+			let field_name = property;
+			let value = this[property];
+			let rules = this.rules[property];
+			let messages = this.messages[property];
+
 			// Only attempt property validation if rules for property exist
-			if(this.rules[property]) {
-				let validationForProperty = this.validator.validate(this[property], this.rules[property]);
+			if(rules) {
+				let validationForProperty = this.validator.validate(field_name, value, rules, messages);
 				validations[property] = validationForProperty;
 
 				if (!validationForProperty.valid) {
-					// Add errors property to returned object
+					errors[property] = [];
+					// Add messages to return errors property
+					Object.values(validationForProperty.errors).forEach(message => {
+						errors[property].push(message);
+					})
 				}
 			}
-			
-		})
+		});
 
 		let valid = Object.values(validations).every(validation => {
-			return validation.valid == true
+			return validation.valid == true;
 		});
+
+		this.errors.record(errors);
 
 		this.isValid = valid;
 		return {valid, validations};
+	}
+
+	/**
+	 * Is form in a submitting state.
+	 */
+	isSubmitting()
+	{
+		return this.submitting;
+	}
+
+	/**
+	 * Is form in a submittable state.
+	 */
+	isSubmittable()
+	{
+		return this.submittable;
 	}
 }
 

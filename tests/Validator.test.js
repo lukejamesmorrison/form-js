@@ -13,8 +13,16 @@ describe('Validator', () => {
     });
 
     test('it can validate a value based on multiple rules', () => {
-        let validationTrue = validator.validate('This is a string with more than 10 characters', ['string', 'min:10']);
-        let validationFalse = validator.validate('This is a string with more than 10 characters', ['string', 'max:10']);
+        let validationTrue = validator.validate(
+            'field_name',
+            'This is a string with more than 10 characters', 
+            ['string', 'min:10']
+        );
+        let validationFalse = validator.validate(
+            'field_name',
+            'This is a string with more than 10 characters', 
+            ['string', 'max:10']
+        );
 
         expect(validationTrue.valid).toBeTruthy();
         expect(validationFalse.valid).toBeFalsy();
@@ -37,51 +45,57 @@ describe('Validator', () => {
          */
 
         // Boolean
-        expect(validator.validate(false, ['boolean']).valid).toBeTruthy();
+        expect(validator.validate('field_name', false, ['boolean']).valid).toBeTruthy();
 
-        //String
-        expect(validator.validate('test', ['string']).valid).toBeTruthy();
+        // String
+        expect(validator.validate('field_name', 'test', ['string']).valid).toBeTruthy();
 
-        //Integer
-        expect(validator.validate(-12, ['integer']).valid).toBeTruthy();
+        // Integer
+        expect(validator.validate('field_name', -12, ['integer']).valid).toBeTruthy();
 
-        //Object
-        expect(validator.validate({}, ['object']).valid).toBeTruthy();
+        // Object
+        expect(validator.validate('field_name', {}, ['object']).valid).toBeTruthy();
 
-        //Max
-        expect(validator.validate(4, ['max:5']).valid).toBeTruthy();
+        // Max
+        expect(validator.validate('field_name', 4, ['max:5']).valid).toBeTruthy();
 
-        //Min
-        expect(validator.validate(4, ['min:3']).valid).toBeTruthy();
+        // Min
+        expect(validator.validate('field_name', 4, ['min:3']).valid).toBeTruthy();
 
-        //Required
-        expect(validator.validate('test', ['required']).valid).toBeTruthy();
+        // Required
+        expect(validator.validate('field_name', 'test', ['required']).valid).toBeTruthy();
 
-        //Null
-        expect(validator.validate(null, ['null']).valid).toBeTruthy();
+        // Null
+        expect(validator.validate('field_name', null, ['null']).valid).toBeTruthy();
 
-        //Length
-        expect(validator.validate('test', ['length:4']).valid).toBeTruthy();
+        // Length
+        expect(validator.validate('field_name', 'test', ['length:4']).valid).toBeTruthy();
 
-        //Array
-        expect(validator.validate([1,2], ['array']).valid).toBeTruthy();
+        // Array
+        expect(validator.validate('field_name', [1,2], ['array']).valid).toBeTruthy();
 
-        //Equals
-        expect(validator.validate(2, ['equal:2']).valid).toBeTruthy();
+        // Equals
+        expect(validator.validate('field_name', 2, ['equal:2']).valid).toBeTruthy();
 
-        //Greater Than
-        expect(validator.validate(2, ['gt:1']).valid).toBeTruthy();
+        // Greater Than
+        expect(validator.validate('field_name', 2, ['gt:1']).valid).toBeTruthy();
 
-        //Greater Than Or Equals
-        expect(validator.validate(2, ['gte:2']).valid).toBeTruthy();
+        // Greater Than Or Equals
+        expect(validator.validate('field_name', 2, ['gte:2']).valid).toBeTruthy();
 
-        //Less Than
-        expect(validator.validate(2, ['lt:3']).valid).toBeTruthy();
+        // Less Than
+        expect(validator.validate('field_name', 2, ['lt:3']).valid).toBeTruthy();
 
-        //Less Than Or Equals
-        expect(validator.validate(2, ['lte:2']).valid).toBeTruthy();
+        // Less Than Or Equals
+        expect(validator.validate('field_name', 2, ['lte:2']).valid).toBeTruthy();
 
-        //Between
-        expect(validator.validate('foo', ['in:foo,bar']).valid).toBeTruthy();
+        // Between
+        expect(validator.validate('field_name', '2', ['between:1,3']).valid).toBeTruthy();
+
+        // In
+        expect(validator.validate('field_name', 'foo', ['in:foo,bar']).valid).toBeTruthy();
+
+        // Same
+        expect(validator.validate('field_name', 2, ['same:2']).valid).toBeTruthy();
     })
 });
