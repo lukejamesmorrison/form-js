@@ -1,5 +1,5 @@
 # Form-js
-A lightweight form package supporting files and HTTP requests. 
+A form package supporting files, HTTP requests as well as handling for client and server-side validation. 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 ![npm (scoped)](https://img.shields.io/npm/v/@lukejm/form-js.svg)
@@ -16,17 +16,17 @@ A lightweight form package supporting files and HTTP requests.
 - [Accessing Errors](#accessing-errors)
 - [Flags and Hooks](#flags-and-hooks)
 - [Options (Coming Soon)](#options)
-- [Upgrade Guide](/upgrade_guide.md)
+- [Upgrade Guide](/upgrade.md)
 
 ## Installation
 
-To intall run:
+To install run:
 
 ```
 npm install @lukejm/form-js
 ```
 
-And importing by adding:
+And import by adding:
 
 ```javascript
 import Form from '@lukejm/form-js'
@@ -135,8 +135,9 @@ Form-js offers a mechanism for both client-side and server-side validation.  By 
 
 ### Client-side Validation
 
-In order to leverage client-side validation, you should provide rules for the appropriate fields when instantiating a new Form object:
+In order to leverage client-side validation, you should provide rules for the appropriate fields when instantiating a new Form object. Rules may be defined as a string separating rules by a `|` character, or by defining them in an array:
 
+**String**
 ```javascript
 let Form = new Form({
     first_name: {
@@ -146,9 +147,7 @@ let Form = new Form({
     //...
 });
 ```
-
-Rules may be defined as a string separating rules by a `|` character, or by defining them in an array:
-
+**Array**
 ```javascript
 let Form = new Form({
     first_name: {
@@ -166,7 +165,7 @@ Validation rules are influenced by many of [Laravel's validation rules](https://
 The field under validation must be a Javascript `array`.
 
 #### between:*min,max*
-The field under validation must have a size between the given min and max.s
+The field under validation must have a size between the given min and max.
 
 #### boolean
 The field under validation must be able to be cast as a `boolean`. Accepted input are `true`, `false`, `1`, `0`, `"1"`, and `"0"`.

@@ -34,6 +34,22 @@ describe.only('Form', () => {
         expect(form.originalData.name).toBe('Test');
     });
 
+    test("it can store its original data from a number", () => {
+        let form = new Form({
+            age: 12
+        });
+
+        expect(form.originalData.age).toBe(12);
+    });
+
+    test("it can store its original data from a boolean", () => {
+        let form = new Form({
+            excited: true
+        });
+
+        expect(form.originalData.excited).toBe(true);
+    });
+
     test("it can receive custom properties", () => {
         let form = new Form({
             name: {
