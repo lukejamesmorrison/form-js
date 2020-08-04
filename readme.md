@@ -4,6 +4,7 @@ A form package supporting files, HTTP requests as well as handling for client an
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 ![npm (scoped)](https://img.shields.io/npm/v/@lukejm/form-js.svg)
 ![CircleCI](https://img.shields.io/circleci/build/github/lukejamesmorrison/form-js)
+![npm](https://img.shields.io/npm/dt/@lukejm/form-js)
 
 <!-- Form-js designed to work with Vue.js so there may be compatibility errors throughout. -->
 
@@ -16,7 +17,7 @@ A form package supporting files, HTTP requests as well as handling for client an
 - [Accessing Errors](#accessing-errors)
 - [Flags and Hooks](#flags-and-hooks)
 - [Options (Coming Soon)](#options)
-- [Upgrade Guide](/upgrade.md)
+- [Upgrade Guide](/UPGRADE.md)
 
 ## Installation
 
@@ -48,10 +49,18 @@ let Form = new Form({
 });
 ```
 
-If you do not wish to use client-side validation, you can simply declare your form fields as default values:
+If you do not wish to use client-side validation, you can simply declare your form fields as default values.  These default values may be a `string`, `number`, `boolean`, `null`, an `array`, or an `object` as long as it does not have a `value` key:
 ```javascript
 let Form = new Form({
-    first_name: 'Steve'
+    first_name: 'Steve',    // String
+    last_name: null,        // Null
+    age: 12,                // Number
+    authorized: true,           // Boolean
+    luckyNumbers: [1, 13],  // Array
+    foodPreferences: {      // Object (without `value` key)
+        vegan: false,
+        vegetarian: true
+    }
 });
 ```
 
@@ -75,7 +84,7 @@ In order to work with files, you must use a listener to call the `addFile(event)
 
 ### HTML
 ```html
-    <input type="file" name="avatar" onChange="addFile(event)">
+    <input type="file" name="avatar" onChange="addFile(this)">
 ```
 
 ### Vue

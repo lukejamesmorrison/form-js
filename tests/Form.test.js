@@ -5,7 +5,7 @@ import moxios from 'moxios';
 import Validator from 'Validator';
 
 
-describe.only('Form', () => {
+describe('Form', () => {
 
     beforeEach(function () {
         // import and pass your custom axios instance to this method
@@ -49,6 +49,61 @@ describe.only('Form', () => {
 
         expect(form.originalData.excited).toBe(true);
     });
+
+    test("it can store its original data from a null value", () => {
+        let form = new Form({
+            excited: null
+        });
+
+        expect(form.originalData.excited).toBeNull();
+    });
+
+    test("it can store its original data from an array", () => {
+        let form = new Form({
+            lucky_numbers: []
+        });
+
+        expect(form.originalData.lucky_numbers).toStrictEqual([]);
+
+        let form2 = new Form({
+            lucky_numbers: [1, 2]
+        });
+
+        expect(form2.originalData.lucky_numbers).toStrictEqual([1, 2]);
+    });
+
+    test("it can store its original data from an empty object", () => {
+        let form = new Form({
+            excited: {}
+        });
+
+        expect(form.originalData.excited).toStrictEqual({});
+    });
+
+    test("it can store its original data from an object not containing a value key", () => {
+        let advancedObject = {
+            users: {
+                john: {
+                    age: 12
+                }
+            }
+        };
+        let form = new Form(advancedObject);
+
+        expect(form.originalData.users).toStrictEqual(advancedObject.users);
+
+        let validationObject = {
+            first_name: {
+                value: 'John',
+                age: 12
+            }
+        };
+
+        let form2 = new Form(validationObject);
+
+        expect(form2.originalData.first_name).toBe('John');
+
+    })
 
     test("it can receive custom properties", () => {
         let form = new Form({
@@ -121,7 +176,6 @@ describe.only('Form', () => {
         let form = new Form;
 
         expect(form.validator).toBeInstanceOf(Validator);
-        // console.log(form.errors);
     });
 
 	/**
@@ -133,7 +187,6 @@ describe.only('Form', () => {
         let form = new Form;
 
         expect(form.errors).toBeInstanceOf(Errors);
-        // console.log(form.errors);
     });
 
 	/**
@@ -146,15 +199,41 @@ describe.only('Form', () => {
         form.headers['test-header'] = 'testHeader';
 
         expect(form.headers['test-header']).toBe('testHeader');
-        // console.log(form.headers);
     });
 
-	/**
-     * The form can store a file.
+    /**
+     * The form can store a file from an HTML file input.
      * 
      * @return void
      */
-    test("it can store a file", () => {
+    test("it can store a file from an HTML file input", () => {
+        let event = {
+            name: 'file-name',
+            files: [
+                'location-of-file.js'
+            ]
+        };
+        let form = new Form;
+        form.addFile(event);
+
+        // header is set
+        expect(form.headers['Content-Type']).toBe('multipart/form-data');
+
+        // hasFiles property is changed to true
+        expect(form.hasFiles).toBe(true);
+
+        // formData object actually contains file
+        expect(form.formData.get('file-name')).toBe('location-of-file.js')
+        // console.log(form.formData.get('file-name'));
+
+    });
+
+	/**
+     * The form can store a file from a Vue component.
+     * 
+     * @return void
+     */
+    test("it can store a file from a Vue component", () => {
         let event = {
             target: {
                 name: 'file-name',
@@ -169,7 +248,7 @@ describe.only('Form', () => {
         // header is set
         expect(form.headers['Content-Type']).toBe('multipart/form-data');
 
-        // hasFiles property is ~changed
+        // hasFiles property is changed to true
         expect(form.hasFiles).toBe(true);
 
         // formData object actually contains file
@@ -178,7 +257,7 @@ describe.only('Form', () => {
 
     });
 
-    test('it_can_call_a_callback_before_submitting', () => {
+    test('it can call a callback before submitting', () => {
         let form = new Form();
         let testInt = 0;
 
@@ -191,7 +270,7 @@ describe.only('Form', () => {
         expect(testInt).toBe(1);
     })
 
-    test('it_can_call_a_callback_after_submitting', (done) => {
+    test('it can call a callback after submitting', (done) => {
         let form = new Form();
         let testInt = 0;
 
@@ -215,7 +294,7 @@ describe.only('Form', () => {
         })
     })
 
-    test('it_can_call_a_callback_after_success', (done) => {
+    test('it can call a callback after success', (done) => {
         let form = new Form();
         let testInt = 0;
 
@@ -239,7 +318,7 @@ describe.only('Form', () => {
         })
     })
 
-    test('it_can_call_a_callback_after_fail', (done) => {
+    test('it can call a callback after fail', (done) => {
         let form = new Form();
         let testInt = 0;
 

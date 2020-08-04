@@ -1,7 +1,6 @@
 import axios from 'axios';
 import Errors from './Errors';
 import Validator from './Validator';
-import DefaultMessages from './Messages';
 import ErrorsParser from './ErrorsParser';
 
 /**
@@ -45,8 +44,8 @@ class Form {
 		 * they are created as null properties.
 		*/
 		for (let field in data) {
-			if (typeof (data[field]) == 'string' || typeof (data[field]) == 'number' || typeof (data[field]) == 'boolean') {
-				this._setPropertyFromString(field, data[field]);
+			if (this._isSimpleValue(data[field])) {
+				this._setPropertyFromSimpleValue(field, data[field]);
 			} else {
 				this._setPropertyFromObject(field, data[field]);
 				this._setRulesForProperty(field, data[field]);
@@ -56,27 +55,76 @@ class Form {
 	};
 
 	/**
+	 * Verify if field value is 'simple'.
+	 *
+	 * Acceptable simple values ()are strings, numbers, booleans or null.
+	 *
+	 * @param {mixed} value 
+	 */
+	_isSimpleValue(value)
+	{
+		return 	typeof (value) == 'string' || 
+				typeof (value) == 'number' || 
+				typeof (value) == 'boolean' ||
+				Array.isArray(value) ||
+				value == null
+	}
+
+	/**
 	 * Set property on form object if property is a String.
 	 * 
 	 * @param {string} name The name of the property.
 	 * @param {string} field The value of the field.
 	 */
-	_setPropertyFromString(name, field)
+	_setPropertyFromSimpleValue(name, field)
 	{
 		this.originalData[name] = field;
 		this[name] = field;
 	}
 
 	/**
-	 * Set property on form object if property is an Object.
+	 * Set property on form object if property is an Object. Custom objects can be empty 
+	 * or must NOT contain a key of "value".  If this is the case, it will be treated 
+	 * like it has rules and validation logic rather than pure data.
 	 * 
  	 * @param {string} name The name of the property.
 	 * @param {object} field The value of the field.
 	 */
 	_setPropertyFromObject(name, field)
 	{
+		if(this._isEmptyObject(field) || this._isAdvancedObject(field))
+		{
+			this.originalData[name] = field;
+			this[name] = field;
+			return;
+		};
+
+		// if(this._isAdvancedObject(field))
+		// {
+		// 	this.originalData[name] = field;
+		// 	this[name] = field;
+		// 	return;
+		// }
+		
 		this.originalData[name] = field.value;
 		this[name] = field.value;
+	}
+
+	_isEmptyObject(obj)
+	{
+		return Object.keys(obj).length === 0 && obj.constructor === Object;
+	}
+
+	/**
+	 * Check if object has a value property.  If it does not, we 
+	 * will return true signifying the provided object is user 
+	 * data and should not contain rules or validation logic.
+	 * 
+	 * @param {Object} obj 
+	 */
+	_isAdvancedObject(obj)
+	{
+		return !Object.keys(obj).includes('value');
 	}
 
 	/**
@@ -130,16 +178,27 @@ class Form {
 	* in form triggered by a 'change' DOM event.
 	*
 	* For Vuejs: @change="addFile"
-	* For HTML: onChange="addFile(event)"
+	* For HTML: onChange="addFile(this)"
     *
-    * @param (object) event The DOM event object.
+    * @param (object) event The HTML DOM object or Vue $event object.
     */
 	addFile(event) {
 		//	Attach file to FormData object
-		if (event.target.files[0]) {
+
+		// HTML
+		if(event.files && event.files[0]) {
+			this.formData.append(event.name, event.files[0]);
+			this.headers['Content-Type'] = 'multipart/form-data';
+			this.hasFiles = true;
+			return;
+		};
+		
+		// Vue
+		if (event.target && event.target.files && event.target.files[0]) {
 			this.formData.append(event.target.name, event.target.files[0]);
 			this.headers['Content-Type'] = 'multipart/form-data';
 			this.hasFiles = true;
+			return;
 		};
 
 	};
@@ -298,10 +357,10 @@ class Form {
 		this.validate();
 
 		if(!this.isValid) {
-			console.warn('Form is not valid.');
-			return (new Promise((resolve, reject) => {
-				reject(response);
-			}));
+			// console.warn('Form is not valid.');
+			return new Promise((resolve, reject) => {
+				reject('Cannot submit, form is not valid.');
+			});
 		}
 
 		// Clear errors
