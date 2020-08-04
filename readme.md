@@ -17,7 +17,7 @@ A form package supporting files, HTTP requests as well as handling for client an
 - [Accessing Errors](#accessing-errors)
 - [Flags and Hooks](#flags-and-hooks)
 - [Options (Coming Soon)](#options)
-- [Upgrade Guide](/UPGRADE.md)
+- [Upgrade Guide](/upgrade.md)
 
 ## Installation
 
