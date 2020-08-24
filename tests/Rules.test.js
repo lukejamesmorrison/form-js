@@ -311,6 +311,84 @@ describe('Rules', () => {
         expect(rules.validateRequiredIf('company_id', 'has_company', 'true', fields)).toBeFalsy();
     })
 
+    /**
+     * Required Unless
+     */
+    test('it can determine if a field is required uness another field has a specific value', () => {
+
+
+        // If field does not equal, then otherField is required
+        var fields = {
+            has_company: false,
+            company_id: 1,
+        };
+
+        expect(rules.validateRequiredUnless('company_id', 'has_company', 'true', fields)).toBeTruthy();
+
+        // If field does equal, otherField is NOT required
+        var fields = {
+            has_company: true,
+        };
+
+        expect(rules.validateRequiredUnless('company_id', 'has_company', 'true', fields)).toBeTruthy();
+
+        // If field does not equal, otherField cannot be null
+        var fields = {
+            has_company: false,
+            company_id: null
+        };
+
+        expect(rules.validateRequiredUnless('company_id', 'has_company', 'true', fields)).toBeFalsy();
+    })
+
+    /**
+     * Required With
+     */
+    test('it can determine if a field is required with other fields', () => {
+
+        var fields = {
+            has_cars: true,
+            cars: ['toyota camry', 'honda civic'],
+        };
+        expect(rules.validateRequiredWith('cars', ['has_cars'], fields)).toBeTruthy();
+
+        var fields = {
+            has_cars: true,
+            cars: [],
+        };
+        expect(rules.validateRequiredWith('cars', ['has_cars'], fields)).toBeFalsy();
+
+        var fields = {
+            has_cars: true,
+        };
+        expect(rules.validateRequiredWith('cars', ['has_cars'], fields)).toBeFalsy();
+
+    });
+
+    /**
+     * Required With All
+     */
+    test('it can determine if a field is required with all other fields', () => {
+
+        var fields = {
+            has_cars: true,
+            cars: ['toyota camry', 'honda civic'],
+        };
+        expect(rules.validateRequiredWithAll('cars', ['has_cars'], fields)).toBeTruthy();
+
+        var fields = {
+            has_cars: true,
+            cars: [],
+        };
+        expect(rules.validateRequiredWithAll('cars', ['has_cars', 'loves_cars'], fields)).toBeFalsy();
+
+        var fields = {
+            has_cars: true,
+        };
+        expect(rules.validateRequiredWithAll('cars', ['has_cars'], fields)).toBeFalsy();
+
+    });
+
     test('it can convert a string to a boolean', () => {
         expect(rules._convertStringToBoolean('true')).toBeTruthy();
         expect(rules._convertStringToBoolean(true)).toBeTruthy();
@@ -320,7 +398,4 @@ describe('Rules', () => {
         expect(rules._convertStringToBoolean('t')).toBeTruthy();
         expect(rules._convertStringToBoolean(1)).toBeTruthy();
     })
-
-
-
 });

@@ -41,4 +41,10 @@ export default {
     confirmed: 'The :field field must be confirmed.',
 
     required_if: 'The :field field is required if the :param0 field equals :param1.',
+
+    required_unless: 'The :field field is required unless the :param0 field equals :param1.',
+
+    required_with: 'The :field field is required with at least one of the listed fields.',
+
+    required_with_all: 'The :field field is required with all of the listed fields.',
 }

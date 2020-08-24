@@ -164,6 +164,18 @@ class Validator {
             return this.rules.validateRequiredIf(name, ruleParameters[0], ruleParameters[1], this.formData);
         }
 
+        if(ruleName == 'required_unless') {
+            return this.rules.validateRequiredUnless(name, ruleParameters[0], ruleParameters[1], this.formData);
+        }
+
+        if(ruleName == 'required_with') {
+            return this.rules.validateRequiredWith(name, ruleParameters, this.formData);
+        }
+
+        if(ruleName == 'required_with_all') {
+            return this.rules.validateRequiredWithAll(name, ruleParameters, this.formData);
+        }
+
         console.warn(`Formjs does not currently support the '${ruleName}' rule.`)
         return false;
     }

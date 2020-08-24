@@ -121,6 +121,49 @@ describe('Validator', () => {
             company_id: 1,
         });
         expect(validator.validate('company_id', 1, ['required_if:has_company,true']).valid).toBeTruthy();
+
+        // Required Unless
+        validator.setData({
+            has_company: true,
+            company_id: 1,
+        });
+        expect(validator.validate('company_id', 1, ['required_unless:has_company,true']).valid).toBeTruthy();
+
+        validator.setData({
+            has_company: true,
+        });
+        expect(validator.validate('company_id', 1, ['required_unless:has_company,false']).valid).toBeFalsy();
+
+        // Required With
+        validator.setData({
+            has_cars: true,
+            cars: ['toyota camry', 'honda civic'],
+        });
+        expect(validator.validate('cars', ['toyota camry', 'honda civic'], ['required_with:has_cars']).valid).toBeTruthy();
+
+        validator.setData({
+            has_cars: true,
+        });
+        expect(validator.validate('cars', ['toyota camry', 'honda civic'], ['required_with:has_cars']).valid).toBeFalsy();
+
+        // Required With All
+        validator.setData({
+            loves_cars: true,
+            has_cars: true,
+            cars: ['toyota camry', 'honda civic'],
+        });
+        expect(validator.validate('cars', ['toyota camry', 'honda civic'], ['required_with_all:has_cars,loves_cars']).valid).toBeTruthy();
+
+        validator.setData({
+            has_cars: true,
+            cars: ['toyota camry', 'honda civic']
+        });
+        expect(validator.validate('cars', ['toyota camry', 'honda civic'], ['required_with_all:has_cars,loves_cars']).valid).toBeFalsy();
+
+        validator.setData({
+            has_cars: true,
+        });
+        expect(validator.validate('cars', ['toyota camry', 'honda civic'], ['required_with_all:has_cars']).valid).toBeFalsy();
     })
 
     test('it can set form data', () => {

@@ -95,18 +95,67 @@ class Rules {
         let formFieldValue = formFields[otherFieldName];
 
         // Check for boolean
-        if (otherFieldValue == 'true' || otherFieldValue == 'false')
-        {
+        if (otherFieldValue == 'true' || otherFieldValue == 'false') {
             otherFieldValue = this._convertStringToBoolean(otherFieldValue);
         };
 
-        if(formFieldValue != otherFieldValue)
-        {
-            return false;
+        return formFieldValue != otherFieldValue 
+            ? false
+            : this.validateRequired(formFields[fieldName]);
+    }
+
+    validateRequiredUnless(fieldName, otherFieldName, otherFieldValue, formFields) {
+
+        let formFieldValue = formFields[otherFieldName];
+
+        // Check for boolean
+        if (otherFieldValue == 'true' || otherFieldValue == 'false') {
+            otherFieldValue = this._convertStringToBoolean(otherFieldValue);
         };
 
-        let validatedFieldValue = formFields[fieldName];
-        return validatedFieldValue != null && validatedFieldValue != ''; 
+        return formFieldValue == otherFieldValue 
+            ? true
+            : this.validateRequired(formFields[fieldName]);
+    }
+
+    /**
+     * 
+     * @param {string} fieldName The field name to be validated
+     * @param {array} otherFieldNames The field names of fields to be validated against
+     * @param {object} formFields 
+     */
+    validateRequiredWith(fieldName, otherFieldNames, formFields) {
+        let valid_num = 0;
+
+        otherFieldNames.forEach(name => {
+            if(this.validateRequired(formFields[name])) {
+                valid_num++;
+            };
+        })
+
+        return valid_num  > 0
+            ? this.validateRequired(formFields[fieldName]) 
+            : false;
+    }
+
+    /**
+     * 
+     * @param {string} fieldName The field name to be validated
+     * @param {array} otherFieldNames The field names of fields to be validated against
+     * @param {object} formFields 
+     */
+    validateRequiredWithAll(fieldName, otherFieldNames, formFields) {
+        let valid_num = 0;
+
+        otherFieldNames.forEach(name => {
+            if(this.validateRequired(formFields[name])) {
+                valid_num++;
+            };
+        })
+
+        return otherFieldNames.length === valid_num 
+            ? this.validateRequired(formFields[fieldName]) 
+            : false;
     }
 
     /**

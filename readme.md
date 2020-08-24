@@ -17,6 +17,7 @@ A form package supporting files, HTTP requests as well as handling for client an
 - [Accessing Errors](#accessing-errors)
 - [Flags and Hooks](#flags-and-hooks)
 - [Options (Coming Soon)](#options)
+- [Future Features](#future-features)
 - [Upgrade Guide](/upgrade.md)
 
 ## Installation
@@ -55,7 +56,7 @@ let Form = new Form({
     first_name: 'Steve',    // String
     last_name: null,        // Null
     age: 12,                // Number
-    authorized: true,           // Boolean
+    authorized: true,       // Boolean
     luckyNumbers: [1, 13],  // Array
     foodPreferences: {      // Object (without `value` key)
         vegan: false,
@@ -222,6 +223,18 @@ The field under validation must be present in the input data and not empty. A fi
 
 The field under validation must be present and not empty if the *anotherfield* field is equal to any *value*.This rule supports `string`, `number` and `boolean` types.
 
+#### required_unless:*anotherfield*,*value*
+
+The field under validation must be present and not empty unless the *anotherfield* field is equal to any *value*. This rule supports `string`, `number` and `boolean` types.
+
+#### required_with:*foo*,*bar*
+
+The field under validation must be present and not empty *only if* any of the other specified fields are present.
+
+#### required_with_all:*foo*,*bar*
+
+The field under validation must be present and not empty *only if* all of the other specified fields are present.
+
 #### length:*value*
 The field under validation must have a length matching the given value. For `string` data, value corresponds to the number of characters. For `numeric` data, value corresponds to a given integer value (the attribute must also have the numeric or integer rule). For an `array`, size corresponds to the length of the array.
 
@@ -289,8 +302,8 @@ Several parameters are available to get and change form states:
 
 | Flag                      | Default              | Description                                                       |
 | -----                     | --------             | -------------                                                     |
-| `form.isSubmitting()`     | `(bool) False`       | `True` when form is submitting an HTTP request                    |
-| `form.isSubmittable()`    | `(bool) True`        | Can the current form be submitted?                                |
+| `form.submitting`         | `(bool) False`       | `True` when form is submitting an HTTP request                    |
+| `form.submittable`        | `(bool) True`        | Can the current form be submitted?                                |
 
 Several hooks are available based on form state.  A `callback` should be passed as a parameter.
 
@@ -339,6 +352,10 @@ I am currently adding the ability to extend and modify Form-js.  Sit tight!
         //  afterSuccess || afterFail
         //  response || error
 ```
+
+## Future Features
+- Custom Validation Rules
+- Configurable Options
 
 ## Thanks
 Thank you Jeffrey Way for your Javascript tutorial on form objects.  It was a heavy influence for this package's early development.
