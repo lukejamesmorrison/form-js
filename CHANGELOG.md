@@ -6,7 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.3] - 2020-08-XX
+## [0.3.4] - 2020-08-24
+
+### Changed
+- Updated package description in `package.json`
+- Updated package dependencies
+
+## [0.3.3] - 2020-08-24
 
 ### Added
 - Add new rules: `different`, `confirmed`, `required_if`, `required_unless`, `required_with`, `required_with_all`.
@@ -29,7 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.3...HEAD
-[0.3.3]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.3...HEAD
+[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.4...HEAD
+[0.3.4]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.4...HEAD
+[0.3.3]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.3...0.3.4
 [0.3.2]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.2...0.3.3
 [0.2.0]: https://github.com/lukejamesmorrison/form-js/compare/v0.2.0...v0.3.2
