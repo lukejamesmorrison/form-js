@@ -35,4 +35,10 @@ export default {
     in: 'The :field field must be in the given array.',
 
     same: 'The :field field must be equal to :param0.',
+
+    different: 'The :field field value must be different than the :param0 field value.',
+
+    confirmed: 'The :field field must be confirmed.',
+
+    required_if: 'The :field field is required if the :param0 field equals :param1.',
 }

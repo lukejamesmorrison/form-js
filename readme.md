@@ -179,6 +179,9 @@ The field under validation must have a size between the given min and max.
 #### boolean
 The field under validation must be able to be cast as a `boolean`. Accepted input are `true`, `false`, `1`, `0`, `"1"`, and `"0"`.
 
+#### different:field
+The field under validation must have a different value than the field provided.
+
 #### equal:*value*
 The given field must match the field under validation. Alias for `same`.
 
@@ -214,6 +217,10 @@ The field under validation must be present in the input data and not empty. A fi
 - The value is `null`.
 - The value is an empty `string`.
 - The value is an empty `array` (length of `0`).
+
+#### required_if:*anotherfield*,*value*
+
+The field under validation must be present and not empty if the *anotherfield* field is equal to any *value*.This rule supports `string`, `number` and `boolean` types.
 
 #### length:*value*
 The field under validation must have a length matching the given value. For `string` data, value corresponds to the number of characters. For `numeric` data, value corresponds to a given integer value (the attribute must also have the numeric or integer rule). For an `array`, size corresponds to the length of the array.

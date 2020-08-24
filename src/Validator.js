@@ -17,17 +17,18 @@ class Validator {
      * 
      * Validate a value against its rules.
      *
-     * @param {mixed} value The value to be validated.
+     * @param {string} fieldname
+     * @param {mixed} fieldValue The value to be validated.
      * @param {array} rules The rules to be used for validation.
      */
-    validate(name, value, rules, messages = {})
+    validate(fieldName, fieldValue, rules, messages = {})
     {
         let validations = {};
 
         rules.forEach(rule => {
-            let validationsForRule = this.validateSingleRule(value, rule);
+            let validationsForRule = this.validateSingleRule(fieldName, fieldValue, rule);
             if(validationsForRule == false) {
-                let message = this._getMessageForRule(name, rule, messages);
+                let message = this._getMessageForRule(fieldName, rule, messages);
                 validations[this._getRuleName(rule)] = message;
             };
 
@@ -73,10 +74,11 @@ class Validator {
      * 
      *  Validate a value against a single rule.
      *
+     * @param {string} name
      * @param {mixed} value 
      * @param {mixed} rule 
      */
-    validateSingleRule(value, rule)
+    validateSingleRule(name, value, rule)
     {
         let ruleName = this._getRuleName(rule);
         let ruleParameters = this._getRuleParameters(rule);
@@ -150,8 +152,31 @@ class Validator {
             return this.rules.validateInArray(value, ruleParameters);
         }
 
+        if(ruleName == 'different') {
+            return this.rules.validateDifferent(value, ruleParameters[0], this.formData);
+        }
+
+        if(ruleName == 'confirmed') {
+            return this.rules.validateConfirmed(name, this.formData);
+        }
+
+        if(ruleName == 'required_if') {
+            return this.rules.validateRequiredIf(name, ruleParameters[0], ruleParameters[1], this.formData);
+        }
+
         console.warn(`Formjs does not currently support the '${ruleName}' rule.`)
         return false;
+    }
+
+    /**
+     * Set the formData property to the provided data object.
+     * 
+     * 
+     * @param {object} data 
+     */
+    setData(data)
+    {
+        this.formData = data;
     }
 
     /**

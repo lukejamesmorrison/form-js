@@ -53,7 +53,7 @@ class Rules {
      */
     validateMax(value, max) {
         // Number
-        if (typeof (value) == 'number') {
+        if (typeof (value) === 'number') {
             return value <= max;
         }
 
@@ -69,7 +69,7 @@ class Rules {
      */
     validateMin(value, min) {
         // Number
-        if (typeof (value) == 'number') {
+        if (typeof (value) === 'number') {
             return value >= min;
         }
 
@@ -84,6 +84,29 @@ class Rules {
      */
     validateRequired(value) {
         return value != null && value != '' && value.length != 0;
+    }
+
+    /**
+     * Validate that value is required if another field equals a certain value.
+     *
+     * @param {mixed} value 
+     */
+    validateRequiredIf(fieldName, otherFieldName, otherFieldValue, formFields) {
+        let formFieldValue = formFields[otherFieldName];
+
+        // Check for boolean
+        if (otherFieldValue == 'true' || otherFieldValue == 'false')
+        {
+            otherFieldValue = this._convertStringToBoolean(otherFieldValue);
+        };
+
+        if(formFieldValue != otherFieldValue)
+        {
+            return false;
+        };
+
+        let validatedFieldValue = formFields[fieldName];
+        return validatedFieldValue != null && validatedFieldValue != ''; 
     }
 
     /**
@@ -195,6 +218,62 @@ class Rules {
     validateInArray(value, array)
     {
         return array.includes(value);
+    }
+
+    /**
+     * Validate if field value is different than another field value.
+     *
+     * @param {mixed} fieldValue
+     * @param {array} otherFieldName
+     * @param {object} formFields
+     */
+    validateDifferent(fieldValue, otherFieldName, formFields)
+    {
+        // console.log(fieldValue, formFields[otherFieldName]);
+        // String, Number or Boolean
+        if(['string', 'number', 'boolean'].includes(typeof(fieldValue)))
+        {
+            return fieldValue !== formFields[otherFieldName];
+        };
+
+        // Array
+        if(Array.isArray(fieldValue))
+        {
+            return fieldValue !== formFields[otherFieldName];
+        }
+
+        // Object
+        if(typeof(fieldValue) === 'object')
+        {
+            return JSON.stringify(fieldValue) !== JSON.stringify(formFields[otherFieldName]);
+        }
+    }
+
+    /**
+     * Validate if field is confirmed by another field.
+     * 
+     * @param {string} fieldName 
+     * @param {object} formFields 
+     */
+    validateConfirmed(fieldName, formFields)
+    {
+        let keys = Object.keys(formFields);
+        let confirm_name = `${fieldName}_confirmation`;
+
+        return keys.includes(confirm_name);
+    }
+
+    _convertStringToBoolean(value)
+    {
+        if (value === 'true')
+        {
+            return true;
+        } else if (value == 'false')
+        {
+            return false
+        } else {
+            return Boolean(value);
+        };
     }
 
 }

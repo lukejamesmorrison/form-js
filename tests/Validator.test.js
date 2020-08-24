@@ -5,8 +5,8 @@ let validator = new Validator;
 describe('Validator', () => {
 
     test('it can validate a value based on a rule', () => {
-        let validString = validator.validateSingleRule('This is a string', 'string');
-        let validObject = validator.validateSingleRule({key: "value"}, 'object');
+        let validString = validator.validateSingleRule('field_name', 'This is a string', 'string');
+        let validObject = validator.validateSingleRule('field_name', {key: "value"}, 'object');
 
         expect(validString).toBeTruthy();
         expect(validObject).toBeTruthy();
@@ -97,5 +97,38 @@ describe('Validator', () => {
 
         // Same
         expect(validator.validate('field_name', 2, ['same:2']).valid).toBeTruthy();
+
+        // Different
+        validator.setData({
+            first: 'hello',
+            second: 'world'
+        });
+        expect(validator.validate('first', 'hello', ['different:second']).valid).toBeTruthy();
+        expect(validator.validate('first', 'world', ['different:second']).valid).toBeFalsy();
+
+        // Confired
+        validator.setData({
+            password: 'secret',
+            password_confirmation: 'secret',
+            other_field: 'super_secret'
+        });
+        expect(validator.validate('password', 'secret', ['confirmed']).valid).toBeTruthy();
+        expect(validator.validate('other_field', 'super_secret', ['confirmed']).valid).toBeFalsy();
+
+        // Required If
+        validator.setData({
+            has_company: true,
+            company_id: 1,
+        });
+        expect(validator.validate('company_id', 1, ['required_if:has_company,true']).valid).toBeTruthy();
+    })
+
+    test('it can set form data', () => {
+
+        validator.setData({
+            test: 'field'
+        });
+
+        expect(validator.formData.test).toBe('field');
     })
 });

@@ -1,4 +1,5 @@
 import Validator from '../src/Validator';
+import Form from '../src/Form';
 
 let validator = new Validator;
 let rules = validator.rules;
@@ -128,7 +129,7 @@ describe('Rules', () => {
         expect(rules.validateNull(null)).toBeTruthy();
         expect(rules.validateNull('test')).toBeFalsy();
 
-        expect(validator.validateSingleRule(null, 'null')).toBeTruthy();
+        expect(validator.validateSingleRule('field_name', null, 'null')).toBeTruthy();
     })
 
     /**
@@ -141,8 +142,8 @@ describe('Rules', () => {
         expect(rules.validateLength(['one', 'two'], 3)).toBeFalsy();
         expect(rules.validateLength('test', 5)).toBeFalsy();
 
-        expect(validator.validateSingleRule('test', 'length:4')).toBeTruthy();
-        expect(validator.validateSingleRule(['test', 'array'], 'length:2')).toBeTruthy();
+        expect(validator.validateSingleRule('field_name', 'test', 'length:4')).toBeTruthy();
+        expect(validator.validateSingleRule('field_name', ['test', 'array'], 'length:2')).toBeTruthy();
     })
 
     /**
@@ -226,6 +227,98 @@ describe('Rules', () => {
     test('it can determine if a value is in an array', () => {
         expect(rules.validateInArray(2, [1,2,3])).toBeTruthy();
         expect(rules.validateInArray('t', [1, 'f', 3])).toBeFalsy();
+    })
+
+    /**
+     * Different
+     */
+    test('it can determine if a value is different than the value of another field', () => {
+
+        
+        // String`
+        var form = new Form({
+            first: 'hello',
+            second: 'world'
+        });
+        expect(rules.validateDifferent('hello', 'second', form.data())).toBeTruthy();
+
+            
+        // Number
+        var form = new Form({
+            first: 1,
+            second: 2.0
+        });
+        expect(rules.validateDifferent(1, 'second', form.data())).toBeTruthy();
+
+        // Array
+        var form = new Form({
+            first: [1],
+            second: [2.0]
+        });
+        expect(rules.validateDifferent([1], 'second', form.data())).toBeTruthy();
+
+        // Object
+        var form = new Form({
+            first: {first: 'hello', second: 'world'},
+            second: {first: 'world', second: 'hello'}
+        });
+        expect(rules.validateDifferent(
+            {first: 'hello', second: 'world'},
+            'second',
+            form.data()
+        )).toBeTruthy();
+    })
+
+    /**
+     * Confirmed
+     */
+    test('it can determine if a field is confirmed with another field', () => {
+
+        var form = new Form({
+            password: 'secret',
+            password_confirmation: 'secret',
+            other_field: 'super_secret'
+        });
+
+        expect(rules.validateConfirmed('password', form.data())).toBeTruthy();
+        expect(rules.validateConfirmed('other_field', form.data())).toBeFalsy();
+    });
+
+    /**
+     * Required If
+     */
+    test('it can determine if a field is required if another field has a specific value', () => {
+
+
+        var fields = {
+            has_company: true,
+            company_id: 1,
+        };
+
+        expect(rules.validateRequiredIf('company_id', 'has_company', 'true', fields)).toBeTruthy();
+
+        var fields = {
+            has_company: true,
+        };
+
+        expect(rules.validateRequiredIf('company_id', 'has_company', 'true', fields)).toBeFalsy();
+
+        var fields = {
+            has_company: true,
+            company_id: null
+        };
+
+        expect(rules.validateRequiredIf('company_id', 'has_company', 'true', fields)).toBeFalsy();
+    })
+
+    test('it can convert a string to a boolean', () => {
+        expect(rules._convertStringToBoolean('true')).toBeTruthy();
+        expect(rules._convertStringToBoolean(true)).toBeTruthy();
+        expect(rules._convertStringToBoolean('false')).toBeFalsy();
+        expect(rules._convertStringToBoolean(false)).toBeFalsy();
+
+        expect(rules._convertStringToBoolean('t')).toBeTruthy();
+        expect(rules._convertStringToBoolean(1)).toBeTruthy();
     })
 
 

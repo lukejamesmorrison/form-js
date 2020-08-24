@@ -438,6 +438,9 @@ class Form {
 			return this.isValid = true;
 		};
 
+		// Provide validator with current fields
+		this.validator.setData(this.data());
+
 		let validations = {};
 		let errors = {};
 
