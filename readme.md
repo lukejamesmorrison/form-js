@@ -183,8 +183,14 @@ The field under validation must be able to be cast as a `boolean`. Accepted inpu
 #### different:field
 The field under validation must have a different value than the field provided.
 
+#### email
+The field under validation must be formatted as an e-mail address.
+
 #### equal:*value*
 The given field must match the field under validation. Alias for `same`.
+
+#### filled
+The field under validation must not be empty when it is present.
 
 #### gt:*value*
 The field under validation must be greater than the given field.
@@ -198,6 +204,9 @@ The field under validation must be included in the given list of values.
 #### integer
 The field under validation must be an `integer`.
 
+#### length:*value*
+The field under validation must have a length matching the given value. For `string` data, value corresponds to the number of characters. For `numeric` data, value corresponds to a given integer value (the attribute must also have the numeric or integer rule). For an `array`, size corresponds to the length of the array.
+
 #### lt:*value*
 The field under validation must be less than the given field.
 
@@ -209,6 +218,12 @@ The field under validation must be less than or equal to a maximum value.
 
 #### min:*value*
 The field under validation must be greater than or equal to a minimum value.
+
+#### null
+The field under validation must be null.
+
+#### numeric
+The field under validation must be numberic.
 
 #### object
 The field under validation must be an `object`.
@@ -234,12 +249,6 @@ The field under validation must be present and not empty *only if* any of the ot
 #### required_with_all:*foo*,*bar*
 
 The field under validation must be present and not empty *only if* all of the other specified fields are present.
-
-#### length:*value*
-The field under validation must have a length matching the given value. For `string` data, value corresponds to the number of characters. For `numeric` data, value corresponds to a given integer value (the attribute must also have the numeric or integer rule). For an `array`, size corresponds to the length of the array.
-
-#### null
-The field under validation should be null.
 
 #### same:*value*
 The given field must match the field under validation.

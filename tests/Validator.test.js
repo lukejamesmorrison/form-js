@@ -47,6 +47,15 @@ describe('Validator', () => {
         // Boolean
         expect(validator.validate('field_name', false, ['boolean']).valid).toBeTruthy();
 
+        // Email
+        expect(validator.validate('field_name', 'email@example.com', ['email']).valid).toBeTruthy();
+
+        // Filled
+        validator.setData({
+            email: 'email@example.com',
+        });
+        expect(validator.validate('email', 'email@example.com', ['filled']).valid).toBeTruthy();
+
         // String
         expect(validator.validate('field_name', 'test', ['string']).valid).toBeTruthy();
 
@@ -67,6 +76,9 @@ describe('Validator', () => {
 
         // Null
         expect(validator.validate('field_name', null, ['null']).valid).toBeTruthy();
+
+        // Numeric
+        expect(validator.validate('field_name', 1, ['numeric']).valid).toBeTruthy();
 
         // Length
         expect(validator.validate('field_name', 'test', ['length:4']).valid).toBeTruthy();
@@ -106,7 +118,7 @@ describe('Validator', () => {
         expect(validator.validate('first', 'hello', ['different:second']).valid).toBeTruthy();
         expect(validator.validate('first', 'world', ['different:second']).valid).toBeFalsy();
 
-        // Confired
+        // Confirmed
         validator.setData({
             password: 'secret',
             password_confirmation: 'secret',
@@ -165,6 +177,8 @@ describe('Validator', () => {
         });
         expect(validator.validate('cars', ['toyota camry', 'honda civic'], ['required_with_all:has_cars']).valid).toBeFalsy();
     })
+
+    
 
     test('it can set form data', () => {
 

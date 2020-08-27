@@ -52,6 +52,9 @@ class Form {
 				this._setMessagesForProperty(field, data[field]);
 			};	
 		};
+
+		// Resolve options on form
+		// this._resolveOptions();
 	};
 
 	/**

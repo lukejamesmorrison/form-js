@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.6] - 2020-08-27
+
+### Added
+- New validation rules: `email`, `filled`, `numeric`
+- Unsupported rules are now caught before validation and will return false.
+
+### Changed
+- Extract default values from test and place in `defaults.js`.
+
+### Fixed
+- Default error messages now display field name with spaces instead of underscores.
+
 ## [0.3.5] - 2020-08-24
 
 ### Fixed
@@ -40,8 +52,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.5...HEAD
-[0.3.5]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.5...HEAD
+[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.6...HEAD
+[0.3.6]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.5...HEAD
+[0.3.5]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.5...0.3.6
 [0.3.4]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.4...0.3.5
 [0.3.3]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.3...0.3.4
 [0.3.2]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.2...0.3.3

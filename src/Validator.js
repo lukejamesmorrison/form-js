@@ -1,5 +1,52 @@
-import Rules from './Rules';
+import Rules from './Rules/Rules';
 import DefaultMessages from './Messages';
+
+/**
+ * These rules do not depend on anything except the field's value.
+ * Rules not in this list should evaluate false.
+ */
+const INDEPENDENT_RULES = [
+    'Array',
+    'Boolean',
+    'Email',
+    'Integer',
+    'Length',
+    'Null',
+    'Numeric',
+    'Object',
+    'String',
+    'Required'
+];
+
+/**
+ * These rules depend on parameters. Rules not in this list should evaluate false.
+ */
+const DEPENDENT_RULES = [
+    'Between',
+    'Equal',
+    'Gt',
+    'Gte',
+    'In',
+    'Lt',
+    'Lte',
+    'Max',
+    'Min',
+];
+
+/**
+ * These rules may contain parameters and are compared to form fields. 
+ * Rules not in this list should evaluate false.
+ */
+const COMPARISON_RULES = [
+    'Confirmed',
+    'Different',
+    'Filled',
+    'Same',
+    'RequiredIf',
+    'RequiredUnless',
+    'RequiredWith',
+    'RequiredWithAll',
+];
 
 /**
  * This class is responsible for validating form data.
@@ -31,8 +78,6 @@ class Validator {
                 let message = this._getMessageForRule(fieldName, rule, messages);
                 validations[this._getRuleName(rule)] = message;
             };
-
-            
         });
 
         let valid = Object.values(validations).every(validation => {
@@ -56,8 +101,8 @@ class Validator {
         // Else use default messages
         let message = DefaultMessages[ruleName];
 
-        // Replace field name
-        message = message.replace(':field', name);
+        // Replace field name with readable rule name
+        message = message.replace(':field', name.replace('_', ' '));
 
         // Replace parameters
         if(ruleParameters)
@@ -81,11 +126,27 @@ class Validator {
     validateSingleRule(name, value, rule)
     {
         let ruleName = this._getRuleName(rule);
+        let ruleNameCapitalized = this._getCapitalizedRuleName(ruleName);
+
+        if(!this._getSupportedRules().includes(ruleNameCapitalized))
+        {
+            console.warn(`Formjs does not currently support the '${ruleName}' rule.`)
+            return false;
+        };
+        
         let ruleParameters = this._getRuleParameters(rule);
 
         if (ruleName == 'string') {
             return this.rules.validateString(value);
         };
+
+        if(ruleName == 'email') {
+            return this.rules.validateEmail(value);
+        }
+
+        if(ruleName == 'filled') {
+            return this.rules.validateFilled(name, this.formData);
+        }
 
         if (ruleName == 'integer') {
             return this.rules.validateInteger(value);
@@ -116,6 +177,10 @@ class Validator {
             return this.rules.validateNull(value);
         }
 
+        if (ruleName == 'numeric') {
+            return this.rules.validateNumeric(value);
+        }
+
         if (ruleName == 'length') {
             return this.rules.validateLength(value, ruleParameters[0]);
         }
@@ -129,19 +194,19 @@ class Validator {
         }
 
         if (ruleName == 'gt') {
-            return this.rules.validateGreaterThan(value, ruleParameters[0]);
+            return this.rules.validateGt(value, ruleParameters[0]);
         }
 
         if (ruleName == 'gte') {
-            return this.rules.validateGreaterThanOrEquals(value, ruleParameters[0]);
+            return this.rules.validateGte(value, ruleParameters[0]);
         }
 
         if (ruleName == 'lt') {
-            return this.rules.validateLessThan(value, ruleParameters[0]);
+            return this.rules.validateLt(value, ruleParameters[0]);
         }
 
         if (ruleName == 'lte') {
-            return this.rules.validateLessThanOrEquals(value, ruleParameters[0]);
+            return this.rules.validateLte(value, ruleParameters[0]);
         }
 
         if (ruleName == 'between') {
@@ -175,9 +240,6 @@ class Validator {
         if(ruleName == 'required_with_all') {
             return this.rules.validateRequiredWithAll(name, ruleParameters, this.formData);
         }
-
-        console.warn(`Formjs does not currently support the '${ruleName}' rule.`)
-        return false;
     }
 
     /**
@@ -217,6 +279,23 @@ class Validator {
         };
 
         return parameters;
+    }
+
+    _getCapitalizedRuleName(name)
+    {
+        let words = name.split('_').map(word => {
+            return word.charAt(0).toUpperCase() + word.substr(1).toLowerCase();
+        });
+
+        return words.join('');
+    }
+
+    _getSupportedRules()
+    {
+        return INDEPENDENT_RULES.concat(
+            DEPENDENT_RULES,
+            COMPARISON_RULES
+        );
     }
 }
 

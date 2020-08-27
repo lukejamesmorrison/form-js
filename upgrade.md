@@ -8,4 +8,4 @@ This upgrade guide will help you keep up with Form-js development.
 **Estimated Upgrade Time: 1 Minute**
 
 `Errors.js`
-- `get()` method will not return all messages for specific error field.  If you use an earlier version then you must use `getFirst()` instead.
+- `get()` method will now return *all* messages for specific error field.  To get the first error message associated with a field use `getFirst()`.

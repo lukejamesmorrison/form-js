@@ -1,12 +1,11 @@
-class Rule {
+class BaseRule {
 
     /**
      * 
      * @param {String} rule 
      */
-    constructor(rule, message = null)
+    constructor(fieldName, parameters = [], comparedFields = [])
     {
-        this.originalData = rule;
         this.name = _getRuleName()
         this.parameters = _getRuleParameters()
     }

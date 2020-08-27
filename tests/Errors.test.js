@@ -28,12 +28,10 @@ describe('Errors', () => {
         moxios.wait(function () {
             // HTTP request should NOT be sent if form is invalid.
             expect(form.isValid).toBeFalsy();
-            expect(form.errors.get('first_name')[0]).toEqual('The first_name field is required.');
-            expect(form.errors.get('first_name')[1]).toEqual('The first_name field must be greater than 5.');
+            expect(form.errors.get('first_name')[0]).toEqual('The first name field is required.');
+            expect(form.errors.get('first_name')[1]).toEqual('The first name field must be greater than 5.');
             done();
         });
-
-
     })
 
     test('it can correctly parse an error response from a Laravel server', (done) => {

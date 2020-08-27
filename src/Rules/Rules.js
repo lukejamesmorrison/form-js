@@ -2,11 +2,6 @@
  * This class is responsible for managing form validation rules.
  */
 class Rules {
-
-    constructor()
-    {
-        // this.messages = defaultMessages;
-    }
     
     /**
      * Validate if value is boolean.
@@ -16,6 +11,17 @@ class Rules {
     validateBoolean(value) {
         let acceptable = [true, false, 1, 0, '1', '0'];
         return acceptable.includes(value);
+    }
+
+    /**
+     * Validate if value is an email address.
+     *
+     * @param {string} value 
+     */
+    validateEmail(value) {
+        let matches = value.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+
+        return matches ? matches.length > 0 : false;
     }
 
     /**
@@ -75,6 +81,24 @@ class Rules {
 
         // String, Array
         return value.length >= min;
+    }
+
+    /**
+     * Validate if value is null.
+     *
+     * @param {mixed} value 
+     */
+    validateNull(value) {
+        return value == null;
+    }
+
+    /**
+     * Validate if value is numeric.
+     *
+     * @param {mixed} value 
+     */
+    validateNumeric(value) {
+        return !isNaN(value);
     }
 
     /**
@@ -158,14 +182,7 @@ class Rules {
             : false;
     }
 
-    /**
-     * Validate if value is null.
-     *
-     * @param {mixed} value 
-     */
-    validateNull(value) {
-        return value == null;
-    }
+    
 
     /**
      * Validate if value is of length.
@@ -209,7 +226,7 @@ class Rules {
      * @param {number} value 
      * @param {number} comparedValue 
      */
-    validateGreaterThan(value, comparedValue)
+    validateGt(value, comparedValue)
     {
         return value > comparedValue;
     }
@@ -220,7 +237,7 @@ class Rules {
      * @param {number} value 
      * @param {number} comparedValue 
      */
-    validateLessThan(value, comparedValue) {
+    validateLt(value, comparedValue) {
         return value < comparedValue;
     }
 
@@ -230,9 +247,9 @@ class Rules {
      * @param {number} value 
      * @param {number} comparedValue 
      */
-    validateGreaterThanOrEquals(value, comparedValue)
+    validateGte(value, comparedValue)
     {
-        return this.validateGreaterThan(value, comparedValue) || this.validateEquals(value, comparedValue);
+        return this.validateGt(value, comparedValue) || this.validateEquals(value, comparedValue);
     }
 
     /**
@@ -241,9 +258,9 @@ class Rules {
      * @param {number} value 
      * @param {number} comparedValue 
      */
-    validateLessThanOrEquals(value, comparedValue)
+    validateLte(value, comparedValue)
     {
-        return this.validateLessThan(value, comparedValue) || this.validateEquals(value, comparedValue);
+        return this.validateLt(value, comparedValue) || this.validateEquals(value, comparedValue);
     }
 
     /**
@@ -255,7 +272,7 @@ class Rules {
      */
     validateBetween(value, lowerValue, higherValue)
     {
-        return this.validateLessThan(value, higherValue) && this.validateGreaterThan(value, lowerValue);
+        return this.validateLt(value, higherValue) && this.validateGt(value, lowerValue);
     }
 
     /**
@@ -310,6 +327,22 @@ class Rules {
         let confirm_name = `${fieldName}_confirmation`;
 
         return keys.includes(confirm_name);
+    }
+
+    /**
+     * Validate if field is present and not empty.
+     * 
+     * @param {string} fieldName 
+     * @param {object} formFields 
+     */
+    validateFilled(fieldName, formFields)
+    {
+        let keys = Object.keys(formFields);
+
+        return  keys.includes(fieldName) && 
+                // Boolean and numbers should still be permitted so we exclude `0` and `false`
+                formFields[fieldName] !== null && 
+                formFields[fieldName] !== ''
     }
 
     _convertStringToBoolean(value)

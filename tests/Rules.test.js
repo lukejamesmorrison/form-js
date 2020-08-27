@@ -1,17 +1,9 @@
 import Validator from '../src/Validator';
 import Form from '../src/Form';
+import * as DEFAULTS from './defaults';
 
 let validator = new Validator;
 let rules = validator.rules;
-
-const BOOLEANS = [true, false, 1, 0, '1', '0'];
-const NUMBERS = [2, -4, 3.1, -5.2];
-const STRING = 'test string';
-const ARRAY = ['one', 'two'];
-const OBJECT = { key: 'value' };
-
-let INTEGERS = NUMBERS.splice(0, 2).concat(BOOLEANS.splice(2, 2));
-let FLOATS = NUMBERS.splice(2, 2);
 
 describe('Rules', () => {
 
@@ -20,39 +12,81 @@ describe('Rules', () => {
      */
     test('it can validate a boolean value', () => {
         // Validate for
-        BOOLEANS.forEach(value => {
+        DEFAULTS.BOOLEANS.forEach(value => {
             expect(rules.validateBoolean(value)).toBeTruthy();
         });
 
         // Validate against
-        NUMBERS.forEach(value => {
+        DEFAULTS.NUMBERS.forEach(value => {
             expect(rules.validateBoolean(value)).toBeFalsy();
         });
-        expect(rules.validateBoolean(STRING)).toBeFalsy();
-        expect(rules.validateBoolean(ARRAY)).toBeFalsy();
-        expect(rules.validateBoolean(OBJECT)).toBeFalsy();
+        expect(rules.validateBoolean(DEFAULTS.STRING)).toBeFalsy();
+        expect(rules.validateBoolean(DEFAULTS.ARRAY)).toBeFalsy();
+        expect(rules.validateBoolean(DEFAULTS.OBJECT)).toBeFalsy();
     });
 
+    /**
+     * Email
+     */
+    test('it can validate an email address', () => {
+
+        DEFAULTS.VALID_EMAILS.forEach(email => {
+            expect(rules.validateEmail(email)).toBeTruthy();
+        });
+
+        DEFAULTS.INVALID_EMAILS.forEach(email => {
+            expect(rules.validateEmail(email)).toBeFalsy();
+        });
+    })
+
+    test('it can validate a filled field', () => {
+
+        // It should pass if key is present and value is not empty
+        var fields = {
+            email: 'email@example.com',
+        };
+        expect(rules.validateFilled('email', fields)).toBeTruthy();
+
+        // It should fail if field is not present
+        var fields = {};
+        expect(rules.validateFilled('email', fields)).toBeFalsy();
+
+        // it should fail if value is not filled
+        var fields = {
+            email: '',
+            phone: null,
+        };
+        expect(rules.validateFilled('email', fields)).toBeFalsy();
+        expect(rules.validateFilled('phone', fields)).toBeFalsy();
+
+        // it should pass if field value is a boolean or number
+        var fields = {
+            important: false,
+            followers: 0
+        };
+        expect(rules.validateFilled('important', fields)).toBeTruthy();
+        expect(rules.validateFilled('followers', fields)).toBeTruthy();
+    })
 
     /**
      * String
      */
     test('it can validate a string value', () => {
         // Validate for
-        BOOLEANS.splice(-2).forEach(value => {
+        DEFAULTS.BOOLEANS.splice(-2).forEach(value => {
             expect(rules.validateString(value)).toBeTruthy(); // '1', '0'
         });
-        expect(rules.validateString(STRING)).toBeTruthy();
+        expect(rules.validateString(DEFAULTS.STRING)).toBeTruthy();
 
         // Validate against
-        BOOLEANS.splice(0, 4).forEach(value => {
+        DEFAULTS.BOOLEANS.splice(0, 4).forEach(value => {
             expect(rules.validateString(value)).toBeFalsy(); // true, false, 1, 0
         });
-        NUMBERS.forEach(value => {
+        DEFAULTS.NUMBERS.forEach(value => {
             expect(rules.validateBoolean(value)).toBeFalsy();
         });
-        expect(rules.validateBoolean(ARRAY)).toBeFalsy();
-        expect(rules.validateBoolean(OBJECT)).toBeFalsy();
+        expect(rules.validateBoolean(DEFAULTS.ARRAY)).toBeFalsy();
+        expect(rules.validateBoolean(DEFAULTS.OBJECT)).toBeFalsy();
     });
 
     /**
@@ -60,12 +94,12 @@ describe('Rules', () => {
      */
     test('it can validate an integer', () => {
         // Validate for
-        INTEGERS.forEach(value => {
+        DEFAULTS.INTEGERS.forEach(value => {
             expect(rules.validateInteger(value)).toBeTruthy();
         });
 
         // Validate against
-        FLOATS.forEach(value => {
+        DEFAULTS.FLOATS.forEach(value => {
             expect(rules.validateInteger(value)).toBeTruthy();
         });
     });
@@ -75,43 +109,43 @@ describe('Rules', () => {
      */
     test('it can validate an object', () => {
         // Validate for
-        expect(rules.validateObject(OBJECT)).toBeTruthy();
+        expect(rules.validateObject(DEFAULTS.OBJECT)).toBeTruthy();
 
         // Validate against
-        FLOATS.forEach(value => {
+        DEFAULTS.FLOATS.forEach(value => {
             expect(rules.validateObject(value)).toBeFalsy();
         });
-        INTEGERS.forEach(value => {
+        DEFAULTS.INTEGERS.forEach(value => {
             expect(rules.validateObject(value)).toBeFalsy();
         });
-        expect(rules.validateObject(STRING)).toBeFalsy();
-        expect(rules.validateObject(ARRAY)).toBeFalsy();
+        expect(rules.validateObject(DEFAULTS.STRING)).toBeFalsy();
+        expect(rules.validateObject(DEFAULTS.ARRAY)).toBeFalsy();
     });
 
     /**
      * Max
      */
     test('it can validate a max limit for a string', () => {
-        expect(rules.validateMax(STRING, 15)).toBeTruthy();
-        expect(rules.validateMax(STRING, 5)).toBeFalsy();
+        expect(rules.validateMax(DEFAULTS.STRING, 15)).toBeTruthy();
+        expect(rules.validateMax(DEFAULTS.STRING, 5)).toBeFalsy();
     })
 
     test('it can validate a max limit for an array', () => {
-        expect(rules.validateMax(ARRAY, 3)).toBeTruthy();
-        expect(rules.validateMax(ARRAY, 1)).toBeFalsy();
+        expect(rules.validateMax(DEFAULTS.ARRAY, 3)).toBeTruthy();
+        expect(rules.validateMax(DEFAULTS.ARRAY, 1)).toBeFalsy();
     })
 
     /**
      * Min
      */
     test('it can validate a min limit for a string', () => {
-        expect(rules.validateMin(STRING, 15)).toBeFalsy();
-        expect(rules.validateMin(STRING, 5)).toBeTruthy();
+        expect(rules.validateMin(DEFAULTS.STRING, 15)).toBeFalsy();
+        expect(rules.validateMin(DEFAULTS.STRING, 5)).toBeTruthy();
     })
 
     test('it can validate a min limit for an array', () => {
-        expect(rules.validateMin(ARRAY, 3)).toBeFalsy();
-        expect(rules.validateMin(ARRAY, 1)).toBeTruthy();
+        expect(rules.validateMin(DEFAULTS.ARRAY, 3)).toBeFalsy();
+        expect(rules.validateMin(DEFAULTS.ARRAY, 1)).toBeTruthy();
     })
 
     /**
@@ -133,6 +167,19 @@ describe('Rules', () => {
     })
 
     /**
+     * Numberic
+     */
+    test('it can validate a numeric value', () => {
+        DEFAULTS.NUMBERS.forEach(value => {
+            expect(rules.validateNumeric(value)).toBeTruthy();
+        });
+
+        expect(rules.validateNumeric(DEFAULTS.ARRAY)).toBeFalsy();
+        expect(rules.validateNumeric(DEFAULTS.OBJECT)).toBeFalsy();
+        expect(rules.validateNumeric(DEFAULTS.STRING)).toBeFalsy();
+    })
+
+    /**
      * Length - Array & String
      */
     test('it can validate the length of a value', () => {
@@ -150,11 +197,11 @@ describe('Rules', () => {
      * Array
      */
     test('it can validate an array', () => {
-        expect(rules.validateArray(ARRAY)).toBeTruthy();
-        expect(rules.validateArray(OBJECT)).toBeFalsy();
-        expect(rules.validateArray(STRING)).toBeFalsy();
-        expect(rules.validateArray(BOOLEANS[0])).toBeFalsy();
-        expect(rules.validateArray(NUMBERS[0])).toBeFalsy();
+        expect(rules.validateArray(DEFAULTS.ARRAY)).toBeTruthy();
+        expect(rules.validateArray(DEFAULTS.OBJECT)).toBeFalsy();
+        expect(rules.validateArray(DEFAULTS.STRING)).toBeFalsy();
+        expect(rules.validateArray(DEFAULTS.BOOLEANS[0])).toBeFalsy();
+        expect(rules.validateArray(DEFAULTS.NUMBERS[0])).toBeFalsy();
     })
 
     /**
@@ -178,36 +225,36 @@ describe('Rules', () => {
      * Greater Than
      */
     test('it can determine if a value is greater than another', () => {
-        expect(rules.validateGreaterThan(2,1)).toBeTruthy();
-        expect(rules.validateGreaterThan(2,2)).toBeFalsy();
-        expect(rules.validateGreaterThan(2, 3)).toBeFalsy();
+        expect(rules.validateGt(2,1)).toBeTruthy();
+        expect(rules.validateGt(2,2)).toBeFalsy();
+        expect(rules.validateGt(2, 3)).toBeFalsy();
     })
 
     /**
      * Less Than
      */
     test('it can determine if a value is less than another', () => {
-        expect(rules.validateLessThan(1, 2)).toBeTruthy();
-        expect(rules.validateLessThan(2, 2)).toBeFalsy();
-        expect(rules.validateLessThan(3, 2)).toBeFalsy();
+        expect(rules.validateLt(1, 2)).toBeTruthy();
+        expect(rules.validateLt(2, 2)).toBeFalsy();
+        expect(rules.validateLt(3, 2)).toBeFalsy();
     })
 
     /**
      * Greater Than Or Equal To
      */
     test('it can determine if a value is greater than or equal to another', () => {
-        expect(rules.validateGreaterThanOrEquals(2, 1)).toBeTruthy();
-        expect(rules.validateGreaterThanOrEquals(2, 2)).toBeTruthy();
-        expect(rules.validateGreaterThanOrEquals(2, 3)).toBeFalsy();
+        expect(rules.validateGte(2, 1)).toBeTruthy();
+        expect(rules.validateGte(2, 2)).toBeTruthy();
+        expect(rules.validateGte(2, 3)).toBeFalsy();
     })
 
     /**
      * Less Than Or Equal To
      */
     test('it can determine if a value is less than or equal to another', () => {
-        expect(rules.validateLessThanOrEquals(1, 2)).toBeTruthy();
-        expect(rules.validateLessThanOrEquals(2, 2)).toBeTruthy();
-        expect(rules.validateLessThanOrEquals(3, 2)).toBeFalsy();
+        expect(rules.validateLte(1, 2)).toBeTruthy();
+        expect(rules.validateLte(2, 2)).toBeTruthy();
+        expect(rules.validateLte(3, 2)).toBeFalsy();
     })
 
     /**
