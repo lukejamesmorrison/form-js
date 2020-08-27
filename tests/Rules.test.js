@@ -97,11 +97,15 @@ describe('Rules', () => {
         DEFAULTS.INTEGERS.forEach(value => {
             expect(rules.validateInteger(value)).toBeTruthy();
         });
+        expect(rules.validateInteger('1')).toBeTruthy();
+        expect(rules.validateInteger('0')).toBeTruthy();
 
         // Validate against
         DEFAULTS.FLOATS.forEach(value => {
             expect(rules.validateInteger(value)).toBeTruthy();
         });
+
+        expect(rules.validateInteger('s')).toBeFalsy();
     });
 
     /**

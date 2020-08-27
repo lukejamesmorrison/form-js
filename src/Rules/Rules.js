@@ -39,7 +39,7 @@ class Rules {
      * @param {mixed} value 
      */
     validateInteger(value) {
-        return Number.isInteger(value);
+        return !isNaN(+value) && Number.isInteger(+value);
     }
 
     /**
