@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.7] - 2020-08-XX
+
 ## [0.3.6] - 2020-08-27
 
 ### Added
@@ -52,8 +54,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.6...HEAD
-[0.3.6]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.5...HEAD
+[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.7...HEAD
+[0.3.7]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.7...HEAD
+[0.3.6]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.5...0.3.6
 [0.3.5]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.5...0.3.6
 [0.3.4]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.4...0.3.5
 [0.3.3]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.3...0.3.4
