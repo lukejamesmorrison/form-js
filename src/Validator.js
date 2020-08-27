@@ -98,6 +98,8 @@ class Validator {
             return messages[ruleName];
         };
 
+        // console.log(ruleName);
+
         // Else use default messages
         let message = DefaultMessages[ruleName];
 
@@ -126,7 +128,7 @@ class Validator {
     validateSingleRule(name, value, rule)
     {
         let ruleName = this._getRuleName(rule);
-        let ruleNameCapitalized = this._getCapitalizedRuleName(ruleName);
+        let ruleNameCapitalized = this._getPascalCaseRuleName(ruleName);
 
         if(!this._getSupportedRules().includes(ruleNameCapitalized))
         {
@@ -281,13 +283,18 @@ class Validator {
         return parameters;
     }
 
-    _getCapitalizedRuleName(name)
+    _getPascalCaseRuleName(name)
     {
         let words = name.split('_').map(word => {
             return word.charAt(0).toUpperCase() + word.substr(1).toLowerCase();
         });
 
         return words.join('');
+    }
+
+    _getSnakeCaseRuleName(name)
+    {
+        return name.split(/(?=[A-Z])/).join('_').toLowerCase();
     }
 
     _getSupportedRules()

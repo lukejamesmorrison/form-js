@@ -295,7 +295,6 @@ class Rules {
      */
     validateDifferent(fieldValue, otherFieldName, formFields)
     {
-        // console.log(fieldValue, formFields[otherFieldName]);
         // String, Number or Boolean
         if(['string', 'number', 'boolean'].includes(typeof(fieldValue)))
         {

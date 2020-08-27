@@ -188,4 +188,14 @@ describe('Validator', () => {
 
         expect(validator.formData.test).toBe('field');
     })
+
+    test('it can covert snake case to pascal case', () => {
+
+         expect(validator._getPascalCaseRuleName('required_if')).toBe('RequiredIf');
+    })
+
+    test('it can covert pascal case to snake case', () => {
+
+         expect(validator._getSnakeCaseRuleName('RequiredIf')).toBe('required_if');
+    })
 });

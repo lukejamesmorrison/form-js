@@ -1,6 +1,6 @@
-import Validator from '../src/Validator';
 import Form from '../src/Form';
 import * as DEFAULTS from './defaults';
+import Validator from '../src/Validator';
 
 let validator = new Validator;
 let rules = validator.rules;
