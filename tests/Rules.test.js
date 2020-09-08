@@ -440,6 +440,16 @@ describe('Rules', () => {
 
     });
 
+    test('it can validate a url', () => {
+        DEFAULTS.VALID_URLS.forEach(url => {
+            expect(rules.validateURL(url)).toBeTruthy();
+        })
+
+        DEFAULTS.INVALID_URLS.forEach(url => {
+            expect(rules.validateURL(url)).toBeFalsy();
+        })
+    })
+
     test('it can convert a string to a boolean', () => {
         expect(rules._convertStringToBoolean('true')).toBeTruthy();
         expect(rules._convertStringToBoolean(true)).toBeTruthy();

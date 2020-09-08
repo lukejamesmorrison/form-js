@@ -6,13 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.8] - 2020-08-XX
+## [0.3.8] - 2020-09-XX
+- New validation rules: `url`
 
 ## [0.3.7] - 2020-08-27
 
 ### Fixed
 - Integer rule now works with *numeric* string values.
-
 
 ## [0.3.6] - 2020-08-27
 
