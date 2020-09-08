@@ -1,62 +1,121 @@
 import Form from 'Form';
-import sinon from 'sinon';
+import sinon, { expectation } from 'sinon';
 import moxios from 'moxios';
 import laravelResponse from './ResponseStubs/Errors/laravel';
+import Errors from '../src/Errors';
 
 describe('Errors', () => {
 
-    beforeEach(() => {
-        moxios.install()
-    });
-
-    afterEach(() => {
-        moxios.uninstall()
-    });
-
-    test('it can get validation errors without sending HTTP request', (done) => {
-        let form = new Form({
-            first_name: {
-                value: '',
-                rules: 'required|min:5'
-            },
-            email: ''
+    test('it can record errors', () => {
+        let errors = new Errors;
+        errors.record({
+            name: ['The name field is invalid'],
+            age: ['A second error message for a different field']
         });
 
-        let onFulfilled = sinon.spy();
-        form.get('/').then(onFulfilled).catch(onFulfilled);
-
-        moxios.wait(function () {
-            // HTTP request should NOT be sent if form is invalid.
-            expect(form.isValid).toBeFalsy();
-            expect(form.errors.get('first_name')[0]).toEqual('The first name field is required.');
-            expect(form.errors.get('first_name')[1]).toEqual('The first name field must be greater than 5.');
-            done();
-        });
+        expect(errors.errors.name).toStrictEqual(['The name field is invalid']);
+        expect(errors.errors.age).toStrictEqual(['A second error message for a different field']);
     })
 
-    test('it can correctly parse an error response from a Laravel server', (done) => {
-        let form = new Form({
-            first_name: '',
-            email: ''
-        })
 
-        moxios.stubRequest('/', {
-            status: 422,
-            response: laravelResponse.data
-        })
-
-        let onFulfilled = sinon.spy();
-        form.get('/').catch(onFulfilled);
-
-        moxios.wait(function () {
-            expect(form.errors.any()).toBeTruthy();
-            expect(form.errors.getFirst('first_name')).toBe('A first name is required');
-            expect(form.errors.get('first_name').length).toBe(2);
-            expect(form.errors.get('email').length).toBe(2);
-            done();
+    test('it can return if an error for a field exists', () => {
+        let errors = new Errors;
+        errors.record({
+            name: ['The name field is invalid']
         });
+
+        expect(errors.has('name')).toBeTruthy();
     })
 
+    test('it can return if any errors exist', () => {
+        let errors = new Errors;
+        errors.record({
+            name: ['The name field is invalid']
+        });
+
+        expect(errors.any()).toBeTruthy();
+    })
+
+    test('it can return number of error fields', () => {
+        let errors = new Errors;
+        errors.record({
+            name: ['The name field is invalid'],
+            address: ['The address field is invalid']
+        });
+
+        expect(errors.size()).toBe(2);
+    })
+
+    test('it can return all errors for a given field', () => {
+        let errors = new Errors;
+        errors.record({
+            name: ['The name field is invalid', 'Another error message']
+        });
+
+        expect(errors.get('name')).toBeInstanceOf(Array);
+        expect(errors.get('name').length).toBe(2);
+    })
+
+    test('it can return first error message for a given field', () => {
+        let errors = new Errors;
+        let message = 'The name field is invalid';
+        errors.record({
+            name: [message]
+        });
+
+        expect(errors.getFirst('name')).toBe(message);
+    })
+
+    test('it can return first error message', () => {
+        let errors = new Errors;
+        let message = 'The name field is invalid';
+        errors.record({
+            name: [message],
+            age: ['This is another message from another field.']
+        });
+
+        expect(errors.first()).toBe(message);
+    })
+
+    test('it can return all errors for a given field', () => {
+        let errors = new Errors;
+        errors.record({
+            name: ['The name field is invalid', 'Another error message'],
+            age: ['Yet another message']
+        });
+
+        expect(errors.all()).toBeInstanceOf(Object);
+
+        let error_field_names = Object.keys(errors.all());
+        expect(error_field_names.includes('name')).toBeTruthy();
+        expect(error_field_names.includes('age')).toBeTruthy();
+    })
+
+    test('it can clear errors for a given field', () => {
+        let errors = new Errors;
+        errors.record({
+            name: ['The name field is invalid'],
+            age: ['Another error message']
+        });
+
+        expect(errors.has('name')).toBeTruthy();
+        expect(errors.has('age')).toBeTruthy();
+
+        errors.clear('name');
+        expect(errors.has('name')).toBeFalsy();
+        expect(errors.has('age')).toBeTruthy();
+    })
+
+    test('it can clear all errors', () => {
+        let errors = new Errors;
+        errors.record({
+            name: ['The name field is invalid'],
+            age: ['Another error message']
+        });
+
+        errors.clear();
+        expect(errors.any()).toBeFalsy();
+    })
 
 })
 

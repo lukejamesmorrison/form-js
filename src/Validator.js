@@ -35,7 +35,7 @@ const DEPENDENT_RULES = [
 ];
 
 /**
- * These rules may contain parameters and are compared to form fields. 
+ * These rules may depend on parameters and are compared to other form fields. 
  * Rules not in this list should evaluate false.
  */
 const COMPARISON_RULES = [
@@ -51,6 +51,8 @@ const COMPARISON_RULES = [
 
 /**
  * This class is responsible for validating form data.
+ * 
+ * @return void
  */
 class Validator {
 
@@ -62,7 +64,6 @@ class Validator {
     }
 
     /**
-     * 
      * Validate a value against its rules.
      *
      * @param {string} fieldname
@@ -76,14 +77,13 @@ class Validator {
         rules.forEach(rule => {
             let validationsForRule = this.validateSingleRule(fieldName, fieldValue, rule);
             if(validationsForRule == false) {
+                let ruleName = this._getRuleName(rule);
                 let message = this._getMessageForRule(fieldName, rule, messages);
-                validations[this._getRuleName(rule)] = message;
+                validations[ruleName] = message;
             };
         });
 
-        let valid = Object.values(validations).every(validation => {
-            return validation == true
-        });
+        let valid = Object.values(validations).every( validation => validation == true );
 
         return {valid, errors: validations};
     }
@@ -94,37 +94,31 @@ class Validator {
         let ruleParameters = this._getRuleParameters(rule);
 
         // If custom message exists
-        if(messages[ruleName])
-        {
-            return messages[ruleName];
-        };
-
-        // console.log(ruleName);
+        if(messages[ruleName]) return messages[ruleName];
 
         // Else use default messages
         let message = DefaultMessages[ruleName];
 
-        // Replace field name with readable rule name
+        // Replace field name placeholder with readable rule name
         message = message.replace(':field', name.replace('_', ' '));
 
         // Replace parameters
-        if(ruleParameters)
-        {    
+        if(ruleParameters) {    
             ruleParameters.forEach((param, index) => {
                 message = message.replace(`:param${index}`, param);
-            })
-        }
+            });
+        };
         
         return message;
     }
 
     /**
-     * 
      *  Validate a value against a single rule.
      *
      * @param {string} name
      * @param {mixed} value 
      * @param {mixed} rule 
+     * @return {boolean}
      */
     validateSingleRule(name, value, rule)
     {
@@ -252,8 +246,8 @@ class Validator {
     /**
      * Set the formData property to the provided data object.
      * 
-     * 
-     * @param {object} data 
+     * @param {object} data
+     * @return void
      */
     setData(data)
     {
@@ -261,20 +255,20 @@ class Validator {
     }
 
     /**
-     * 
      * Parse rule name from rule string.
      *
      * @param {string} rule 
+     * @return {string}
      */
     _getRuleName(rule) {
         return rule.split(':')[0];
     }
 
     /**
-     * 
      * Parse rule parameters from rule string.
      *
      * @param {string} rule 
+     * @return {array}
      */
     _getRuleParameters(rule)
     {
@@ -288,6 +282,11 @@ class Validator {
         return parameters;
     }
 
+    /**
+     * Convert snake case string to pascal case.
+     * 
+     * @param {string} name 
+     */
     _getPascalCaseRuleName(name)
     {
         let words = name.split('_').map(word => {
@@ -297,11 +296,21 @@ class Validator {
         return words.join('');
     }
 
+    /**
+     * Convert pascal case string to snake case.
+     * 
+     * @param {string} name 
+     */
     _getSnakeCaseRuleName(name)
     {
         return name.split(/(?=[A-Z])/).join('_').toLowerCase();
     }
 
+    /**
+     * Get all supported rules.
+     * 
+     * @return {array}
+     */
     _getSupportedRules()
     {
         return INDEPENDENT_RULES.concat(

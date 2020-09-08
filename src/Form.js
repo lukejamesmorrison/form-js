@@ -11,9 +11,10 @@ import ErrorsParser from './ErrorsParser';
 class Form {
 
 	/**
-     *  Create a new Form instance.
+     * Create a new Form instance.
      *
-     *	@param (object) data The attributes to be added to the form data.
+	 * @param {object} data The attributes to be added to the form data.
+	 * @return void
      */
 	constructor(data, options = {}) {
 		this.errors = new Errors;
@@ -64,9 +65,10 @@ class Form {
 	/**
 	 * Verify if field value is 'simple'.
 	 *
-	 * Acceptable simple values ()are strings, numbers, booleans or null.
+	 * Acceptable simple values are strings, numbers, booleans, arrays or null.
 	 *
 	 * @param {mixed} value 
+	 * @return {boolean}
 	 */
 	_isSimpleValue(value)
 	{
@@ -82,6 +84,7 @@ class Form {
 	 * 
 	 * @param {string} name The name of the property.
 	 * @param {string} field The value of the field.
+	 * @return void
 	 */
 	_setPropertyFromSimpleValue(name, field)
 	{
@@ -96,6 +99,7 @@ class Form {
 	 * 
  	 * @param {string} name The name of the property.
 	 * @param {object} field The value of the field.
+	 * @return void
 	 */
 	_setPropertyFromObject(name, field)
 	{
@@ -105,18 +109,17 @@ class Form {
 			this[name] = field;
 			return;
 		};
-
-		// if(this._isAdvancedObject(field))
-		// {
-		// 	this.originalData[name] = field;
-		// 	this[name] = field;
-		// 	return;
-		// }
 		
 		this.originalData[name] = field.value;
 		this[name] = field.value;
 	}
 
+	/**
+	 * Is object empty?
+	 * 
+	 * @param {object} obj 
+	 * @return {boolean}
+	 */
 	_isEmptyObject(obj)
 	{
 		return Object.keys(obj).length === 0 && obj.constructor === Object;
@@ -128,6 +131,7 @@ class Form {
 	 * data and should not contain rules or validation logic.
 	 * 
 	 * @param {Object} obj 
+	 * @return {boolean}
 	 */
 	_isAdvancedObject(obj)
 	{
@@ -140,7 +144,7 @@ class Form {
 	 * 
 	 * @param {string} name The name of the property.
 	 * @param {object} field The value of the field.
-	 * @return {array}
+	 * @return void
 	 */
 	_setRulesForProperty(name, field)
 	{
@@ -156,7 +160,7 @@ class Form {
 	 * 
 	 * @param {string} name The name of the property.
 	 * @param {object} field The value of the field.
-	 * @return {array}
+	 * @return void
 	 */
 	_setMessagesForProperty(name, field)
 	{
@@ -168,7 +172,7 @@ class Form {
 	/**
 	*  Fetch all relevant data for the form.
 	*
-	* @return {object}
+	* @return {object} data
 	*/
 	data() {
 		let data = {};
@@ -184,10 +188,11 @@ class Form {
     * Add file to FormData object. Required for each form input 
 	* in form triggered by a 'change' DOM event.
 	*
-	* For Vuejs: @change="addFile"
+	* For Vue: @change="addFile"
 	* For HTML: onChange="addFile(this)"
     *
-    * @param (object) event The HTML DOM object or Vue $event object.
+    * @param {object} event The HTML DOM object or Vue $event object.
+	* @return void
     */
 	addFile(event) {
 		//	Attach file to FormData object
@@ -258,7 +263,9 @@ class Form {
 	};
 
 	/**
-	*  Reset the form fields.
+	 * Reset the form fields.
+	 * 
+	 * @return void
 	*/
 	reset() {
 		// Clear data fields
@@ -306,9 +313,19 @@ class Form {
 	};
 
 	/**
+     *  Call form submit for PUT request.
+     *
+     *	@param (string) url
+     */
+	put(url) {
+		return this.submit('put', url);
+	};
+
+	/**
 	 * Callback function to be executed before form is submitted.
 	 * 
 	 * @param {callback} callback 
+	 * @return {Form}
 	 */
 	beforeSubmit(callback) {
 		this.beforeSubmitCallback = callback;
@@ -319,6 +336,7 @@ class Form {
 	 * Callback function to be executed after form is submitted.
 	 * 
 	 * @param {callback} callback 
+	 * @return {Form}
 	 */
 	afterSubmit(callback) {
 		this.afterSubmitCallback = callback;
@@ -348,10 +366,11 @@ class Form {
 	}
 
 	/**
-	*  Submit the form.
-	*
-	*  @param (string) requestType
-	*  @param (string) url
+	 * Submit the form.
+	 *
+	 * @param {string} requestType
+	 * @param {string} url
+	 * @return {Promise|null}
 	*/
 	submit(requestType, url) {
 		//  Only submit if form is submittable
@@ -398,19 +417,20 @@ class Form {
 	};
 
 	/**
-	*  Handle a successful form submission.
-	*
-	*  @param (object) response
-	*/
+	 * Handle a successful form submission.
+	 *
+	 * @param {object} response
+	 * @return void
+	 */
 	onSuccess(response) {
 		// Run after submit callback
 		if (this.afterSubmitCallback) {
-			this.afterSubmitCallback();
+			this.afterSubmitCallback(response);
 		};
 
 		// Run after success callback
 		if (this.afterSuccessCallback) {
-			this.afterSuccessCallback();
+			this.afterSuccessCallback(response);
 		}
 
 		this.submitting = false;
@@ -419,7 +439,8 @@ class Form {
 	/**
    *  Handle a failed form submission.
    *
-   *  @param (object) error
+   *  @param {object} error
+   * @return void
    */
 	onFail(response) {
 		// Run after fail callback
@@ -438,6 +459,7 @@ class Form {
 	/**
 	 * Validate form fields.
 	 *
+	 * @return {object}
 	 */
 	validate() {
 		if(!Object.keys(this.rules).length) {
@@ -461,10 +483,11 @@ class Form {
 		return {valid, validations};
 	}
 
-		/**
+	/**
 	 * Validate a form section.
 	 * 
-	 * @param {string} name 
+	 * @param {string} name The name of the section.
+	 * @return {object}
 	 */
 	validateSection(name)
 	{
@@ -492,6 +515,12 @@ class Form {
 		return {valid, validations};
 	}
 
+	/**
+	 * Validate a form field.
+	 * 
+	 * @param {string} field_name 
+	 * @return {object}
+	 */
 	validateField(field_name)
 	{
 		let errors = [];
@@ -518,6 +547,8 @@ class Form {
 
 	/**
 	 * Is form in a submitting state.
+	 * 
+	 * @return {boolean}
 	 */
 	isSubmitting()
 	{
@@ -526,6 +557,8 @@ class Form {
 
 	/**
 	 * Is form in a submittable state.
+	 * 
+	 * @return {boolean}
 	 */
 	isSubmittable()
 	{
@@ -537,8 +570,9 @@ class Form {
 	 * 
 	 * @param {string} name The name of the section.
 	 * @param {array} fieldNames The fields belonging to the section.
+	 * @return void
 	 */
-	defineSection(name, fieldNames = [])
+	defineSection(name, fieldNames)
 	{
 		this.sections[name] = {
 			valid: false,
@@ -550,6 +584,7 @@ class Form {
 	 * Is a section valid?
 	 * 
 	 * @param {string} name The name of the section.
+	 * @return {boolean}
 	 */
 	sectionIsValid(name)
 	{

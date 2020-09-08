@@ -4,23 +4,26 @@
 class Errors {
 
     /**
-     *  Create a new Errors instance.
+     * Create a new Errors instance.
+     * 
+     * @return void
      */
     constructor() {
         this.errors = {};
     }
 
     /**
-     *  Determine if an errors exist for the given field.
+     * Determine if an errors exist for the given field.
      *
-     *  @param (string) field
+     * @param {string} field
+     * @return {boolean}
      */
     has(field) {
         return this.errors.hasOwnProperty(field);
     }
 
     /**
-     *  Determine if we have any errors.
+     * Determine if we have any errors.
      *
      * @return {boolean}
      */
@@ -29,7 +32,7 @@ class Errors {
     }
 
     /**
-     *  Determine the number of errors.
+     * Determine the number of errors.
      *
      * @return {number}
      */
@@ -38,44 +41,44 @@ class Errors {
     }
 
      /**
-     *  Retreive all error messages for the given field.
+     * Retreive all error messages for the given field.
      *
-     * @param (string) field
+     * @param {string} field
      * @return {string|null}
      */
     get(field) {
         if(this.errors[field]) {
             return this.errors[field];
-        }
+        };
     }
 
     /**
-     *  Retreive the first error message for the given field.
+     * Retreive the first error message for the given field.
      *
-     * @param (string) field
-     * @param (boolean) all
+     * @param {string} field
+     * @param {boolean} all
      * @return {string|null}
      */
     getFirst(field)
     {
         if(this.errors[field]) {
             return this.errors[field][0];
-        }
+        };
     }
 
     /**
-     *  Retreive the first error message.
+     * Retreive the first error message.
      *
      * @return {string|null}
      */
     first() {
         if(Object.values(this.errors).length > 0) {
-           return Object.values(this.errors)[0][0]; 
-        }
+           return Object.values(this.errors)[0][0]; // errors -> first error  -> first message
+        };
     }
 
     /**
-     *  Retreive all errors.
+     * Retreive all errors.
      *
      * @return {object}
      */
@@ -85,18 +88,20 @@ class Errors {
     }
 
     /**
-     *  Record the new errors.
+     * Record the new errors.
      *
-     *  @param {object} errors
+     * @param {object} errors
+     * @return void
      */
     record(errors) {
         this.errors = errors;
     }
 
     /**
-     *  Clear one or all error fields.
+     * Clear one or all error fields.
      *
-     *  @param {string|null} field
+     * @param {string|null} field
+     * @return void
      */
     clear(field = null) {
         if (field) {

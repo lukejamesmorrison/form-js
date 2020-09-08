@@ -3,17 +3,16 @@ import sinon from 'sinon';
 import Errors from 'Errors';
 import moxios from 'moxios';
 import Validator from 'Validator';
+import laravelResponse from './ResponseStubs/Errors/laravel';
 
 
 describe('Form', () => {
 
     beforeEach(function () {
-        // import and pass your custom axios instance to this method
         moxios.install()
     });
 
     afterEach(function () {
-        // import and pass your custom axios instance to this method
         moxios.uninstall()
     });
 
@@ -200,6 +199,59 @@ describe('Form', () => {
 
         expect(form.headers['test-header']).toBe('testHeader');
     });
+
+    test('it can send a request', (done) => {
+        let form  = new Form;
+
+        moxios.stubRequest('/', {
+            status: 200,
+            response: laravelResponse.data
+        });
+        
+        let onFulfilled = sinon.spy();
+
+        // Submit
+        form.submit('get', '/').then(onFulfilled).catch(onFulfilled);
+        moxios.wait(function () {
+            expect(onFulfilled.called).toBeTruthy();
+            done();
+        });
+
+        // GET
+        form.get('/').then(onFulfilled).catch(onFulfilled);
+        moxios.wait(function () {
+            expect(onFulfilled.called).toBeTruthy();
+            done();
+        });
+
+        // POST
+        form.post('/').then(onFulfilled).catch(onFulfilled);
+        moxios.wait(function () {
+            expect(onFulfilled.called).toBeTruthy();
+            done();
+        });
+
+        // PATCH
+        form.patch('/').then(onFulfilled).catch(onFulfilled);
+        moxios.wait(function () {
+            expect(onFulfilled.called).toBeTruthy();
+            done();
+        });
+
+        // DELETE
+        form.delete('/').then(onFulfilled).catch(onFulfilled);
+        moxios.wait(function () {
+            expect(onFulfilled.called).toBeTruthy();
+            done();
+        });
+
+        // PUT
+        form.put('/').then(onFulfilled).catch(onFulfilled);
+        moxios.wait(function () {
+            expect(onFulfilled.called).toBeTruthy();
+            done();
+        });
+    })
 
     /**
      * The form can store a file from an HTML file input.

@@ -33,7 +33,7 @@ class Rules {
      * @return {boolean}
      */
     validateString(value) {
-        return (typeof value === 'string');
+        return typeof value === 'string';
     }
 
     /**
@@ -43,7 +43,8 @@ class Rules {
      * @return {boolean}
      */
     validateInteger(value) {
-        return !isNaN(+value) && Number.isInteger(+value);
+        return  !isNaN(+value) && 
+                Number.isInteger(+value);
     }
 
     /**
@@ -53,7 +54,8 @@ class Rules {
      * @return {boolean}
      */
     validateObject(value) {
-        return (value instanceof Object && !(value instanceof Array));
+        return  value instanceof Object && 
+                !(value instanceof Array);
     }
 
     /**
@@ -117,7 +119,9 @@ class Rules {
      * @return {boolean}
      */
     validateRequired(value) {
-        return value != null && value != '' && value.length != 0;
+        return  value != null && 
+                value != '' && 
+                value.length != 0;
     }
 
     /**
@@ -181,7 +185,7 @@ class Rules {
             };
         })
 
-        return valid_num  > 0
+        return valid_num > 0
             ? this.validateRequired(formFields[fieldName]) 
             : false;
     }
@@ -347,20 +351,17 @@ class Rules {
     validateDifferent(fieldValue, otherFieldName, formFields)
     {
         // String, Number or Boolean
-        if(['string', 'number', 'boolean'].includes(typeof(fieldValue)))
-        {
+        if(['string', 'number', 'boolean'].includes(typeof(fieldValue))) {
             return fieldValue !== formFields[otherFieldName];
         };
 
         // Array
-        if(Array.isArray(fieldValue))
-        {
+        if(Array.isArray(fieldValue)) {
             return fieldValue !== formFields[otherFieldName];
         }
 
         // Object
-        if(typeof(fieldValue) === 'object')
-        {
+        if(typeof(fieldValue) === 'object') {
             return JSON.stringify(fieldValue) !== JSON.stringify(formFields[otherFieldName]);
         }
     }
@@ -397,6 +398,12 @@ class Rules {
                 formFields[fieldName] !== ''
     }
 
+    /**
+     * Convert a string to a boolean. 
+     * Ie. 'true' -> true
+     * 
+     * @param {string} value 
+     */
     _convertStringToBoolean(value)
     {
         if (value === 'true')

@@ -1,3 +1,7 @@
+
+/**
+ * This file hold the default error messages for each validation rule.
+ */
 export default {
 
     array: 'The :field field must be of type Array.',

@@ -256,6 +256,9 @@ The given field must match the field under validation.
 #### string
 The field under validation must be a `string`.
 
+#### url
+The field under validation must be a valid URL.
+
 ### Server-side Validation
 
 Form-js handles request logic internally.  You should ensure that errors are formatted as an object where field names are keys and the values are arrays of message strings specific to that error.  

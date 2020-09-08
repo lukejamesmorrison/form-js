@@ -1,8 +1,12 @@
+/**
+ * This class is currently a placeholder.  In the future, it will 
+ * act as the concrete representation of a 'rule' class.
+ */
 class BaseRule {
 
     /**
      * 
-     * @param {String} rule 
+     * @param {string} rule 
      */
     constructor(fieldName, parameters = [], comparedFields = [])
     {

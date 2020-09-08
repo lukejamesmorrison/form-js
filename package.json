@@ -27,6 +27,8 @@
     "dist/**/*"
   ],
   "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "tests/coverage",
     "moduleDirectories": [
       "node_modules",
       "src"
