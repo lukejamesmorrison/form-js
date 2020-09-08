@@ -15,7 +15,8 @@ const INDEPENDENT_RULES = [
     'Numeric',
     'Object',
     'String',
-    'Required'
+    'Required',
+    'Url'
 ];
 
 /**
@@ -241,6 +242,10 @@ class Validator {
 
         if(ruleName == 'required_with_all') {
             return this.rules.validateRequiredWithAll(name, ruleParameters, this.formData);
+        }
+
+        if(ruleName == 'url') {
+            return this.rules.validateUrl(value);
         }
     }
 

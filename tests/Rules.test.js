@@ -442,11 +442,11 @@ describe('Rules', () => {
 
     test('it can validate a url', () => {
         DEFAULTS.VALID_URLS.forEach(url => {
-            expect(rules.validateURL(url)).toBeTruthy();
+            expect(rules.validateUrl(url)).toBeTruthy();
         })
 
         DEFAULTS.INVALID_URLS.forEach(url => {
-            expect(rules.validateURL(url)).toBeFalsy();
+            expect(rules.validateUrl(url)).toBeFalsy();
         })
     })
 

@@ -26,6 +26,7 @@ class Form {
 		this.files = {};
 		this.rules = {};
 		this.messages = {};
+		this.sections = {};
 
 		this.isValid = false;
 		this.hasFiles = false;
@@ -52,6 +53,9 @@ class Form {
 				this._setMessagesForProperty(field, data[field]);
 			};	
 		};
+
+		// Provide validator with current fields
+		this.validator.setData(this.data());
 
 		// Resolve options on form
 		// this._resolveOptions();
@@ -432,51 +436,84 @@ class Form {
 	};
 
 	/**
-	 * Validate form fields based on provided rules.
+	 * Validate form fields.
 	 *
 	 */
 	validate() {
-		if(!Object.keys(this.rules).length)
-		{
+		if(!Object.keys(this.rules).length) {
 			return this.isValid = true;
 		};
 
-		// Provide validator with current fields
-		this.validator.setData(this.data());
-
-		let validations = {};
 		let errors = {};
+		let validations = {};
 
-		Object.keys(this.data()).forEach(property => {
-
-			let field_name = property;
-			let value = this[property];
-			let rules = this.rules[property];
-			let messages = this.messages[property];
-
-			// Only attempt property validation if rules for property exist
-			if(rules) {
-				let validationForProperty = this.validator.validate(field_name, value, rules, messages);
-				validations[property] = validationForProperty;
-
-				if (!validationForProperty.valid) {
-					errors[property] = [];
-					// Add messages to return errors property
-					Object.values(validationForProperty.errors).forEach(message => {
-						errors[property].push(message);
-					})
-				}
-			}
+		Object.keys(this.data()).forEach(field_name => {
+			let fieldValidation = this.validateField(field_name);
+			validations[field_name] = fieldValidation.valid;
+			errors[field_name] = fieldValidation.errors;
 		});
 
-		let valid = Object.values(validations).every(validation => {
-			return validation.valid == true;
-		});
+		let valid = Object.values(validations).every(validation => validation == true);
 
 		this.errors.record(errors);
-
 		this.isValid = valid;
+
 		return {valid, validations};
+	}
+
+		/**
+	 * Validate a form section.
+	 * 
+	 * @param {string} name 
+	 */
+	validateSection(name)
+	{
+		let errors = {};
+		let validations = {};
+		let section = this.sections[name];
+
+		// Throw error if section does not exist
+		if(!section) {
+			console.warn(`There is no section with name '${name}' defined.`);
+			return false;
+		};
+
+		section.fields.forEach(field_name => {
+			let fieldValidation = this.validateField(field_name);
+			validations[field_name] = fieldValidation.valid;
+			errors[field_name] = fieldValidation.errors;
+		});
+
+		let valid = Object.values(validations).every(validation => validation == true);
+
+		this.errors.record(errors);
+		this.sections[name].valid = valid;
+
+		return {valid, validations};
+	}
+
+	validateField(field_name)
+	{
+		let errors = [];
+		let value = this[field_name];
+		let rules = this.rules[field_name];
+		let messages = this.messages[field_name];
+		let valid = rules && rules.length ? false : true;
+
+		// Only attempt property validation if rules for property exist
+		if(rules) {
+			let validationForField = this.validator.validate(field_name, value, rules, messages);
+			valid = validationForField.valid;
+
+			if (!validationForField.valid) {
+				// Add messages to return errors property
+				Object.values(validationForField.errors).forEach(message => {
+					errors.push(message);
+				})
+			}
+		};
+
+		return { valid, errors };
 	}
 
 	/**
@@ -493,6 +530,30 @@ class Form {
 	isSubmittable()
 	{
 		return this.submittable;
+	}
+
+	/**
+	 * Define a form section.
+	 * 
+	 * @param {string} name The name of the section.
+	 * @param {array} fieldNames The fields belonging to the section.
+	 */
+	defineSection(name, fieldNames = [])
+	{
+		this.sections[name] = {
+			valid: false,
+			fields: fieldNames
+		};
+	}
+
+	/**
+	 * Is a section valid?
+	 * 
+	 * @param {string} name The name of the section.
+	 */
+	sectionIsValid(name)
+	{
+		return this.sections[name] && this.sections[name].valid;
 	}
 }
 

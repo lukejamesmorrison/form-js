@@ -53,4 +53,6 @@ export default {
     same: 'The :field field must be equal to :param0.',
 
     string: 'The :field field must be of type String.',
+
+    url: 'The :field field must be a valid URL.',
 }

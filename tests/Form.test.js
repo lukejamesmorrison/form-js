@@ -388,4 +388,40 @@ describe('Form', () => {
         expect(form.isSubmittable()).toBeTruthy();
     })
 
+    test('it can define a section', () => {
+        let form = new Form({
+            field_one: 'first name',
+            field_two: 'last name'
+        });
+
+        form.defineSection('names', ['field_one', 'field_two']);
+
+        expect(Object.keys(form.sections).includes('names'));
+        expect(form.sections.names.fields).toStrictEqual(['field_one', 'field_two']);
+    })
+
+    test('it can validate a section', () => {
+
+        let form = new Form({
+            name: {
+                value: 'Jane Doe',
+                rules: 'required|string'
+            },
+            street: {
+                value: '123 Street',
+                rules: 'required|string'
+            }
+        });
+
+        form.defineSection('address', ['street']);
+
+        expect(form.isValid).toBeFalsy();
+        expect(form.sectionIsValid('address')).toBeFalsy();
+
+        form.validateSection('address');
+
+        expect(form.isValid).toBeFalsy();
+        expect(form.sectionIsValid('address')).toBeTruthy();
+    })
+
 });
