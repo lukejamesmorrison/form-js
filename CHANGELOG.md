@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New validation rules: `url`.
 - Form Sections.
 - Code coverage for test suite.
+- Form options.
+- `options.js` to store default form options.
 
 ### Changed
 - `Form` now has multiple methods to handle validation: `validate`, `validateSection`, `validateField`.

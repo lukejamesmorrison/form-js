@@ -8,7 +8,8 @@ class Errors {
      * 
      * @return void
      */
-    constructor() {
+    constructor()
+    {
         this.errors = {};
     }
 
@@ -18,7 +19,8 @@ class Errors {
      * @param {string} field
      * @return {boolean}
      */
-    has(field) {
+    has(field)
+    {
         return this.errors.hasOwnProperty(field);
     }
 
@@ -27,8 +29,9 @@ class Errors {
      *
      * @return {boolean}
      */
-    any() {
-        return Object.keys(this.errors).length > 0;
+    any()
+    {
+        return this.size() > 0;
     }
 
     /**
@@ -36,7 +39,8 @@ class Errors {
      *
      * @return {number}
      */
-    size() {
+    size()
+    {
         return Object.keys(this.errors).length;
     }
 
@@ -46,7 +50,8 @@ class Errors {
      * @param {string} field
      * @return {string|null}
      */
-    get(field) {
+    get(field)
+    {
         if(this.errors[field]) {
             return this.errors[field];
         };
@@ -71,14 +76,15 @@ class Errors {
      *
      * @return {string|null}
      */
-    first() {
-        if(Object.values(this.errors).length > 0) {
-           return Object.values(this.errors)[0][0]; // errors -> first error  -> first message
+    first()
+    {
+        if(this.size() > 0) {
+           return Object.values(this.errors)[0][0]; // errors -> first error -> first message
         };
     }
 
     /**
-     * Retreive all errors.
+     * Retreive all errors.s
      *
      * @return {object}
      */
@@ -93,7 +99,8 @@ class Errors {
      * @param {object} errors
      * @return void
      */
-    record(errors) {
+    record(errors)
+    {
         this.errors = errors;
     }
 
@@ -103,7 +110,8 @@ class Errors {
      * @param {string|null} field
      * @return void
      */
-    clear(field = null) {
+    clear(field = null)
+    {
         if (field) {
             delete this.errors[field];
             return;

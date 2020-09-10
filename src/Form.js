@@ -2,6 +2,7 @@ import axios from 'axios';
 import Errors from './Errors';
 import Validator from './Validator';
 import ErrorsParser from './ErrorsParser';
+import DefaultOptions from './options';
 
 /**
  * This class is responsible for managing form data and initiation HTTP 
@@ -14,24 +15,25 @@ class Form {
      * Create a new Form instance.
      *
 	 * @param {object} data The attributes to be added to the form data.
+	 * @param {object} customOptions The custom options to be applied to the form.
 	 * @return void
      */
-	constructor(data, options = {}) {
+	constructor(data, customOptions = {}) {
 		this.errors = new Errors;
 		this.validator = new Validator;
 		this.formData = new FormData;
 
-		this.originalData = {};
-		this.options = options;
-		this.headers = {};
 		this.files = {};
 		this.rules = {};
+		this.headers = {};
 		this.messages = {};
 		this.sections = {};
+		this.originalData = {};
+		this.options = DefaultOptions;
+		this.customOptions = customOptions;
 
 		this.isValid = false;
 		this.hasFiles = false;
-
 		this.submitting = false;
 		this.submittable = true;
 
@@ -52,14 +54,19 @@ class Form {
 				this._setPropertyFromObject(field, data[field]);
 				this._setRulesForProperty(field, data[field]);
 				this._setMessagesForProperty(field, data[field]);
-			};	
+				this._addFieldToSection(field, data[field]);
+			};
 		};
 
-		// Provide validator with current fields
+		/**
+		 * Provide validator with current fields.
+		 */
 		this.validator.setData(this.data());
 
-		// Resolve options on form
-		// this._resolveOptions();
+		/**
+		 * Update default form options with custom options.
+		 */
+		this._resolveCustomOptions();
 	};
 
 	/**
@@ -72,9 +79,9 @@ class Form {
 	 */
 	_isSimpleValue(value)
 	{
-		return 	typeof (value) == 'string' || 
-				typeof (value) == 'number' || 
-				typeof (value) == 'boolean' ||
+		return 	typeof value == 'string' || 
+				typeof value == 'number' || 
+				typeof value == 'boolean' ||
 				Array.isArray(value) ||
 				value == null
 	}
@@ -103,8 +110,7 @@ class Form {
 	 */
 	_setPropertyFromObject(name, field)
 	{
-		if(this._isEmptyObject(field) || this._isAdvancedObject(field))
-		{
+		if(this._isEmptyObject(field) || this._isAdvancedObject(field)) {
 			this.originalData[name] = field;
 			this[name] = field;
 			return;
@@ -122,7 +128,7 @@ class Form {
 	 */
 	_isEmptyObject(obj)
 	{
-		return Object.keys(obj).length === 0 && obj.constructor === Object;
+		return 	Object.keys(obj).length === 0 && obj.constructor === Object;
 	}
 
 	/**
@@ -169,12 +175,40 @@ class Form {
 		};
 	}
 
+	_addFieldToSection(name, field)
+	{
+		let sectionName = field.section;
+
+		if (sectionName) {
+			// Create section if doesn't exist
+			if(!this.sections[sectionName]) {
+				this.sections[sectionName] = {
+					valid: false,
+					fields: []
+				};
+			};
+
+			this.sections[sectionName].fields.push(name);
+		};
+	}
+
+	/**
+	 * Update default form options with custom options.
+	 */
+	_resolveCustomOptions()
+	{
+		for(let option in this.customOptions) {
+			this.options[option] = this.customOptions[option]
+		};
+	}
+
 	/**
 	*  Fetch all relevant data for the form.
 	*
 	* @return {object} data
 	*/
-	data() {
+	data()
+	{
 		let data = {};
 
 		for (let property in this.originalData) {
@@ -194,9 +228,8 @@ class Form {
     * @param {object} event The HTML DOM object or Vue $event object.
 	* @return void
     */
-	addFile(event) {
-		//	Attach file to FormData object
-
+	addFile(event)
+	{
 		// HTML
 		if(event.files && event.files[0]) {
 			this.formData.append(event.name, event.files[0]);
@@ -212,7 +245,6 @@ class Form {
 			this.hasFiles = true;
 			return;
 		};
-
 	};
 
 	/**
@@ -231,22 +263,22 @@ class Form {
 	*
 	* @see https://developer.mozilla.org/en-US/docs/Web/API/FormData
 	*
-	* @return {FormData}
+	* @return {FormData|null}
 	*/
-	getFormData() {
+	getFormData()
+	{
 		let data = this.data();
 
 		Object.keys(data).forEach(key => {
 
 			//	If object property is an array, modify for FormData object
 			if (Array.isArray(data[key])) {
-
 				//	Remove items from existing object
 				this.formData.delete(`${key}[]`);
-
 				//	Add new items
-				Object.values(data[key]).forEach(value => this.formData.append(`${key}[]`, value));
-
+				Object.values(data[key]).forEach(value => {
+					this.formData.append(`${key}[]`, value)
+				});
 			}
 
 			//	If null, don't add to FormData object
@@ -267,7 +299,8 @@ class Form {
 	 * 
 	 * @return void
 	*/
-	reset() {
+	reset()
+	{
 		// Clear data fields
 		for (let field in this.originalData) {
 			this[field] = null;
@@ -281,7 +314,8 @@ class Form {
 	*
 	* @param (string) url
 	*/
-	post(url) {
+	post(url)
+	{
 		return this.submit('post', url);
 	};
 
@@ -290,7 +324,8 @@ class Form {
      *
      * @param (string) url
      */
-	get(url) {
+	get(url)
+	{
 		return this.submit('get', url);
 	};
 
@@ -299,7 +334,8 @@ class Form {
      *
      * @param (string) url
      */
-	patch(url) {
+	patch(url) 
+	{
 		return this.submit('patch', url);
 	};
 
@@ -308,7 +344,8 @@ class Form {
      *
      *	@param (string) url
      */
-	delete(url) {
+	delete(url)
+	{
 		return this.submit('delete', url);
 	};
 
@@ -317,7 +354,8 @@ class Form {
      *
      *	@param (string) url
      */
-	put(url) {
+	put(url)
+	{
 		return this.submit('put', url);
 	};
 
@@ -327,7 +365,8 @@ class Form {
 	 * @param {callback} callback 
 	 * @return {Form}
 	 */
-	beforeSubmit(callback) {
+	beforeSubmit(callback)
+	{
 		this.beforeSubmitCallback = callback;
 		return this;
 	};
@@ -338,7 +377,8 @@ class Form {
 	 * @param {callback} callback 
 	 * @return {Form}
 	 */
-	afterSubmit(callback) {
+	afterSubmit(callback)
+	{
 		this.afterSubmitCallback = callback;
 		return this;
 	};
@@ -349,7 +389,8 @@ class Form {
 	 * @param {callback} callback
 	 * @return {Form}
 	 */
-	afterSuccess(callback) {
+	afterSuccess(callback)
+	{
 		this.afterSuccessCallback = callback;
 		return this;
 	}
@@ -360,7 +401,8 @@ class Form {
 	 * @param {callback} callback
 	 * @return {Form}
 	 */
-	afterFail(callback) {
+	afterFail(callback)
+	{
 		this.afterFailCallback = callback;
 		return this;
 	}
@@ -372,7 +414,8 @@ class Form {
 	 * @param {string} url
 	 * @return {Promise|null}
 	*/
-	submit(requestType, url) {
+	submit(requestType, url)
+	{
 		//  Only submit if form is submittable
 		if (!this.submittable) {
 			console.warn('Form cannot be submitted.');
@@ -380,14 +423,15 @@ class Form {
 		};
 
 		// Validate form
-		this.validate();
+		if (this.options.validateOnSubmit) {
+			this.validate();
 
-		if(!this.isValid) {
-			// console.warn('Form is not valid.');
-			return new Promise((resolve, reject) => {
-				reject('Cannot submit, form is not valid.');
-			});
-		}
+			if(!this.isValid) {
+				return new Promise((resolve, reject) => {
+					reject('Cannot submit, form is not valid.');
+				});
+			}
+		};
 
 		// Clear errors
 		this.errors.clear();
@@ -422,7 +466,8 @@ class Form {
 	 * @param {object} response
 	 * @return void
 	 */
-	onSuccess(response) {
+	onSuccess(response)
+	{
 		// Run after submit callback
 		if (this.afterSubmitCallback) {
 			this.afterSubmitCallback(response);
@@ -437,12 +482,13 @@ class Form {
 	};
 
 	/**
-   *  Handle a failed form submission.
-   *
-   *  @param {object} error
-   * @return void
-   */
-	onFail(response) {
+     * Handle a failed form submission.
+     *
+     * @param {object} error
+     * @return void
+     */
+	onFail(response)
+	{
 		// Run after fail callback
 		if (this.afterFailCallback) {
 			this.afterFailCallback();
@@ -461,7 +507,8 @@ class Form {
 	 *
 	 * @return {object}
 	 */
-	validate() {
+	validate()
+	{
 		if(!Object.keys(this.rules).length) {
 			return this.isValid = true;
 		};
@@ -480,7 +527,7 @@ class Form {
 		this.errors.record(errors);
 		this.isValid = valid;
 
-		return {valid, validations};
+		return { valid, validations };
 	}
 
 	/**
@@ -512,7 +559,7 @@ class Form {
 		this.errors.record(errors);
 		this.sections[name].valid = valid;
 
-		return {valid, validations};
+		return { valid, validations };
 	}
 
 	/**
@@ -569,14 +616,14 @@ class Form {
 	 * Define a form section.
 	 * 
 	 * @param {string} name The name of the section.
-	 * @param {array} fieldNames The fields belonging to the section.
+	 * @param {array[string]} fields The fields belonging to the section.
 	 * @return void
 	 */
-	defineSection(name, fieldNames)
+	defineSection(name, fields)
 	{
 		this.sections[name] = {
 			valid: false,
-			fields: fieldNames
+			fields
 		};
 	}
 
@@ -589,6 +636,17 @@ class Form {
 	sectionIsValid(name)
 	{
 		return this.sections[name] && this.sections[name].valid;
+	}
+
+	/**
+	 * Get field names in a specific section.
+	 * 
+	 * @param {string} name The section name.
+	 * @return {array} The array of field names in section.
+	 */
+	getSectionFields(name)
+	{
+		return this.sections[name] ? this.sections[name].fields : [];
 	}
 }
 

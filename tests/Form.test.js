@@ -104,6 +104,22 @@ describe('Form', () => {
 
     })
 
+    test('it can set default options', () => {
+        let form = new Form;
+
+        expect(form.options.validateOnSubmit).toBeTruthy();
+    })
+
+    test('it can set custom options', () => {
+        let form = new Form({}, {
+            validateOnSubmit: false
+        });
+
+        expect(form.options.validateOnSubmit).toBeFalsy();
+    })
+
+
+
     test("it can receive custom properties", () => {
         let form = new Form({
             name: {
@@ -474,6 +490,60 @@ describe('Form', () => {
 
         expect(form.isValid).toBeFalsy();
         expect(form.sectionIsValid('address')).toBeTruthy();
+    })
+
+    test('it can get field names in section', () => {
+        let form = new Form({
+            name: {
+                value: 'Jane Doe',
+                rules: 'required|string'
+            },
+            street: {
+                value: '123 Street',
+                rules: 'required|string'
+            }
+        });
+
+        form.defineSection('address', ['street']);
+
+        expect(form.getSectionFields('address')).toStrictEqual(['street'])
+    })
+
+    test('it can add a field to a section', () => {
+        let form = new Form;
+
+        let first_name = {
+            value: 'Jane',
+            section: 'name'
+        };
+
+        form._addFieldToSection('first_name', first_name);
+
+        expect(form.getSectionFields('name')).toStrictEqual(['first_name']);
+    })
+
+    test('it can assign fields to section from data during instantiation', () => {
+        let form = new Form({
+            first_name: {
+                value: 'Jane',
+                rules: 'required|string',
+                section: 'name'
+            },
+            last_name: {
+                value: 'Doe',
+                rules: 'required|string',
+                section: 'name'
+            },
+            street: {
+                value: '123 Street',
+                rules: 'required|string',
+                section: 'address'
+            }
+        });
+
+        expect(form.getSectionFields('name')).toStrictEqual(['first_name', 'last_name']);
+        expect(form.getSectionFields('address')).toStrictEqual(['street']);
+        expect(form.getSectionFields('preferences')).toStrictEqual([]);
     })
 
 });
