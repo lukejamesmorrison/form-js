@@ -118,6 +118,22 @@ describe('Form', () => {
         expect(form.options.validateOnSubmit).toBeFalsy();
     })
 
+    test('it can set custom request config', () => {
+        let form = new Form({}, {
+            axios: {
+                timeout: 1000,
+            }
+        });
+
+        expect(form.getRequestConfig()).toStrictEqual({
+            // Headers added by default
+            headers: {},
+            timeout: 1000,
+        });
+
+
+    })
+
 
 
     test("it can receive custom properties", () => {
@@ -254,15 +270,15 @@ describe('Form', () => {
             done();
         });
 
-        // DELETE
-        form.delete('/').then(onFulfilled).catch(onFulfilled);
+        // PUT
+        form.put('/').then(onFulfilled).catch(onFulfilled);
         moxios.wait(function () {
             expect(onFulfilled.called).toBeTruthy();
             done();
         });
 
-        // PUT
-        form.put('/').then(onFulfilled).catch(onFulfilled);
+        // DELETE
+        form.delete('/').then(onFulfilled).catch(onFulfilled);
         moxios.wait(function () {
             expect(onFulfilled.called).toBeTruthy();
             done();

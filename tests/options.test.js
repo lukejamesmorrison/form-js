@@ -1,6 +1,6 @@
-import Form from '../src/Form';
 import sinon from 'sinon';
 import moxios from 'moxios';
+import Form from '../src/Form';
 import laravelResponse from './ResponseStubs/Errors/laravel';
 
 

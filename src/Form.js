@@ -201,6 +201,22 @@ class Form {
 			this.options[option] = this.customOptions[option]
 		};
 	}
+	/**
+	 * Get config to be used in HTTP request.  
+	 * 
+	 * This method combines form headers and custom configurations 
+	 * defined in the `axios` key of the form options 
+	 * object provided when instantiated.
+	 * 
+	 * @return {object}
+	 */
+	getRequestConfig()
+	{
+		return { 
+			headers: this.headers, 
+			...this.customOptions.axios
+		};
+	}
 
 	/**
 	*  Fetch all relevant data for the form.
@@ -447,8 +463,10 @@ class Form {
 		// If request has files, we will send a FormData() object
 		let data = this.hasFiles ? this.getFormData() : this.data();
 
+		
+
 		return new Promise((resolve, reject) => {
-			axios[requestType](url, data, this.headers)
+			axios[requestType](url, data, this.getRequestConfig())
 				.then(response => {
 					this.onSuccess(response);
 					resolve(response);
@@ -463,7 +481,7 @@ class Form {
 	/**
 	 * Handle a successful form submission.
 	 *
-	 * @param {object} response
+	 * @param {object} response The response object returned from the HTTP request.
 	 * @return void
 	 */
 	onSuccess(response)
@@ -484,7 +502,7 @@ class Form {
 	/**
      * Handle a failed form submission.
      *
-     * @param {object} error
+     * @param {object} response The response object returned from the HTTP request.
      * @return void
      */
 	onFail(response)

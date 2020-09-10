@@ -1,7 +1,3 @@
-import Form from 'Form';
-import sinon, { expectation } from 'sinon';
-import moxios from 'moxios';
-import laravelResponse from './ResponseStubs/Errors/laravel';
 import Errors from '../src/Errors';
 
 describe('Errors', () => {

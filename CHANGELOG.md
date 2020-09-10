@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.8] - 2020-09-XX
+## [0.3.8] - 2020-09-10
 
 ### Added
 - New validation rules: `url`.
@@ -14,12 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code coverage for test suite.
 - Form options.
 - `options.js` to store default form options.
+- Config options can now be attached to HTTP request. See [Request Config](https://www.npmjs.com/package/axios#request-config)
 
 ### Changed
 - `Form` now has multiple methods to handle validation: `validate`, `validateSection`, `validateField`.
 
 ### Fixed
 - Docblock inconsistencies and formatting.
+- Form headers are now correctly attached to axios request.
 
 
 ## [0.3.7] - 2020-08-27
@@ -70,8 +72,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Form can now accept simple default values of types: `string`, `number`, `boolean` as well as an `array` or `object`. Objects may be set as data however *MUST NOT* contain a `value` key. This key is reserved to identify fields with default values and validation logic.
 - Files can now be added correctly using native HTML file input onChange event.
-
-### Removed
 
 [Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.8...HEAD
 [0.3.8]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.8...HEAD

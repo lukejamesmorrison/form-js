@@ -1,12 +1,10 @@
 # Form-js
-A form package supporting files, HTTP requests as well as handling for client and server-side validation. 
+A form package supporting files and HTTP requests with client and server-side validation.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 ![npm (scoped)](https://img.shields.io/npm/v/@lukejm/form-js.svg)
 ![CircleCI](https://img.shields.io/circleci/build/github/lukejamesmorrison/form-js)
 ![npm](https://img.shields.io/npm/dt/@lukejm/form-js)
-
-<!-- Form-js designed to work with Vue.js so there may be compatibility errors throughout. -->
 
 - [Installation](#installation)
 - [Getting Started](#getting-started)
@@ -16,7 +14,7 @@ A form package supporting files, HTTP requests as well as handling for client an
 - [Validation Rules](#validation-rules)
 - [Accessing Errors](#accessing-errors)
 - [Flags and Hooks](#flags-and-hooks)
-- [Options (Coming Soon)](#options)
+- [Options](#options)
 - [Future Features](#future-features)
 - [Upgrade Guide](/upgrade.md)
 
@@ -44,7 +42,7 @@ let Form = new Form({
         value: null,
         rules: 'string',
         messages: {
-            string: 'This is a custom error message for string validation on the first_name field'
+            string: 'This is a custom error message for string validation on the first name field.'
         }
     }
 });
@@ -104,11 +102,10 @@ To access the forms file:
     let files = form.getFiles(); // Array[Object]
 ```
 
-
 ***The form type and headers will automatically be updated when you add your first file.***
 
 ## Making Requests
-Form-js uses Axios in order to send HTTP requests.
+Form-js uses [Axios](https://github.com/axios/axios) to handle HTTP requests.
 
 A form may be submitted by using the `submit(method, endpoint)` method:
 
@@ -328,24 +325,51 @@ Several hooks are available based on form state.  A `callback` should be passed 
 
 
 ### Options
-Coming Soon
+Form-js offers several customizable options.  You may instantiate a new `Form` object with a second parameter: `options`:
 
-I am currently adding the ability to extend and modify Form-js.  Sit tight!
+```javascript
+let form = new Form(
+    fields,
+    {
+        validateOnSubmit: false,
+        axios: {
+            timeout: 1000
+        }
+    }
+)
+```
+
+The following options are supported:
+
+| Option                     | Default              | Description                                                        |
+| -----                      | --------             | -------------                                                      |
+| `validateOnSubmit`         | `(bool) True`        | Should form conduct a field validation prior to submitting.  If the form is invalid when `true`, it will not be submitted. |
+
+By defining an `axios` key, you are able to use all of the available [Axios Request Configurations](https://github.com/axios/axios#request-config).
 
 ## Complete Example
 
 ```javascript
-    let form = Form({
-        email: {
-            value: 'johnsmith@example.com',
-            rules: 'required|string|email',
-            messages: {
-                string: 'Sorry but your email address is probably not that weird.',
-                email: 'Hmmm, this doesn\'t look like a real email address!'
+    let form = new Form(
+        // Fields
+        {
+            email: {
+                value: 'johnsmith@example.com',
+                rules: 'required|string|email',
+                messages: {
+                    string: 'Sorry but your email address is probably not that weird.',
+                    email: 'Hmmm, this doesn\'t look like a real email address!'
+                }
             }
         },
-        //...
-    })
+        // Options
+        {
+            validateOnSubmit: false,
+            axios: {
+                timeout: 1000
+            }
+        }
+    )
 
     form.post('/users')
         .beforeSubmitting(() => console.log('beforeSubmit'))
@@ -367,10 +391,7 @@ I am currently adding the ability to extend and modify Form-js.  Sit tight!
 
 ## Future Features
 - Custom Validation Rules
-- Configurable Options
-
-## Thanks
-Thank you Jeffrey Way for your Javascript tutorial on form objects.  It was a heavy influence for this package's early development.
+- Advanced Form Section logic
 
 ## License
 The Form-js library is open-sourced software licensed under the MIT license.
