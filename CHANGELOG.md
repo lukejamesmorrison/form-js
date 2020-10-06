@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `first()` method of `Error` object now accepts an optional `field` argument and can be used as an alias for the `getFirst()` method.
+- `Validator` now uses `switch` statements to determine which rule to apply for validation.
 
 ## [0.3.8] - 2020-09-10
 

@@ -13,7 +13,6 @@ describe('Errors', () => {
         expect(errors.errors.age).toStrictEqual(['A second error message for a different field']);
     })
 
-
     test('it can return if an error for a field exists', () => {
         let errors = new Errors;
         errors.record({
@@ -59,7 +58,6 @@ describe('Errors', () => {
             name: [message]
         });
 
-
         expect(errors.getFirst('name')).toBe(message);
         expect(errors.first('name')).toBe(message);
     })
@@ -74,8 +72,6 @@ describe('Errors', () => {
 
         expect(errors.first()).toBe(message);
     })
-
-
 
     test('it can return all errors for a given field', () => {
         let errors = new Errors;

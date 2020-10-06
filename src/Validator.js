@@ -133,113 +133,89 @@ class Validator {
         
         let ruleParameters = this._getRuleParameters(rule);
 
-        if (ruleName == 'string') {
-            return this.rules.validateString(value);
-        };
-
-        if(ruleName == 'email') {
-            return this.rules.validateEmail(value);
-        }
-
-        if(ruleName == 'filled') {
-            return this.rules.validateFilled(name, this.formData);
-        }
-
-        if (ruleName == 'integer') {
-            return this.rules.validateInteger(value);
-        };
-
-        if (ruleName == 'boolean') {
-            return this.rules.validateBoolean(value);
-        };
-
-        if (ruleName == 'object') {
-            return this.rules.validateObject(value);
-        };
-
-        if(ruleName == 'max')
-        {
-            return this.rules.validateMax(value, ruleParameters[0]);
-        }
-
-        if (ruleName == 'min') {
-            return this.rules.validateMin(value, ruleParameters[0]);
-        }
-
-        if (ruleName == 'required') {
-            return this.rules.validateRequired(value);
-        }
-
-        if (ruleName == 'null') {
-            return this.rules.validateNull(value);
-        }
-
-        if (ruleName == 'numeric') {
-            return this.rules.validateNumeric(value);
-        }
-
-        if (ruleName == 'length') {
-            return this.rules.validateLength(value, ruleParameters[0]);
-        }
-
-        if (ruleName == 'array') {
-            return this.rules.validateArray(value);
-        }
-
-        if (ruleName == 'equal' || ruleName == 'same') {
-            return this.rules.validateEquals(value, ruleParameters[0]);
-        }
-
-        if (ruleName == 'gt') {
-            return this.rules.validateGt(value, ruleParameters[0]);
-        }
-
-        if (ruleName == 'gte') {
-            return this.rules.validateGte(value, ruleParameters[0]);
-        }
-
-        if (ruleName == 'lt') {
-            return this.rules.validateLt(value, ruleParameters[0]);
-        }
-
-        if (ruleName == 'lte') {
-            return this.rules.validateLte(value, ruleParameters[0]);
-        }
-
-        if (ruleName == 'between') {
-            return this.rules.validateBetween(value, ruleParameters[0], ruleParameters[1]);
-        }
-
-        if(ruleName == 'in') {
-            return this.rules.validateInArray(value, ruleParameters);
-        }
-
-        if(ruleName == 'different') {
-            return this.rules.validateDifferent(value, ruleParameters[0], this.formData);
-        }
-
-        if(ruleName == 'confirmed') {
-            return this.rules.validateConfirmed(name, this.formData);
-        }
-
-        if(ruleName == 'required_if') {
-            return this.rules.validateRequiredIf(name, ruleParameters[0], ruleParameters[1], this.formData);
-        }
-
-        if(ruleName == 'required_unless') {
-            return this.rules.validateRequiredUnless(name, ruleParameters[0], ruleParameters[1], this.formData);
-        }
-
-        if(ruleName == 'required_with') {
-            return this.rules.validateRequiredWith(name, ruleParameters, this.formData);
-        }
-
-        if(ruleName == 'required_with_all') {
-            return this.rules.validateRequiredWithAll(name, ruleParameters, this.formData);
-        }
-
-        if(ruleName == 'url') {
-            return this.rules.validateUrl(value);
+        switch (ruleName) {
+            case 'array':
+                return this.rules.validateArray(value);
+                break;
+            case 'between':
+                return this.rules.validateBetween(value, ruleParameters[0], ruleParameters[1]);
+                break;
+            case 'boolean':
+                return this.rules.validateBoolean(value);
+                break;
+            case 'confirmed':
+                return this.rules.validateConfirmed(name, this.formData);
+                break;
+            case 'different':
+                return this.rules.validateDifferent(value, ruleParameters[0], this.formData);
+                break;
+            case 'email':
+                return this.rules.validateEmail(value);
+                break;
+            case 'equal':
+            case 'same':
+                return this.rules.validateEquals(value, ruleParameters[0]);
+                break;
+            case 'filled':
+                return this.rules.validateFilled(name, this.formData);
+                break;
+            case 'gt':
+                return this.rules.validateGt(value, ruleParameters[0]);
+                break;
+            case 'gte':
+                return this.rules.validateGte(value, ruleParameters[0]);
+                break;
+            case 'in':
+                return this.rules.validateInArray(value, ruleParameters);
+                break;
+            case 'integer':
+                return this.rules.validateInteger(value);
+                break;
+            case 'length':
+                return this.rules.validateLength(value, ruleParameters[0]);
+                break;
+            case 'lt':
+                return this.rules.validateLt(value, ruleParameters[0]);
+                break;
+            case 'lte':
+                return this.rules.validateLte(value, ruleParameters[0]);
+                break;
+            case 'max':
+                return this.rules.validateMax(value, ruleParameters[0]);
+                break;
+            case 'min':
+                return this.rules.validateMin(value, ruleParameters[0]);
+                break;
+            case 'null':
+                return this.rules.validateNull(value);
+                break;
+            case 'numeric':
+                return this.rules.validateNumeric(value);
+                break;
+            case 'object':
+                return this.rules.validateObject(value);
+                break;
+            case 'required':
+                return this.rules.validateRequired(value);
+                break;
+            case 'required_if':
+                return this.rules.validateRequiredIf(name, ruleParameters[0], ruleParameters[1], this.formData);
+                break;
+            case 'required_unless':
+                return this.rules.validateRequiredUnless(name, ruleParameters[0], ruleParameters[1], this.formData);
+                break;
+            case 'required_with':
+                return this.rules.validateRequiredWith(name, ruleParameters, this.formData);
+                break;
+            case 'required_with_all':
+                return this.rules.validateRequiredWithAll(name, ruleParameters, this.formData);
+                break;
+            case 'string':
+                return this.rules.validateString(value);
+                break;
+            case 'url':
+                return this.rules.validateUrl(value);
+                break;
         }
     }
 

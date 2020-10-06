@@ -13,6 +13,7 @@ A form package supporting files and HTTP requests with client and server-side va
 - [Validation](#validation)
 - [Validation Rules](#validation-rules)
 - [Accessing Errors](#accessing-errors)
+- [Sections](#sections)
 - [Flags and Hooks](#flags-and-hooks)
 - [Options](#options)
 - [Future Features](#future-features)
@@ -68,13 +69,13 @@ let Form = new Form({
 At any time, you may use `form.data()` to access the forms current data properties:
 
 ```javascript
-    let currentData = form.data(); // {first_name: 'John', last_name: 'Smith',...}
+let currentData = form.data(); // {first_name: 'John', last_name: 'Smith',...}
 ```
 
 If you are using files, use `form.getFormData()`:
 
 ```javascript
-    let currentData = form.getFormData(); // {first_name: 'John', last_name: 'Smith',...}
+let currentData = form.getFormData(); // {first_name: 'John', last_name: 'Smith',...}
 ```
 
 ## Working with Files
@@ -83,23 +84,23 @@ In order to work with files, you must use a listener to call the `addFile(event)
 
 ### HTML
 ```html
-    <input type="file" name="avatar" onChange="addFile(this)">
+<input type="file" name="avatar" onChange="addFile(this)">
 ```
 
 ### Vue
 ```html
-    <input type="file" name="avatar" @change="addFile">
+<input type="file" name="avatar" @change="addFile">
 ```
 
 To check if a form has files:
 
 ```javascript
-    let hasFiles = form.hasFiles(); // Boolean
+let hasFiles = form.hasFiles(); // Boolean
 ```
 
 To access the forms file:
 ```javascript
-    let files = form.getFiles(); // Array[Object]
+let files = form.getFiles(); // Array[Object]
 ```
 
 ***The form type and headers will automatically be updated when you add your first file.***
@@ -110,16 +111,16 @@ Form-js uses [Axios](https://github.com/axios/axios) to handle HTTP requests.
 A form may be submitted by using the `submit(method, endpoint)` method:
 
 ```javascript
-    form.submit('get', '/users');
+form.submit('get', '/users');
 ```
 
 Form-js has helpers for the following HTTP request types:
 ```javascript
-    form.get('/users');
-    form.post('/users');
-    form.put('/users');
-    form.patch('/users');
-    form.delete('/users');
+form.get('/users');
+form.post('/users');
+form.put('/users');
+form.patch('/users');
+form.delete('/users');
 ```
 
 ## Getting Responses
@@ -127,9 +128,9 @@ Form-js has helpers for the following HTTP request types:
 Form-js extends Axios and many of the native methods have been maintained.
 
 ```javascript
-    form.get('/users/john_smith/posts')
-    .then(response)
-    .catch(errors);
+form.get('/users/john_smith/posts')
+.then(response)
+.catch(errors);
 ```
 
 ### The Response
@@ -279,34 +280,78 @@ Response: {
 To see if the form has any errors, you can use the following function:
 
 ```javascript
-    let hasErrors = form.errors.any(); // Boolean
+let hasErrors = form.errors.any(); // Boolean
 ```
 
 If you wish to see if the form has an error with a specific key:
 
 ```javascript
-    let hasError = form.errors.has('first_name') // Boolean
+let hasError = form.errors.has('first_name') // Boolean
 ```
 
 To access the first error of the form or the first error for a specific field:
 
 ```javascript
-    // First error of form
-    let error = form.errors.first() // String
-    // First error of first_name field
-    let error = form.errors.first('first_name') // String
+// First error of form
+let error = form.errors.first() // String
+// First error of first_name field
+let error = form.errors.first('first_name') // String
 ```
 
-To access all errors for a given key (field):
+To access all errors for a given field:
 ```javascript
-    let error = form.errors.get('first_name') // Array[String]
+let error = form.errors.get('first_name') // Array[String]
 ```
 
-To access all errors current registered in Form:
+To access all errors current registered:
 
 ```javascript
-    let errors = form.errors.all(); // Object
+let errors = form.errors.all(); // Object
 ```
+
+## Sections
+
+Form-js supports distinct sections, each capable of validation on their own. Validation can be conducted per section for instances where form progress is dependant on fields being valid prior to moving to next section.
+
+### Definition
+
+**On Instantiation**
+
+```javascript
+let Form = new Form({
+    street: {
+        value: '',
+        rules: 'string|required',
+        section: 'address'
+    }
+});
+```
+
+**Method**
+
+```javascript
+// The array of field names belonging to the section
+let fields = ['street', 'city', 'state', 'country', 'postal_code'];
+
+// Define an 'address' section with defined fields
+form.defineSection('address', fields);
+```
+
+### Validation
+
+You may validate a section on its own:
+
+```javascript
+form.validateSection('address') // Object
+```
+
+To check if a section is valid:
+
+```javascript
+form.sectionIsValid('address') // Boolean
+```
+
+**Note**: All fields will be validated on form submission even if section is currently valid.
 
 ## Flags and Hooks
 
@@ -353,48 +398,48 @@ By defining an `axios` key, you are able to use all of the available [Axios Requ
 ## Complete Example
 
 ```javascript
-    let form = new Form(
-        // Fields
-        {
-            email: {
-                value: 'johnsmith@example.com',
-                rules: 'required|string|email',
-                messages: {
-                    string: 'Sorry but your email address is probably not that weird.',
-                    email: 'Hmmm, this doesn\'t look like a real email address!'
-                }
-            }
-        },
-        // Options
-        {
-            validateOnSubmit: false,
-            axios: {
-                timeout: 1000
-            }
+let form = new Form(
+    // Fields
+    {
+        email: {
+            value: 'johnsmith@example.com',
+            rules: 'required|string|email',
+            messages: {
+                string: 'Sorry but your email address is probably not that weird.',
+                email: 'Hmmm, this doesn\'t look like a real email address!'
+            },
+            section: 'general'
         }
-    )
+    },
+    // Options
+    {
+        validateOnSubmit: false,
+        axios: {
+            timeout: 1000
+        }
+    }
+)
 
-    form.post('/users')
-        .beforeSubmitting(() => console.log('beforeSubmit'))
-        .afterSubmitting(() => console.log('afterSubmit'))
-        .afterSuccess(() => console.log('afterSuccess'))
-        .afterFail(() => console.log('afterFail'))
-        .then(response => {
-            console.log('response')
-        })
-        .catch(error => {
-            console.log('error')
-        })
+form.post('/users')
+    .beforeSubmitting(() => console.log('beforeSubmit'))
+    .afterSubmitting(() => console.log('afterSubmit'))
+    .afterSuccess(() => console.log('afterSuccess'))
+    .afterFail(() => console.log('afterFail'))
+    .then(response => {
+        console.log('response')
+    })
+    .catch(error => {
+        console.log('error')
+    })
 
-        //  beforeSubmit
-        //  afterSubmit
-        //  afterSuccess || afterFail
-        //  response || error
+    //  beforeSubmit
+    //  afterSubmit
+    //  afterSuccess || afterFail
+    //  response || error
 ```
 
 ## Future Features
 - Custom Validation Rules
-- Advanced Form Section logic
 
 ## License
 The Form-js library is open-sourced software licensed under the MIT license.
