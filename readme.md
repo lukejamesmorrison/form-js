@@ -288,10 +288,13 @@ If you wish to see if the form has an error with a specific key:
     let hasError = form.errors.has('first_name') // Boolean
 ```
 
-To access the first error for a given key (field):
+To access the first error of the form or the first error for a specific field:
 
 ```javascript
-    let error = form.errors.getFirst('first_name') // String
+    // First error of form
+    let error = form.errors.first() // String
+    // First error of first_name field
+    let error = form.errors.first('first_name') // String
 ```
 
 To access all errors for a given key (field):

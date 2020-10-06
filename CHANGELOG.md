@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.9] - 2020-10-06
+
+### Added
+- Form Section documentation.
+
+### Changed
+- `first()` method of `Error` object now accepts an optional `field` argument and can be used as an alias for the `getFirst()` method.
+
 ## [0.3.8] - 2020-09-10
 
 ### Added

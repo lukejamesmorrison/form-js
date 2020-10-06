@@ -76,11 +76,15 @@ class Errors {
      *
      * @return {string|null}
      */
-    first()
+    first(field = null)
     {
-        if(this.size() > 0) {
-           return Object.values(this.errors)[0][0]; // errors -> first error -> first message
-        };
+        if(field) {
+            return this.getFirst(field);
+        } else {
+            if(this.size() > 0) {
+                return Object.values(this.errors)[0][0]; // errors -> first error -> first message
+            };
+        }
     }
 
     /**

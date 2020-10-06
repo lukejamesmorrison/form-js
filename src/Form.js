@@ -463,8 +463,6 @@ class Form {
 		// If request has files, we will send a FormData() object
 		let data = this.hasFiles ? this.getFormData() : this.data();
 
-		
-
 		return new Promise((resolve, reject) => {
 			axios[requestType](url, data, this.getRequestConfig())
 				.then(response => {
@@ -494,7 +492,7 @@ class Form {
 		// Run after success callback
 		if (this.afterSuccessCallback) {
 			this.afterSuccessCallback(response);
-		}
+		};
 
 		this.submitting = false;
 	};
@@ -509,7 +507,7 @@ class Form {
 	{
 		// Run after fail callback
 		if (this.afterFailCallback) {
-			this.afterFailCallback();
+			this.afterFailCallback(response);
 		};
 
 		// Resolve submitting state
@@ -541,10 +539,10 @@ class Form {
 		});
 
 		let valid = Object.values(validations).every(validation => validation == true);
-
-		this.errors.record(errors);
 		this.isValid = valid;
 
+		this.errors.record(errors);
+		
 		return { valid, validations };
 	}
 

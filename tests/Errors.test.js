@@ -59,7 +59,9 @@ describe('Errors', () => {
             name: [message]
         });
 
+
         expect(errors.getFirst('name')).toBe(message);
+        expect(errors.first('name')).toBe(message);
     })
 
     test('it can return first error message', () => {
@@ -72,6 +74,8 @@ describe('Errors', () => {
 
         expect(errors.first()).toBe(message);
     })
+
+
 
     test('it can return all errors for a given field', () => {
         let errors = new Errors;
