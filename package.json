@@ -1,6 +1,6 @@
 {
   "name": "@lukejm/form-js",
-  "version": "0.3.9",
+  "version": "0.4.0",
   "description": "A form package supporting files and HTTP requests with client and server-side validation.",
   "main": "dist/index.js",
   "scripts": {
