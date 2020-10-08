@@ -58,9 +58,15 @@ class Validator {
 
     constructor()
     {
+        /**
+		 * @property {object} The validator's rules.
+		 */
         this.rules = new Rules;
-        this.formData = {};
-        this.errors = {};
+
+        /**
+		 * @property {object} The form's field data.
+		 */
+        this.formFields = {};
     }
 
     /**
@@ -69,25 +75,48 @@ class Validator {
      * @param {string} fieldname
      * @param {mixed} fieldValue The value to be validated.
      * @param {array} rules The rules to be used for validation.
+     * @param {object} messages 
+     * @return {object}
      */
     validate(fieldName, fieldValue, rules, messages = {})
     {
         let validations = {};
 
         rules.forEach(rule => {
-            let validationsForRule = this.validateSingleRule(fieldName, fieldValue, rule);
-            if(validationsForRule == false) {
-                let ruleName = this._getRuleName(rule);
-                let message = this._getMessageForRule(fieldName, rule, messages);
-                validations[ruleName] = message;
-            };
+
+            // Validate Custom Rule
+            if(typeof rule === 'function') {
+                let validationsForRule = this.validateCustomRule(fieldName, fieldValue, rule);
+
+                if(typeof validationsForRule === 'string') {
+                    let message = validationsForRule;
+                    validations['custom'] = message;
+                };
+                
+            // Validate Default Rule
+            } else {
+                let validationsForRule = this.validateDefaultRule(fieldName, fieldValue, rule);
+
+                if(validationsForRule == false) {
+                    let ruleName = this._getRuleName(rule);
+                    let message = this._getMessageForRule(fieldName, rule, messages);
+                    validations[ruleName] = message;
+                };
+            }  
         });
 
-        let valid = Object.values(validations).every( validation => validation == true );
+        let valid = Object.values(validations).every( validation => validation == true);
 
         return {valid, errors: validations};
     }
 
+    /**
+     * Get the message for a specified rule.
+     *
+     * @param {stirng} name The field name.
+     * @param {string} rule The rule string including parameters.
+     * @param {object} messages The messages searched. 
+     */
     _getMessageForRule(name, rule, messages)
     {
         let ruleName = this._getRuleName(rule);
@@ -113,14 +142,37 @@ class Validator {
     }
 
     /**
-     *  Validate a value against a single rule.
+     * Validate a field against a custom rule.
      *
-     * @param {string} name
-     * @param {mixed} value 
-     * @param {mixed} rule 
+     * @param {string} fieldName The name of the field.
+     * @param {mixed} fieldValue The value of the field.
+     * @param {callback} rule The callback function representing the custom rule.
      * @return {boolean}
      */
-    validateSingleRule(name, value, rule)
+    validateCustomRule(fieldName, fieldValue, rule) {
+        return rule(fieldName, fieldValue, this._customRulesFailed)
+    }
+
+    /**
+     * Returns a string for use with a custom validation rule.
+     *
+     * @param {string} message THe error message for a custom rule.
+     * @return {string}
+     */
+    _customRulesFailed(message)
+    {
+        return message;
+    }
+
+    /**
+     *  Validate a field against a defualt rule.
+     *
+     * @param {string} fieldName The field name.
+     * @param {mixed} value  The field value.
+     * @param {string} rule
+     * @return {boolean}
+     */
+    validateDefaultRule(fieldName, value, rule)
     {
         let ruleName = this._getRuleName(rule);
         let ruleNameCapitalized = this._getPascalCaseRuleName(ruleName);
@@ -144,10 +196,10 @@ class Validator {
                 return this.rules.validateBoolean(value);
                 break;
             case 'confirmed':
-                return this.rules.validateConfirmed(name, this.formData);
+                return this.rules.validateConfirmed(fieldName, this.formFields);
                 break;
             case 'different':
-                return this.rules.validateDifferent(value, ruleParameters[0], this.formData);
+                return this.rules.validateDifferent(value, ruleParameters[0], this.formFields);
                 break;
             case 'email':
                 return this.rules.validateEmail(value);
@@ -157,7 +209,7 @@ class Validator {
                 return this.rules.validateEquals(value, ruleParameters[0]);
                 break;
             case 'filled':
-                return this.rules.validateFilled(name, this.formData);
+                return this.rules.validateFilled(fieldName, this.formFields);
                 break;
             case 'gt':
                 return this.rules.validateGt(value, ruleParameters[0]);
@@ -199,16 +251,16 @@ class Validator {
                 return this.rules.validateRequired(value);
                 break;
             case 'required_if':
-                return this.rules.validateRequiredIf(name, ruleParameters[0], ruleParameters[1], this.formData);
+                return this.rules.validateRequiredIf(fieldName, ruleParameters[0], ruleParameters[1], this.formFields);
                 break;
             case 'required_unless':
-                return this.rules.validateRequiredUnless(name, ruleParameters[0], ruleParameters[1], this.formData);
+                return this.rules.validateRequiredUnless(fieldName, ruleParameters[0], ruleParameters[1], this.formFields);
                 break;
             case 'required_with':
-                return this.rules.validateRequiredWith(name, ruleParameters, this.formData);
+                return this.rules.validateRequiredWith(fieldName, ruleParameters, this.formFields);
                 break;
             case 'required_with_all':
-                return this.rules.validateRequiredWithAll(name, ruleParameters, this.formData);
+                return this.rules.validateRequiredWithAll(fieldName, ruleParameters, this.formFields);
                 break;
             case 'string':
                 return this.rules.validateString(value);
@@ -227,7 +279,7 @@ class Validator {
      */
     setData(data)
     {
-        this.formData = data;
+        this.formFields = data;
     }
 
     /**

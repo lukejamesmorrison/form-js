@@ -19,27 +19,85 @@ class Form {
 	 * @return void
      */
 	constructor(data, customOptions = {}) {
+		/**
+		 * @property {Error} The form errors instance.
+		 */
 		this.errors = new Errors;
+		/**
+		 * @property {Validator} The form validator instance.
+		 */
 		this.validator = new Validator;
+		/**
+		 * @property {FormData} The form's FormData instance. Used when files are present in form.
+		 */
 		this.formData = new FormData;
 
+		/**
+		 * @property {object} Contains form's files.
+		 * UNUSED
+		 */
 		this.files = {};
+		/**
+		 * @property {object} The form's rules.
+		 */
 		this.rules = {};
+		/**
+		 * @property {object} The form's headers.
+		 */
 		this.headers = {};
+		/**
+		 * @property {object} The form's error messages.
+		 */
 		this.messages = {};
+		/**
+		 * @property {object} The form's section definitions.
+		 */
 		this.sections = {};
+		/**
+		 * @property {object} The form's original data from instantiation.
+		 */
 		this.originalData = {};
+		/**
+		 * @property {object} The form's options.
+		 */
 		this.options = DefaultOptions;
+		/**
+		 * @property {object} The form's custom options.
+		 */
 		this.customOptions = customOptions;
 
+		/**
+		 * @property {boolean} Is the form valid?
+		 */
 		this.isValid = false;
+		/**
+		 * @property {boolean} Does the form have files?
+		 */
 		this.hasFiles = false;
+		/**
+		 * @property {boolean} Is the form submitting?
+		 */
 		this.submitting = false;
+		/**
+		 * @property {boolean} Is the form submittable?
+		 */
 		this.submittable = true;
 
+		/**
+		 * @property {callback} Called before submit() method is called.
+		 */
 		this.beforeSubmitCallback = null;
+		/**
+		 * @property {callback} Called after submit() method is called.
+		 */
 		this.afterSubmitCallback = null;
+		/**
+		 * @property {callback} Called after request is successful.
+		 */
 		this.afterSuccessCallback = null;
+		/**
+		 * @property {callback} Called after request fails.
+		 */
 		this.afterFailCallback = null;
 	
 		/**
@@ -148,16 +206,16 @@ class Form {
 	 * Set rules on form object for property if rules key exists.  If rules 
 	 * are defined as a string, they will be reformatted into an array.
 	 * 
-	 * @param {string} name The name of the property.
-	 * @param {object} field The value of the field.
+	 * @param {string} fieldName The name of the property.
+	 * @param {object} data The value of the field.
 	 * @return void
 	 */
-	_setRulesForProperty(name, field)
+	_setRulesForProperty(fieldName, data)
 	{
-		if (field.rules) {
-			this.rules[name] = typeof (field.rules) == 'string' 
-				? field.rules.split('|') // string -> array
-				: field.rules; // array
+		if (data.rules) {
+			this.rules[fieldName] = typeof (data.rules) == 'string' 
+				? data.rules.split('|') // string -> array
+				: data.rules; // array
 		};
 	}
 
@@ -525,25 +583,36 @@ class Form {
 	 */
 	validate()
 	{
-		if(!Object.keys(this.rules).length) {
-			return this.isValid = true;
-		};
+		// Check for strict sections
+		if(!this._checkStrictSections()) {	
+			this.isValid = false;
+			return { valid: this.isValid };
+		}
 
-		let errors = {};
-		let validations = {};
+		// Valid if no rules have been defined
+		else if(!Object.keys(this.rules).length) {
+			this.isValid = true;
+			return { valid: this.isValid };
+		}
 
-		Object.keys(this.data()).forEach(field_name => {
-			let fieldValidation = this.validateField(field_name);
-			validations[field_name] = fieldValidation.valid;
-			errors[field_name] = fieldValidation.errors;
-		});
+		else {
+			let errors = {};
+			let validations = {};
 
-		let valid = Object.values(validations).every(validation => validation == true);
-		this.isValid = valid;
+			Object.keys(this.data()).forEach(field_name => {
+				let fieldValidation = this.validateField(field_name);
+				validations[field_name] = fieldValidation.valid;
+				errors[field_name] = fieldValidation.errors;
+			});
 
-		this.errors.record(errors);
+			let valid = Object.values(validations).every(validation => validation == true);
+			this.isValid = valid;
+			this.errors.record(errors);
+			
+			return { valid, validations };
+		}
+
 		
-		return { valid, validations };
 	}
 
 	/**
@@ -581,25 +650,26 @@ class Form {
 	/**
 	 * Validate a form field.
 	 * 
-	 * @param {string} field_name 
+	 * @param {string} fieldName 
 	 * @return {object}
 	 */
-	validateField(field_name)
+	validateField(fieldName)
 	{
 		let errors = [];
-		let value = this[field_name];
-		let rules = this.rules[field_name];
-		let messages = this.messages[field_name];
+		let value = this[fieldName];
+		let rules = this.rules[fieldName];
+		let messages = this.messages[fieldName];
 		let valid = rules && rules.length ? false : true;
 
 		// Only attempt property validation if rules for property exist
 		if(rules) {
-			let validationForField = this.validator.validate(field_name, value, rules, messages);
-			valid = validationForField.valid;
+			let validateRules = this.validator.validate(fieldName, value, rules, messages);
 
-			if (!validationForField.valid) {
+			valid = validateRules.valid;
+
+			if (!validateRules.valid) {
 				// Add messages to return errors property
-				Object.values(validationForField.errors).forEach(message => {
+				Object.values(validateRules.errors).forEach(message => {
 					errors.push(message);
 				})
 			}
@@ -663,6 +733,20 @@ class Form {
 	getSectionFields(name)
 	{
 		return this.sections[name] ? this.sections[name].fields : [];
+	}
+
+	/**
+	 * Check if all form fields are associated with a section.
+	 */
+	_checkStrictSections()
+	{
+		if(this.options.strictSections) {
+			let allFields = Object.keys(this.data()).sort();
+			let sectionFields = Object.values(this.sections).map(section => section.fields).flat().sort();
+
+			return JSON.stringify(allFields) === JSON.stringify(sectionFields);
+		};
+		return true;
 	}
 }
 

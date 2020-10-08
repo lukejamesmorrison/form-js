@@ -11,6 +11,6 @@ export default {
      * has been defined? This ensures fields are not missed in validation 
      * if you decide to disable validation on submit (validateOnSubmit).
      */
-    // strictSections: false,
+    strictSections: false,
 
 }

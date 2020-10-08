@@ -1,14 +1,13 @@
 /**
  * This class is currently a placeholder.  In the future, it will 
- * act as the concrete representation of a 'rule' class.
+ * act as the concrete representation of a 'Rule' class.
  */
 class BaseRule {
 
     /**
-     * 
      * @param {string} rule 
      */
-    constructor(fieldName, parameters = [], comparedFields = [])
+    constructor(fieldName, parameters = [], comparedFields = [], formFields = {})
     {
         this.name = _getRuleName()
         this.parameters = _getRuleParameters()

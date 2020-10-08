@@ -3,13 +3,11 @@
  */
 class Errors {
 
-    /**
-     * Create a new Errors instance.
-     * 
-     * @return void
-     */
     constructor()
     {
+        /**
+         * @property {object} The collection of errors.
+         */
         this.errors = {};
     }
 

@@ -11,7 +11,6 @@ A form package supporting files and HTTP requests with client and server-side va
 - [Making Requests](#making-requests)
 - [Getting Responses](#getting-responses)
 - [Validation](#validation)
-- [Validation Rules](#validation-rules)
 - [Accessing Errors](#accessing-errors)
 - [Sections](#sections)
 - [Flags and Hooks](#flags-and-hooks)
@@ -139,6 +138,10 @@ Form-js handles request logic internally.  The `response` received is in the sam
 
 ## Validation
 
+- [Validation Rules](#validation-rules)
+- [Custom Validation Rules](#custom-validation-rules)
+- [Server Side Validation](#server-side-validation)
+
 Form-js offers a mechanism for both client-side and server-side validation.  By defining rules on your form object, the appropriate fields will be validated before an AJAX request is sent.  If client-side validation passes, the Form object will then await a response from the server.  If further validation errors are persisted, the Form will register these as required.
 
 ### Client-side Validation
@@ -256,6 +259,25 @@ The field under validation must be a `string`.
 
 #### url
 The field under validation must be a valid URL.
+
+### Custom Validation Rules
+
+Form-js supports custom rule definitions for your form fields. At this time only inline definitions are supported and are defined as anonymous functions. A custom rule takes 3 arguments: `fieldName` which is the name of the field, `fieldValue` which is the value of the field and `fail` which is a callback called when the rule fails.  It requires an error message as its only arguement.
+
+```javascript
+
+let form = new Form({
+    age: {
+        value: 24,
+        rules: [
+            (fieldName, fieldValue, fail) => {
+                return fieldValue % 2 === 0 || fail('Your custom error message.');
+            }
+        ]
+    }
+})
+
+```
 
 ### Server-side Validation
 
@@ -391,7 +413,8 @@ The following options are supported:
 
 | Option                     | Default              | Description                                                        |
 | -----                      | --------             | -------------                                                      |
-| `validateOnSubmit`         | `(bool) True`        | Should form conduct a field validation prior to submitting.  If the form is invalid when `true`, it will not be submitted. |
+| `validateOnSubmit`         | `(bool) true`        | Should form conduct a field validation prior to submitting?  The form will not be validated when submitted if set to `false`. |
+| `strictSections`           | `(bool) false`       | Should all form fields belong to form sections? Form validation will fail if set to `true` when fields do not belong to [Sections](#sections). |
 
 By defining an `axios` key, you are able to use all of the available [Axios Request Configurations](https://github.com/axios/axios#request-config).
 
@@ -439,7 +462,8 @@ form.post('/users')
 ```
 
 ## Future Features
-- Custom Validation Rules
+- Ability to add custom rules for use across all forms in your application.
+- More rules!
 
 ## License
 The Form-js library is open-sourced software licensed under the MIT license.

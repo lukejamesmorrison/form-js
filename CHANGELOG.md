@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2020-10-XX
+
+### Added
+- `strictSections` option to declare if all form fields should belong to sections.
+- Ability to use custom rules.
+
+### Changed
+- `Validator`'s `validateSingleRule()` method has been split into two methods to accomodate custom rules.
+
+### Fixed
+- Updated inline documentation.
+
 ## [0.3.9] - 2020-10-06
 
 ### Added
@@ -82,9 +94,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Form can now accept simple default values of types: `string`, `number`, `boolean` as well as an `array` or `object`. Objects may be set as data however *MUST NOT* contain a `value` key. This key is reserved to identify fields with default values and validation logic.
 - Files can now be added correctly using native HTML file input onChange event.
 
-[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.8...HEAD
-[0.3.8]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.8...HEAD
-[0.3.7]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.7...HEAD
+[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.9...0.4.0
+[0.3.9]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.8...0.3.9
+[0.3.8]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.7...0.3.8
+[0.3.7]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.6...0.3.7
 [0.3.6]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.5...0.3.6
 [0.3.5]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.5...0.3.6
 [0.3.4]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.4...0.3.5

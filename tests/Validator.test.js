@@ -4,13 +4,26 @@ let validator = new Validator;
 
 describe('Validator', () => {
 
-    test('it can validate a value based on a rule', () => {
-        let validString = validator.validateSingleRule('field_name', 'This is a string', 'string');
-        let validObject = validator.validateSingleRule('field_name', {key: "value"}, 'object');
+    test('it can validate a value based on a default rule', () => {
+        let validString = validator.validateDefaultRule('field_name', 'This is a string', 'string');
+        let validObject = validator.validateDefaultRule('field_name', {key: "value"}, 'object');
 
         expect(validString).toBeTruthy();
         expect(validObject).toBeTruthy();
     });
+
+    test('it can validate a value based on a custom rule', () => {
+        let rule = (name, value, fail) => {
+            return value % 2 == 0 || fail('Failed Rule');
+        }
+        let validEven = validator.validateCustomRule('field_name', 24, rule);
+        let invalidEven = validator.validateCustomRule('field_name', 23, rule);
+        
+        expect(validEven).toBeTruthy();
+        expect(invalidEven).toBe('Failed Rule');
+    });
+
+
 
     test('it can validate a value based on multiple rules', () => {
         let validationTrue = validator.validate(
@@ -189,7 +202,7 @@ describe('Validator', () => {
             test: 'field'
         });
 
-        expect(validator.formData.test).toBe('field');
+        expect(validator.formFields.test).toBe('field');
     })
 
     test('it can covert snake case to pascal case', () => {

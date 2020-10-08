@@ -307,8 +307,7 @@ describe('Form', () => {
         expect(form.hasFiles).toBe(true);
 
         // formData object actually contains file
-        expect(form.formData.get('file-name')).toBe('location-of-file.js')
-        // console.log(form.formData.get('file-name'));
+        expect(form.formData.get('file-name')).toBe('location-of-file.js');
 
     });
 
@@ -337,7 +336,6 @@ describe('Form', () => {
 
         // formData object actually contains file
         expect(form.formData.get('file-name')).toBe('location-of-file.js')
-        // console.log(form.formData.get('file-name'));
 
     });
 
@@ -561,5 +559,69 @@ describe('Form', () => {
         expect(form.getSectionFields('address')).toStrictEqual(['street']);
         expect(form.getSectionFields('preferences')).toStrictEqual([]);
     })
+
+    test('it can have a custom rule', () => {
+
+        let form = new Form({
+            age: {
+                value: 24,
+                rules: [
+                    'integer',
+                    // Value is even
+                    (fieldName, value, fail) => {
+                        return value % 2 == 0 || fail('The age field must be even.');
+                    }
+                ]
+            }
+        });
+
+        form.validate();
+
+        expect(form.isValid).toBeTruthy();
+
+        let form2 = new Form({
+            age: {
+                value: 24,
+                rules: [
+                    'integer',
+                    // Value is odd
+                    (fieldName, value, fail) => {
+                        return value % 2 != 0 || fail('The age field must be odd.');
+                    }
+                ]
+            }
+        });
+
+        form2.validate();
+
+        expect(form2.isValid).toBeFalsy();
+        expect(form2.errors.any()).toBeTruthy();
+
+    });
+
+    test('it can require strict sections', () => {
+
+        let form = new Form({
+            first_name: 'John',
+            last_name: {
+                value: 'Doe',
+                rules: 'required'
+            },
+            street: '123 Test Street',
+            city: 'Test City'
+        }, {
+            strictSections: true
+        });
+
+        form.defineSection('general', ['first_name', 'last_name']);
+        form.defineSection('address', ['street']);
+
+        expect(form.validate().valid).toBeFalsy();
+
+        form.defineSection('general', ['first_name', 'last_name']);
+        form.defineSection('address', ['street', 'city']);
+
+        expect(form.validate().valid).toBeTruthy();
+    });
 
 });

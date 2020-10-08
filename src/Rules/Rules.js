@@ -262,7 +262,7 @@ class Rules {
 
         if (Array.isArray(value) && Array.isArray(comparedValue))
         {
-            return JSON.stringify(value) == JSON.stringify(comparedValue);
+            return JSON.stringify(value) === JSON.stringify(comparedValue);
         };
 
         return value == comparedValue;

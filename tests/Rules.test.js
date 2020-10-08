@@ -167,7 +167,7 @@ describe('Rules', () => {
         expect(rules.validateNull(null)).toBeTruthy();
         expect(rules.validateNull('test')).toBeFalsy();
 
-        expect(validator.validateSingleRule('field_name', null, 'null')).toBeTruthy();
+        expect(validator.validateDefaultRule('field_name', null, 'null')).toBeTruthy();
     })
 
     /**
@@ -193,8 +193,8 @@ describe('Rules', () => {
         expect(rules.validateLength(['one', 'two'], 3)).toBeFalsy();
         expect(rules.validateLength('test', 5)).toBeFalsy();
 
-        expect(validator.validateSingleRule('field_name', 'test', 'length:4')).toBeTruthy();
-        expect(validator.validateSingleRule('field_name', ['test', 'array'], 'length:2')).toBeTruthy();
+        expect(validator.validateDefaultRule('field_name', 'test', 'length:4')).toBeTruthy();
+        expect(validator.validateDefaultRule('field_name', ['test', 'array'], 'length:2')).toBeTruthy();
     })
 
     /**
