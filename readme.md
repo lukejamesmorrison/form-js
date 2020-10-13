@@ -199,7 +199,7 @@ The given field must match the field under validation. Alias for `same`.
 #### filled
 The field under validation must not be empty when it is present.
 
-#### File
+#### file
 The field under validation must be a file.
 
 #### gt:*value*
