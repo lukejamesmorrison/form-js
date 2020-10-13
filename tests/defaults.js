@@ -130,3 +130,23 @@ export const INVALID_URLS = [
     "http://10.1.1.1",
     "http://10.1.1.254"
 ];
+
+/**
+ * Valid date values.
+ */
+export const VALID_DATES = [
+    new Date,
+    '12 May 1992',
+    '2011-10-05T14:48:00.000Z',
+    1602276402
+];
+
+/**
+ * Invalid date values.
+ */
+export const INVALID_DATES = [
+    'today',
+    'hey',
+    [],
+    {}
+]

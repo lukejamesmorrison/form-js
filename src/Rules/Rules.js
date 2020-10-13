@@ -15,6 +15,28 @@ class Rules {
     }
 
     /**
+     * Validate if value is a date.
+     *
+     * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date
+     *
+     * @param {mixed} value 
+     */
+    validateDate(value)
+    {
+        return new Date(value) != 'Invalid Date';
+    }
+
+
+    validateDateEquals(fieldName, otherFieldName, formFields)
+    {
+        let firstDate =  new Date(formFields[fieldName]);
+        let secondDate = new Date(formFields[otherFieldName]);
+
+        return  firstDate != 'Invalid Date' &&
+                firstDate.valueOf() === secondDate.valueOf();
+    }
+
+    /**
      * Validate if value is an email address.
      *
      * @param {string} value 
@@ -24,6 +46,24 @@ class Rules {
         let matches = value.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
 
         return matches ? matches.length > 0 : false;
+    }
+
+    /**
+     * Validate that a form field is a file.
+     *
+     * @param {string} fieldName
+     * @param {File} file
+     */
+    validateFile(fieldName, formData)
+    {
+        let field = formData[fieldName];
+        let extension = this._getFileExtension(field);
+        return field instanceof File;
+    }
+
+    _getFileExtension(file)
+    {
+        return file.name.split('.').pop();
     }
 
     /**
@@ -348,21 +388,24 @@ class Rules {
      * @param {object} formFields
      * @return {boolean}
      */
-    validateDifferent(fieldValue, otherFieldName, formFields)
+    validateDifferent(fieldName, otherFieldName, formFields)
     {
+        let fieldValue = formFields[fieldName];
+        let otherFieldValue = formFields[otherFieldName];
+
         // String, Number or Boolean
         if(['string', 'number', 'boolean'].includes(typeof(fieldValue))) {
-            return fieldValue !== formFields[otherFieldName];
+            return fieldValue !== otherFieldValue;
         };
 
         // Array
         if(Array.isArray(fieldValue)) {
-            return fieldValue !== formFields[otherFieldName];
+            return fieldValue !== otherFieldValue;
         }
 
         // Object
         if(typeof(fieldValue) === 'object') {
-            return JSON.stringify(fieldValue) !== JSON.stringify(formFields[otherFieldName]);
+            return JSON.stringify(fieldValue) !== JSON.stringify(otherFieldValue);
         }
     }
 

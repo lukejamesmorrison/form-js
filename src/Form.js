@@ -117,11 +117,6 @@ class Form {
 		};
 
 		/**
-		 * Provide validator with current fields.
-		 */
-		this.validator.setData(this.data());
-
-		/**
 		 * Update default form options with custom options.
 		 */
 		this._resolveCustomOptions();
@@ -153,8 +148,7 @@ class Form {
 	 */
 	_setPropertyFromSimpleValue(name, field)
 	{
-		this.originalData[name] = field;
-		this[name] = field;
+		this.originalData[name] = this[name] = field;
 	}
 
 	/**
@@ -169,13 +163,11 @@ class Form {
 	_setPropertyFromObject(name, field)
 	{
 		if(this._isEmptyObject(field) || this._isAdvancedObject(field)) {
-			this.originalData[name] = field;
-			this[name] = field;
+			this.originalData[name] = this[name] = field;
 			return;
 		};
 		
-		this.originalData[name] = field.value;
-		this[name] = field.value;
+		this.originalData[name] = this[name] = field.value;
 	}
 
 	/**
@@ -277,7 +269,8 @@ class Form {
 	}
 
 	/**
-	*  Fetch all relevant data for the form.
+	* Fetch all relevant data for the form. Only the attributes whos keys 
+	* are in the original data will be returned.
 	*
 	* @return {object} data
 	*/
@@ -304,19 +297,26 @@ class Form {
     */
 	addFile(event)
 	{
+		
 		// HTML
 		if(event.files && event.files[0]) {
-			this.formData.append(event.name, event.files[0]);
+			let fieldName = event.name;
+			this.formData.append(fieldName, event.files[0]);
 			this.headers['Content-Type'] = 'multipart/form-data';
 			this.hasFiles = true;
-			return;
+			this.originalData[fieldName] = this[fieldName] = this.formData.get(fieldName);
+			this.files[fieldName] = this.formData.get(fieldName);
+			return;	
 		};
 		
 		// Vue
 		if (event.target && event.target.files && event.target.files[0]) {
-			this.formData.append(event.target.name, event.target.files[0]);
+			let fieldName = event.target.name;
+			this.formData.append(fieldName, event.target.files[0]);
 			this.headers['Content-Type'] = 'multipart/form-data';
 			this.hasFiles = true;
+			this.originalData[fieldName] = this[fieldName] = this.formData.get(fieldName);
+			this.files[fieldName] = this.formData.get(fieldName);
 			return;
 		};
 	};
@@ -362,7 +362,6 @@ class Form {
 			else {
 				this.formData.append(key, data[key])
 			};
-
 		});
 
 		return this.formData;
@@ -611,8 +610,6 @@ class Form {
 			
 			return { valid, validations };
 		}
-
-		
 	}
 
 	/**
@@ -656,14 +653,13 @@ class Form {
 	validateField(fieldName)
 	{
 		let errors = [];
-		let value = this[fieldName];
 		let rules = this.rules[fieldName];
 		let messages = this.messages[fieldName];
 		let valid = rules && rules.length ? false : true;
 
 		// Only attempt property validation if rules for property exist
 		if(rules) {
-			let validateRules = this.validator.validate(fieldName, value, rules, messages);
+			let validateRules = this.validator.validate(fieldName, rules, this.data(), messages);
 
 			valid = validateRules.valid;
 

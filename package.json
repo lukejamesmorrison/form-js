@@ -7,7 +7,7 @@
     "test": "jest",
     "test-watch": "jest --watch",
     "build": "webpack --mode production",
-    "bp": "npm run test; npm run build; npm publish"
+    "prep": "npm run test; npm run build;"
   },
   "dependencies": {
     "axios": "^0.19.2"

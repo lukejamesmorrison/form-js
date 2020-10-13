@@ -5,18 +5,21 @@ import Validator from '../src/Validator';
 let validator = new Validator;
 let rules = validator.rules;
 
+let mockFile = new File([''], 'file-name.js', {
+    type: 'image/jpeg',
+    lastModified: 1575297668218
+});
+
 describe('Rules', () => {
 
     /**
      * Boolean
      */
     test('it can validate a boolean value', () => {
-        // Validate for
         DEFAULTS.BOOLEANS.forEach(value => {
             expect(rules.validateBoolean(value)).toBeTruthy();
         });
 
-        // Validate against
         DEFAULTS.NUMBERS.forEach(value => {
             expect(rules.validateBoolean(value)).toBeFalsy();
         });
@@ -24,6 +27,30 @@ describe('Rules', () => {
         expect(rules.validateBoolean(DEFAULTS.ARRAY)).toBeFalsy();
         expect(rules.validateBoolean(DEFAULTS.OBJECT)).toBeFalsy();
     });
+
+    /**
+     * Date
+     */
+    test('it can validate a date', () => {
+        DEFAULTS.VALID_DATES.forEach(date => {
+            expect(rules.validateDate(date)).toBeTruthy();
+        });
+
+        DEFAULTS.INVALID_DATES.forEach(date => {
+            expect(rules.validateDate(date)).toBeFalsy();
+        });
+    })
+
+    test('it can validate if a date equals another date', () => {
+        var fields = {
+            first: new Date('12 May 1992'),
+            second: new Date('12 May 1992'),
+            third: new Date('13 May 1992')
+        };
+
+        expect(rules.validateDateEquals('first', 'second', fields)).toBeTruthy();
+        expect(rules.validateDateEquals('first', 'third', fields)).toBeFalsy();
+    })
 
     /**
      * Email
@@ -39,17 +66,27 @@ describe('Rules', () => {
         });
     })
 
+     /**
+     * File
+     */
+    test('it can validate a file is of a specfic type', () => {
+
+        let file = mockFile;
+        expect(rules.validateFile('avatar', { avatar: file })).toBeTruthy();
+    })
+
+    /**
+     * Filled
+     */
     test('it can validate a filled field', () => {
 
         // It should pass if key is present and value is not empty
-        var fields = {
+        expect(rules.validateFilled('email', {
             email: 'email@example.com',
-        };
-        expect(rules.validateFilled('email', fields)).toBeTruthy();
+        })).toBeTruthy();
 
         // It should fail if field is not present
-        var fields = {};
-        expect(rules.validateFilled('email', fields)).toBeFalsy();
+        expect(rules.validateFilled('email', {})).toBeFalsy();
 
         // it should fail if value is not filled
         var fields = {
@@ -167,7 +204,7 @@ describe('Rules', () => {
         expect(rules.validateNull(null)).toBeTruthy();
         expect(rules.validateNull('test')).toBeFalsy();
 
-        expect(validator.validateDefaultRule('field_name', null, 'null')).toBeTruthy();
+        expect(validator.validateDefaultRule('field_name', 'null', {field_name: null})).toBeTruthy();
     })
 
     /**
@@ -193,8 +230,8 @@ describe('Rules', () => {
         expect(rules.validateLength(['one', 'two'], 3)).toBeFalsy();
         expect(rules.validateLength('test', 5)).toBeFalsy();
 
-        expect(validator.validateDefaultRule('field_name', 'test', 'length:4')).toBeTruthy();
-        expect(validator.validateDefaultRule('field_name', ['test', 'array'], 'length:2')).toBeTruthy();
+        expect(validator.validateDefaultRule('field_name', 'length:4', {field_name: 'test'})).toBeTruthy();
+        expect(validator.validateDefaultRule('field_name', 'length:2', {field_name: ['test', 'array']})).toBeTruthy();
     })
 
     /**
@@ -284,40 +321,29 @@ describe('Rules', () => {
      * Different
      */
     test('it can determine if a value is different than the value of another field', () => {
-
-        
-        // String`
-        var form = new Form({
+        // String
+        expect(rules.validateDifferent('first', 'second', {
             first: 'hello',
             second: 'world'
-        });
-        expect(rules.validateDifferent('hello', 'second', form.data())).toBeTruthy();
+        })).toBeTruthy();
 
-            
         // Number
-        var form = new Form({
+        expect(rules.validateDifferent('first', 'second', {
             first: 1,
             second: 2.0
-        });
-        expect(rules.validateDifferent(1, 'second', form.data())).toBeTruthy();
+        })).toBeTruthy();
 
         // Array
-        var form = new Form({
+        expect(rules.validateDifferent('first', 'second', {
             first: [1],
             second: [2.0]
-        });
-        expect(rules.validateDifferent([1], 'second', form.data())).toBeTruthy();
+        })).toBeTruthy();
 
         // Object
-        var form = new Form({
+        expect(rules.validateDifferent('first', 'second', {
             first: {first: 'hello', second: 'world'},
             second: {first: 'world', second: 'hello'}
-        });
-        expect(rules.validateDifferent(
-            {first: 'hello', second: 'world'},
-            'second',
-            form.data()
-        )).toBeTruthy();
+        })).toBeTruthy();
     })
 
     /**
@@ -325,14 +351,14 @@ describe('Rules', () => {
      */
     test('it can determine if a field is confirmed with another field', () => {
 
-        var form = new Form({
+        let fields = {
             password: 'secret',
             password_confirmation: 'secret',
             other_field: 'super_secret'
-        });
+        };
 
-        expect(rules.validateConfirmed('password', form.data())).toBeTruthy();
-        expect(rules.validateConfirmed('other_field', form.data())).toBeFalsy();
+        expect(rules.validateConfirmed('password', fields)).toBeTruthy();
+        expect(rules.validateConfirmed('other_field', fields)).toBeFalsy();
     });
 
     /**
@@ -340,26 +366,22 @@ describe('Rules', () => {
      */
     test('it can determine if a field is required if another field has a specific value', () => {
 
-
-        var fields = {
+        // Truthy scenario
+        expect(rules.validateRequiredIf('company_id', 'has_company', 'true', {
             has_company: true,
             company_id: 1,
-        };
+        })).toBeTruthy();
 
-        expect(rules.validateRequiredIf('company_id', 'has_company', 'true', fields)).toBeTruthy();
-
-        var fields = {
+        // Field is not present
+        expect(rules.validateRequiredIf('company_id', 'has_company', 'true', {
             has_company: true,
-        };
+        })).toBeFalsy();
 
-        expect(rules.validateRequiredIf('company_id', 'has_company', 'true', fields)).toBeFalsy();
-
-        var fields = {
+        // Field is null
+        expect(rules.validateRequiredIf('company_id', 'has_company', 'true', {
             has_company: true,
             company_id: null
-        };
-
-        expect(rules.validateRequiredIf('company_id', 'has_company', 'true', fields)).toBeFalsy();
+        })).toBeFalsy();
     })
 
     /**
@@ -369,27 +391,21 @@ describe('Rules', () => {
 
 
         // If field does not equal, then otherField is required
-        var fields = {
+        expect(rules.validateRequiredUnless('company_id', 'has_company', 'true', {
             has_company: false,
             company_id: 1,
-        };
-
-        expect(rules.validateRequiredUnless('company_id', 'has_company', 'true', fields)).toBeTruthy();
+        })).toBeTruthy();
 
         // If field does equal, otherField is NOT required
-        var fields = {
+        expect(rules.validateRequiredUnless('company_id', 'has_company', 'true', {
             has_company: true,
-        };
-
-        expect(rules.validateRequiredUnless('company_id', 'has_company', 'true', fields)).toBeTruthy();
+        })).toBeTruthy();
 
         // If field does not equal, otherField cannot be null
-        var fields = {
+        expect(rules.validateRequiredUnless('company_id', 'has_company', 'true', {
             has_company: false,
             company_id: null
-        };
-
-        expect(rules.validateRequiredUnless('company_id', 'has_company', 'true', fields)).toBeFalsy();
+        })).toBeFalsy();
     })
 
     /**
@@ -397,23 +413,22 @@ describe('Rules', () => {
      */
     test('it can determine if a field is required with other fields', () => {
 
-        var fields = {
+        // Truthy scenario
+        expect(rules.validateRequiredWith('cars', ['has_cars'], {
             has_cars: true,
             cars: ['toyota camry', 'honda civic'],
-        };
-        expect(rules.validateRequiredWith('cars', ['has_cars'], fields)).toBeTruthy();
+        })).toBeTruthy();
 
-        var fields = {
+        // Field has falsy value
+        expect(rules.validateRequiredWith('cars', ['has_cars'], {
             has_cars: true,
             cars: [],
-        };
-        expect(rules.validateRequiredWith('cars', ['has_cars'], fields)).toBeFalsy();
+        })).toBeFalsy();
 
-        var fields = {
+        // Field is not present
+        expect(rules.validateRequiredWith('cars', ['has_cars'], {
             has_cars: true,
-        };
-        expect(rules.validateRequiredWith('cars', ['has_cars'], fields)).toBeFalsy();
-
+        })).toBeFalsy();
     });
 
     /**
@@ -421,22 +436,22 @@ describe('Rules', () => {
      */
     test('it can determine if a field is required with all other fields', () => {
 
-        var fields = {
+        // Truthy scenario
+        expect(rules.validateRequiredWithAll('cars', ['has_cars'], {
             has_cars: true,
             cars: ['toyota camry', 'honda civic'],
-        };
-        expect(rules.validateRequiredWithAll('cars', ['has_cars'], fields)).toBeTruthy();
+        })).toBeTruthy();
 
-        var fields = {
+        // Field has falsy value
+        expect(rules.validateRequiredWithAll('cars', ['has_cars', 'loves_cars'], {
             has_cars: true,
             cars: [],
-        };
-        expect(rules.validateRequiredWithAll('cars', ['has_cars', 'loves_cars'], fields)).toBeFalsy();
+        })).toBeFalsy();
 
-        var fields = {
+        // Field is not present
+        expect(rules.validateRequiredWithAll('cars', ['has_cars'], {
             has_cars: true,
-        };
-        expect(rules.validateRequiredWithAll('cars', ['has_cars'], fields)).toBeFalsy();
+        })).toBeFalsy();
 
     });
 

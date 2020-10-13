@@ -12,6 +12,10 @@ export default {
 
     confirmed: 'The :field field must be confirmed.',
 
+    date: 'The :field field must be a valid Date object or date string.',
+
+    date_equals: 'The :field field must be the same date as the :param0 field.',
+
     different: 'The :field field value must be different than the :param0 field value.',
     
     email: 'The :field field must be a valid email address.',
@@ -19,6 +23,8 @@ export default {
     equal: 'The :field field must be equal to :param0.',
 
     filled: 'The :field field must be present and not be empty.',
+
+    file: 'The :field field must be a file.',
 
     gt: 'The :field field must be greater than :param0.',
 

@@ -38,7 +38,7 @@ A form should be instantiated like the following, passing in default values, rul
 
 ```javascript
 let Form = new Form({
-    first_name: {
+    firstName: {
         value: null,
         rules: 'string',
         messages: {
@@ -51,8 +51,8 @@ let Form = new Form({
 If you do not wish to use client-side validation, you can simply declare your form fields as default values.  These default values may be a `string`, `number`, `boolean`, `null`, an `array`, or an `object` as long as it does not have a `value` key:
 ```javascript
 let Form = new Form({
-    first_name: 'Steve',    // String
-    last_name: null,        // Null
+    firstName: 'Steve',    // String
+    lastName: null,        // Null
     age: 12,                // Number
     authorized: true,       // Boolean
     luckyNumbers: [1, 13],  // Array
@@ -151,7 +151,7 @@ In order to leverage client-side validation, you should provide rules for the ap
 **String**
 ```javascript
 let Form = new Form({
-    first_name: {
+    firstName: {
         value: null,
         rules: 'string|required|min:3'
     },
@@ -161,7 +161,7 @@ let Form = new Form({
 **Array**
 ```javascript
 let Form = new Form({
-    first_name: {
+    firstName: {
         value: null,
         rules: ['string', 'required', 'min:3']
     },
@@ -181,7 +181,13 @@ The field under validation must have a size between the given min and max.
 #### boolean
 The field under validation must be able to be cast as a `boolean`. Accepted input are `true`, `false`, `1`, `0`, `"1"`, and `"0"`.
 
-#### different:field
+#### date
+The field under validation must be a valid `Date` object or date string in accordance with the native Javscript [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object.
+
+#### date_equals:*field*
+The field under validation must be a date equal to another field.
+
+#### different:*field*
 The field under validation must have a different value than the field provided.
 
 #### email
@@ -192,6 +198,9 @@ The given field must match the field under validation. Alias for `same`.
 
 #### filled
 The field under validation must not be empty when it is present.
+
+#### File
+The field under validation must be a file.
 
 #### gt:*value*
 The field under validation must be greater than the given field.
@@ -270,13 +279,13 @@ let form = new Form({
     age: {
         value: 24,
         rules: [
+            // A rule that will verify that the field is an even value
             (fieldName, fieldValue, fail) => {
-                return fieldValue % 2 === 0 || fail('Your custom error message.');
+                return fieldValue % 2 === 0 || fail(`Your custom error message for ${fieldName} field.`);
             }
         ]
     }
 })
-
 ```
 
 ### Server-side Validation
@@ -287,7 +296,7 @@ Form-js handles request logic internally.  You should ensure that errors are for
 Response: {
     data: {
         errors: {
-            first_name: [
+            firstName: [
                 "The first name field is required",
                 "The first name field should be of type String"
             ]
@@ -308,7 +317,7 @@ let hasErrors = form.errors.any(); // Boolean
 If you wish to see if the form has an error with a specific key:
 
 ```javascript
-let hasError = form.errors.has('first_name') // Boolean
+let hasError = form.errors.has('firstName') // Boolean
 ```
 
 To access the first error of the form or the first error for a specific field:
@@ -317,12 +326,12 @@ To access the first error of the form or the first error for a specific field:
 // First error of form
 let error = form.errors.first() // String
 // First error of first_name field
-let error = form.errors.first('first_name') // String
+let error = form.errors.first('firstName') // String
 ```
 
 To access all errors for a given field:
 ```javascript
-let error = form.errors.get('first_name') // Array[String]
+let error = form.errors.get('firstName') // Array[String]
 ```
 
 To access all errors current registered:
@@ -353,7 +362,7 @@ let Form = new Form({
 
 ```javascript
 // The array of field names belonging to the section
-let fields = ['street', 'city', 'state', 'country', 'postal_code'];
+let fields = ['street', 'city', 'state', 'country', 'postalCode'];
 
 // Define an 'address' section with defined fields
 form.defineSection('address', fields);
@@ -462,7 +471,7 @@ form.post('/users')
 ```
 
 ## Future Features
-- Ability to add custom rules for use across all forms in your application.
+- Ability to add global custom rules.
 - More rules!
 
 ## License

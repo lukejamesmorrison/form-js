@@ -8,6 +8,7 @@ import DefaultMessages from './Messages';
 const INDEPENDENT_RULES = [
     'Array',
     'Boolean',
+    'Date',
     'Email',
     'Integer',
     'Length',
@@ -40,8 +41,10 @@ const DEPENDENT_RULES = [
  */
 const COMPARISON_RULES = [
     'Confirmed',
+    'DateEquals',
     'Different',
     'Filled',
+    'File',
     'Same',
     'RequiredIf',
     'RequiredUnless',
@@ -70,7 +73,7 @@ class Validator {
     }
 
     /**
-     * Validate a value against its rules.
+     * Validate a field against its rules.
      *
      * @param {string} fieldname
      * @param {mixed} fieldValue The value to be validated.
@@ -78,15 +81,16 @@ class Validator {
      * @param {object} messages 
      * @return {object}
      */
-    validate(fieldName, fieldValue, rules, messages = {})
+    validate(fieldName, rules, formData, messages = {})
     {
         let validations = {};
+        let fieldValue = formData[fieldName];
 
         rules.forEach(rule => {
 
             // Validate Custom Rule
             if(typeof rule === 'function') {
-                let validationsForRule = this.validateCustomRule(fieldName, fieldValue, rule);
+                let validationsForRule = this.validateCustomRule(fieldName, rule, formData);
 
                 if(typeof validationsForRule === 'string') {
                     let message = validationsForRule;
@@ -95,7 +99,7 @@ class Validator {
                 
             // Validate Default Rule
             } else {
-                let validationsForRule = this.validateDefaultRule(fieldName, fieldValue, rule);
+                let validationsForRule = this.validateDefaultRule(fieldName, rule, formData);
 
                 if(validationsForRule == false) {
                     let ruleName = this._getRuleName(rule);
@@ -149,7 +153,9 @@ class Validator {
      * @param {callback} rule The callback function representing the custom rule.
      * @return {boolean}
      */
-    validateCustomRule(fieldName, fieldValue, rule) {
+    validateCustomRule(fieldName, rule, formData) {
+        let fieldValue = formData[fieldName];
+        
         return rule(fieldName, fieldValue, this._customRulesFailed)
     }
 
@@ -172,10 +178,11 @@ class Validator {
      * @param {string} rule
      * @return {boolean}
      */
-    validateDefaultRule(fieldName, value, rule)
+    validateDefaultRule(fieldName, rule, formData)
     {
         let ruleName = this._getRuleName(rule);
         let ruleNameCapitalized = this._getPascalCaseRuleName(ruleName);
+        let value = formData[fieldName];
 
         if(!this._getSupportedRules().includes(ruleNameCapitalized))
         {
@@ -188,86 +195,61 @@ class Validator {
         switch (ruleName) {
             case 'array':
                 return this.rules.validateArray(value);
-                break;
             case 'between':
                 return this.rules.validateBetween(value, ruleParameters[0], ruleParameters[1]);
-                break;
             case 'boolean':
                 return this.rules.validateBoolean(value);
-                break;
             case 'confirmed':
-                return this.rules.validateConfirmed(fieldName, this.formFields);
-                break;
+                return this.rules.validateConfirmed(fieldName, formData);
             case 'different':
-                return this.rules.validateDifferent(value, ruleParameters[0], this.formFields);
-                break;
+                return this.rules.validateDifferent(fieldName, ruleParameters[0], formData);
             case 'email':
                 return this.rules.validateEmail(value);
-                break;
             case 'equal':
             case 'same':
                 return this.rules.validateEquals(value, ruleParameters[0]);
-                break;
+            case 'file':
+                return this.rules.validateFile(fieldName, formData);
             case 'filled':
-                return this.rules.validateFilled(fieldName, this.formFields);
-                break;
+                return this.rules.validateFilled(fieldName, formData);
             case 'gt':
                 return this.rules.validateGt(value, ruleParameters[0]);
-                break;
             case 'gte':
                 return this.rules.validateGte(value, ruleParameters[0]);
-                break;
             case 'in':
                 return this.rules.validateInArray(value, ruleParameters);
-                break;
             case 'integer':
                 return this.rules.validateInteger(value);
-                break;
             case 'length':
                 return this.rules.validateLength(value, ruleParameters[0]);
-                break;
             case 'lt':
                 return this.rules.validateLt(value, ruleParameters[0]);
-                break;
             case 'lte':
                 return this.rules.validateLte(value, ruleParameters[0]);
-                break;
             case 'max':
                 return this.rules.validateMax(value, ruleParameters[0]);
-                break;
             case 'min':
                 return this.rules.validateMin(value, ruleParameters[0]);
-                break;
             case 'null':
                 return this.rules.validateNull(value);
-                break;
             case 'numeric':
                 return this.rules.validateNumeric(value);
-                break;
             case 'object':
                 return this.rules.validateObject(value);
-                break;
             case 'required':
                 return this.rules.validateRequired(value);
-                break;
             case 'required_if':
-                return this.rules.validateRequiredIf(fieldName, ruleParameters[0], ruleParameters[1], this.formFields);
-                break;
+                return this.rules.validateRequiredIf(fieldName, ruleParameters[0], ruleParameters[1], formData);
             case 'required_unless':
-                return this.rules.validateRequiredUnless(fieldName, ruleParameters[0], ruleParameters[1], this.formFields);
-                break;
+                return this.rules.validateRequiredUnless(fieldName, ruleParameters[0], ruleParameters[1], formData);
             case 'required_with':
-                return this.rules.validateRequiredWith(fieldName, ruleParameters, this.formFields);
-                break;
+                return this.rules.validateRequiredWith(fieldName, ruleParameters, formData);
             case 'required_with_all':
-                return this.rules.validateRequiredWithAll(fieldName, ruleParameters, this.formFields);
-                break;
+                return this.rules.validateRequiredWithAll(fieldName, ruleParameters, formData);
             case 'string':
                 return this.rules.validateString(value);
-                break;
             case 'url':
                 return this.rules.validateUrl(value);
-                break;
         }
     }
 

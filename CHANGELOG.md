@@ -6,17 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.4.0] - 2020-10-XX
+## [0.4.0] - 2020-10-13
 
 ### Added
 - `strictSections` option to declare if all form fields should belong to sections.
 - Ability to use custom rules.
+- New rules `date`, `date_equals`, `file`.
 
 ### Changed
 - `Validator`'s `validateSingleRule()` method has been split into two methods to accomodate custom rules.
+- `addFiles()` on `Form` now sets files as attributes like other fields. 
+- `validate()` method on `Validator` has been refactored to accept 4 parameters: `fieldName`, `rules`, `formData`, `messages`.  This ensures all rules have access to the form's data.
+- `validateDefaultRule()` and `validateCustomRule()` methods on `Validator` now accept 3 parameters: `fieldName`, `rule`, `formData` to be consistent with `validate()` method.
+- Refactored test suite to be consistent with latest source code refactor.
 
 ### Fixed
-- Updated inline documentation.
+- Inline documentation.
 
 ## [0.3.9] - 2020-10-06
 
