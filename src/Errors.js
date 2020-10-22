@@ -86,7 +86,7 @@ class Errors {
     }
 
     /**
-     * Retreive all errors.s
+     * Retreive all errors.
      *
      * @return {object}
      */

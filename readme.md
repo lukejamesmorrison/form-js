@@ -74,33 +74,33 @@ let currentData = form.data(); // {first_name: 'John', last_name: 'Smith',...}
 If you are using files, use `form.getFormData()`:
 
 ```javascript
-let currentData = form.getFormData(); // {first_name: 'John', last_name: 'Smith',...}
+let currentData = form.getFormData(); // FormData object
 ```
 
 ## Working with Files
 
-In order to work with files, you must use a listener to call the `addFile(event)` method when a file input is changed:
+In order to work with files, you must use a listener to call the `addFile()` method when a file input is changed:
 
 ### HTML
 ```html
-<input type="file" name="avatar" onChange="addFile(this)">
+<input type="file" name="avatar" onChange="form.addFile(this)">
 ```
 
 ### Vue
 ```html
-<input type="file" name="avatar" @change="addFile">
+<input type="file" name="avatar" @change="form.addFile">
 ```
 
 To check if a form has files:
 
 ```javascript
-let hasFiles = form.hasFiles(); // Boolean
+let hasFiles = form.hasFiles; // Boolean
 ```
 
-To access the forms file:
+<!-- To access the forms file:
 ```javascript
 let files = form.getFiles(); // Array[Object]
-```
+``` -->
 
 ***The form type and headers will automatically be updated when you add your first file.***
 
@@ -128,8 +128,8 @@ Form-js extends Axios and many of the native methods have been maintained.
 
 ```javascript
 form.get('/users/john_smith/posts')
-.then(response)
-.catch(errors);
+    .then(response)
+    .catch(errors);
 ```
 
 ### The Response
@@ -142,7 +142,7 @@ Form-js handles request logic internally.  The `response` received is in the sam
 - [Custom Validation Rules](#custom-validation-rules)
 - [Server Side Validation](#server-side-validation)
 
-Form-js offers a mechanism for both client-side and server-side validation.  By defining rules on your form object, the appropriate fields will be validated before an AJAX request is sent.  If client-side validation passes, the Form object will then await a response from the server.  If further validation errors are persisted, the Form will register these as required.
+Form-js offers a mechanism for both client-side and server-side validation.  By defining rules on your form object, the appropriate fields will be validated before an AJAX request is sent. If client-side validation passes, the Form object will then await a response from the server.  If further validation errors are persisted, the Form will register these as required.
 
 ### Client-side Validation
 
@@ -172,8 +172,14 @@ let Form = new Form({
 ### Validation Rules
 Validation rules are influenced by many of [Laravel's validation rules](https://laravel.com/docs/7.x/validation#available-validation-rules). There are more validation rules on the way!
 
+#### after:*field*
+The field under validation must be after the date value of `field`.
+
 #### array
 The field under validation must be a Javascript `array`.
+
+#### before:*field*
+The field under validation must be before the date value of `field`.
 
 #### between:*min,max*
 The field under validation must have a size between the given min and max.
@@ -196,11 +202,11 @@ The field under validation must be formatted as an e-mail address.
 #### equal:*value*
 The given field must match the field under validation. Alias for `same`.
 
-#### filled
-The field under validation must not be empty when it is present.
-
 #### file
 The field under validation must be a file.
+
+#### filled
+The field under validation must not be empty when it is present.
 
 #### gt:*value*
 The field under validation must be greater than the given field.
@@ -213,6 +219,18 @@ The field under validation must be included in the given list of values.
 
 #### integer
 The field under validation must be an `integer`.
+
+#### ip
+The field under validation must be an IP address.
+
+#### ipv4
+The field under validation must be an [IPv4](https://en.wikipedia.org/wiki/IPv4#Address_representations) address.
+
+#### ipv6
+The field under validation must be an [IPv6](https://en.wikipedia.org/wiki/IPv6_address) address.
+
+#### json
+The field under validation must be a valid JSON `string`.
 
 #### length:*value*
 The field under validation must have a length matching the given value. For `string` data, value corresponds to the number of characters. For `numeric` data, value corresponds to a given integer value (the attribute must also have the numeric or integer rule). For an `array`, size corresponds to the length of the array.
@@ -279,9 +297,10 @@ let form = new Form({
     age: {
         value: 24,
         rules: [
-            // A rule that will verify that the field is an even value
+            'integer',
+            // Verify that the field is an even value
             (fieldName, fieldValue, fail) => {
-                return fieldValue % 2 === 0 || fail(`Your custom error message for ${fieldName} field.`);
+                return fieldValue % 2 === 0 || fail(`Your custom error message for the ${fieldName} field.`);
             }
         ]
     }
@@ -302,8 +321,7 @@ Response: {
             ]
         }
     }
-}
-    
+}  
 ```
 
 ### Accessing Errors
@@ -325,7 +343,7 @@ To access the first error of the form or the first error for a specific field:
 ```javascript
 // First error of form
 let error = form.errors.first() // String
-// First error of first_name field
+// First error of firstName field
 let error = form.errors.first('firstName') // String
 ```
 
@@ -364,7 +382,7 @@ let Form = new Form({
 // The array of field names belonging to the section
 let fields = ['street', 'city', 'state', 'country', 'postalCode'];
 
-// Define an 'address' section with defined fields
+// Define an 'address' section containing fields
 form.defineSection('address', fields);
 ```
 
@@ -476,4 +494,3 @@ form.post('/users')
 
 ## License
 The Form-js library is open-sourced software licensed under the MIT license.
-

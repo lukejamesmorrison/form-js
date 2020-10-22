@@ -325,6 +325,7 @@ class Form {
 	 * Get form files.
 	 * 
 	 * @return {object}
+	 * UNUSED
 	 */
 	getFiles()
 	{

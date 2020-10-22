@@ -15,13 +15,13 @@ describe('Validator', () => {
 
     test('it can validate a value based on a custom rule', () => {
         let rule = (name, value, fail) => {
-            return value % 2 == 0 || fail('Failed Rule');
+            return value % 2 == 0 || fail(`Failed rule for ${name} field.`);
         }
         let validEven = validator.validateCustomRule('field_name', rule, {field_name: 24});
         let invalidEven = validator.validateCustomRule('field_name', rule, {field_name: 23});
         
         expect(validEven).toBeTruthy();
-        expect(invalidEven).toBe('Failed Rule');
+        expect(invalidEven).toBe('Failed rule for field_name field.');
     });
 
 
@@ -57,9 +57,21 @@ describe('Validator', () => {
         /**
          * Tests should be truthy to prove that the correct rule is applied and validated.
          */
+        
+        // After
+        expect(validator.validate('field', ['after:other_field'], {
+            field: '12 May 1992', 
+            other_field: '11 May 1992'
+        }).valid).toBeTruthy();
 
         // Array
         expect(validator.validate('field_name', ['array'], {field_name: [1,2]}).valid).toBeTruthy();
+
+        // Before
+        expect(validator.validate('field', ['before:other_field'], {
+            field: '11 May 1992', 
+            other_field: '12 May 1992'
+        }).valid).toBeTruthy();
 
         // Between
         expect(validator.validate('field_name', ['between:1,3'], {field_name: '2'}).valid).toBeTruthy();
@@ -125,6 +137,19 @@ describe('Validator', () => {
 
         // Integer
         expect(validator.validate('field_name', ['integer'], {field_name: -12}).valid).toBeTruthy();
+
+        // IP
+        expect(validator.validate('field_name', ['ip'], {field_name: '192.168.0.1'}).valid).toBeTruthy();
+        expect(validator.validate('field_name', ['ip'], {field_name: '2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF'}).valid).toBeTruthy();
+
+        // IPv4
+        expect(validator.validate('field_name', ['ipv4'], {field_name: '192.168.0.1'}).valid).toBeTruthy();
+
+        // IPv6
+        expect(validator.validate('field_name', ['ipv6'], {field_name: '2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF'}).valid).toBeTruthy();
+
+        // JSON
+        expect(validator.validate('field_name', ['json'], {field_name: '{"hey": "there"}'}).valid).toBeTruthy();
 
         // Length
         expect(validator.validate('field_name', ['length:4'], {field_name: 'test'}).valid).toBeTruthy();

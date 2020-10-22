@@ -4,7 +4,11 @@
  */
 export default {
 
+    after: 'The :field field must be a date after the :param0 field date.',
+
     array: 'The :field field must be of type Array.',
+
+    before: 'The :field field must be a date before the :param0 field date.',
 
     between: 'The :field field must be between :param0 and :param1.',
 
@@ -33,6 +37,14 @@ export default {
     in: 'The :field field must be in the given array.',
 
     integer: 'The :field field must be of type Integer.',
+
+    ip: 'The :field field must be a valid IP address.',
+
+    ipv4: 'The :field field must be a valid IPv4 address.',
+
+    ipv6: 'The :field field must be a valid IPv6 address.',
+
+    json: 'The :field field must be a valid JSON string.',
 
     length: 'The :field field must be of length :param0.',
 

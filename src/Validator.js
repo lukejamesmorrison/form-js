@@ -11,6 +11,10 @@ const INDEPENDENT_RULES = [
     'Date',
     'Email',
     'Integer',
+    'Ip',
+    'Ipv4',
+    'Ipv6',
+    'Json',
     'Length',
     'Null',
     'Numeric',
@@ -40,6 +44,8 @@ const DEPENDENT_RULES = [
  * Rules not in this list should evaluate false.
  */
 const COMPARISON_RULES = [
+    'After',
+    'Before',
     'Confirmed',
     'DateEquals',
     'Different',
@@ -193,8 +199,12 @@ class Validator {
         let ruleParameters = this._getRuleParameters(rule);
 
         switch (ruleName) {
+            case 'after':
+                return this.rules.validateAfter(fieldName, ruleParameters[0], formData);
             case 'array':
                 return this.rules.validateArray(value);
+            case 'before':
+                return this.rules.validateBefore(fieldName, ruleParameters[0], formData);
             case 'between':
                 return this.rules.validateBetween(value, ruleParameters[0], ruleParameters[1]);
             case 'boolean':
@@ -220,6 +230,14 @@ class Validator {
                 return this.rules.validateInArray(value, ruleParameters);
             case 'integer':
                 return this.rules.validateInteger(value);
+            case 'ip':
+                return this.rules.validateIp(value);
+            case 'ipv4':
+                return this.rules.validateIpv4(value);
+            case 'ipv6':
+                return this.rules.validateIpv6(value);
+            case 'json':
+                return this.rules.validateJson(value);
             case 'length':
                 return this.rules.validateLength(value, ruleParameters[0]);
             case 'lt':

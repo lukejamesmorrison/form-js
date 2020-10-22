@@ -6,7 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.4.1] - 2020-10-XX
+## [0.4.1] - 2020-10-22
+
+### Added
+- New rules: `after`, `before`, `json`, `ip`, `ipv4`, `ipv6`. 
+
+### Changed
+- Improved existing test coverage.
+
+### Fixed
+- `comfirmed` rule now verfies that confimation field exists AND matches value.
+-  Documentation for `hasFiles` property on `Form` now shows property instead of method.
+
+### Removed
+- `getFiles()` method documentation for `Form` as it is unused.
 
 ## [0.4.0] - 2020-10-13
 

@@ -13,6 +13,33 @@ let mockFile = new File([''], 'file-name.js', {
 describe('Rules', () => {
 
     /**
+     * After
+     */
+    test('it can validate if a date is after another date', () => {
+
+        let fields = {
+            before: '13 May 1992',
+            field: '12 May 1992',
+            after: '11 May 1992' 
+        };
+
+        expect(rules.validateAfter('field', 'before', fields)).toBeFalsy();
+        expect(rules.validateAfter('field', 'field', fields)).toBeFalsy();
+        expect(rules.validateAfter('field', 'after', fields)).toBeTruthy();
+    });
+
+    /**
+     * Array
+     */
+    test('it can validate an array', () => {
+        expect(rules.validateArray(DEFAULTS.ARRAY)).toBeTruthy();
+        expect(rules.validateArray(DEFAULTS.OBJECT)).toBeFalsy();
+        expect(rules.validateArray(DEFAULTS.STRING)).toBeFalsy();
+        expect(rules.validateArray(DEFAULTS.BOOLEANS[0])).toBeFalsy();
+        expect(rules.validateArray(DEFAULTS.NUMBERS[0])).toBeFalsy();
+    });
+
+    /**
      * Boolean
      */
     test('it can validate a boolean value', () => {
@@ -26,6 +53,22 @@ describe('Rules', () => {
         expect(rules.validateBoolean(DEFAULTS.STRING)).toBeFalsy();
         expect(rules.validateBoolean(DEFAULTS.ARRAY)).toBeFalsy();
         expect(rules.validateBoolean(DEFAULTS.OBJECT)).toBeFalsy();
+    });
+
+    /**
+     * Before
+     */
+    test('it can validate if a date is before another date', () => {
+
+        let fields = {
+            before: '13 May 1992',
+            field: '12 May 1992',
+            after: '11 May 1992' 
+        };
+
+        expect(rules.validateBefore('field', 'before', fields)).toBeTruthy();
+        expect(rules.validateBefore('field', 'field', fields)).toBeFalsy();
+        expect(rules.validateBefore('field', 'after', fields)).toBeFalsy();
     });
 
     /**
@@ -103,6 +146,62 @@ describe('Rules', () => {
         };
         expect(rules.validateFilled('important', fields)).toBeTruthy();
         expect(rules.validateFilled('followers', fields)).toBeTruthy();
+    })
+
+    /**
+     * JSON
+     */
+    test('it can validate a json string', () => {
+
+        DEFAULTS.VALID_JSON.forEach(item => {
+            expect(rules.validateJson(item)).toBeTruthy();
+        });
+
+        DEFAULTS.INVALID_JSON.forEach(item => {
+            expect(rules.validateJson(item)).toBeFalsy();
+        });
+    })
+
+    /**
+     * IP
+     */
+    test('it can validate an ip address', () => {
+        let VALID_IPS = DEFAULTS.VALID_IPV4.concat(DEFAULTS.VALID_IPV6);
+        let INVALID_IPS = DEFAULTS.INVALID_IPV4.concat(DEFAULTS.INVALID_IPV6);
+
+        VALID_IPS.forEach(item => {
+            expect(rules.validateIp(item)).toBeTruthy();
+        });
+
+        INVALID_IPS.forEach(item => {
+            expect(rules.validateIp(item)).toBeFalsy();
+        });
+    })
+
+    /**
+     * IPv4
+     */
+    test('it can validate an ipv4 address', () => {
+        DEFAULTS.VALID_IPV4.forEach(item => {
+            expect(rules.validateIpv4(item)).toBeTruthy();
+        });
+
+        DEFAULTS.INVALID_IPV4.forEach(item => {
+            expect(rules.validateIpv4(item)).toBeFalsy();
+        });
+    })
+
+    /**
+     * IPv6
+     */
+    test('it can validate an ipv6 address', () => {
+        DEFAULTS.VALID_IPV6.forEach(item => {
+            expect(rules.validateIpv6(item)).toBeTruthy();
+        });
+
+        DEFAULTS.INVALID_IPV6.forEach(item => {
+            expect(rules.validateIpv6(item)).toBeFalsy();
+        });
     })
 
     /**
@@ -235,17 +334,6 @@ describe('Rules', () => {
     })
 
     /**
-     * Array
-     */
-    test('it can validate an array', () => {
-        expect(rules.validateArray(DEFAULTS.ARRAY)).toBeTruthy();
-        expect(rules.validateArray(DEFAULTS.OBJECT)).toBeFalsy();
-        expect(rules.validateArray(DEFAULTS.STRING)).toBeFalsy();
-        expect(rules.validateArray(DEFAULTS.BOOLEANS[0])).toBeFalsy();
-        expect(rules.validateArray(DEFAULTS.NUMBERS[0])).toBeFalsy();
-    })
-
-    /**
      * Equals
      */
     test('it can determine if a value is equal to another', () => {
@@ -354,11 +442,19 @@ describe('Rules', () => {
         let fields = {
             password: 'secret',
             password_confirmation: 'secret',
-            other_field: 'super_secret'
+            other_field: 'super_secret',
+            another_field: 'secret',
+            another_field_confirmation: 'seeeecret'
         };
 
+        // Truthy scenario
         expect(rules.validateConfirmed('password', fields)).toBeTruthy();
+
+        // No confirmation field for provided field name
         expect(rules.validateConfirmed('other_field', fields)).toBeFalsy();
+
+        // Confirmed field value does not match
+        expect(rules.validateConfirmed('another_field', fields)).toBeFalsy();
     });
 
     /**

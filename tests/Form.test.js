@@ -130,11 +130,7 @@ describe('Form', () => {
             headers: {},
             timeout: 1000,
         });
-
-
     })
-
-
 
     test("it can receive custom properties", () => {
         let form = new Form({
@@ -623,5 +619,51 @@ describe('Form', () => {
 
         expect(form.validate().valid).toBeTruthy();
     });
+
+    test('it can get FormData object', () => {
+
+        let form = new Form({
+            firstName: 'John'
+        });
+
+        expect(form.getFormData()).toBeInstanceOf(FormData);
+        expect(form.getFormData().get('firstName')).toBe('John');
+    })
+
+    test('it can get an array from formData property', () => {
+        let form = new Form({
+            favoriteNumbers: [1,2]
+        });
+
+        // FormData will cast array values as strings
+        expect(form.getFormData().getAll('favoriteNumbers[]')).toEqual(['1', '2']);
+    })
+
+    test('it will not store a null value in formData', () => {
+        let form = new Form({
+            field: null
+        });
+
+        // FormData will cast array values as strings
+        expect(form.getFormData().get('field')).toBeNull();
+    })
+
+    test('it can be reset', () => {
+        let form = new Form({
+            firstName: 'John'
+        });
+
+        form.errors.record({
+            firstName: ['the firstName error message']
+        })
+
+        expect(form.firstName).toEqual('John');
+        expect(form.errors.any()).toBeTruthy();
+
+        form.reset();
+
+        expect(form.firstName).toBeNull();
+        expect(form.errors.any()).toBeFalsy();
+    })
 
 });

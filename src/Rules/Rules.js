@@ -2,6 +2,61 @@
  * This class is responsible for managing form validation rules.
  */
 class Rules {
+
+    /**
+     * Validate that a field's date value is after another's.
+     *
+     * @param {string} fieldName 
+     * @param {string} afterFieldName 
+     * @param {object} formFields 
+     * @return {boolean}
+     */
+    validateAfter(fieldName, afterFieldName, formFields)
+    {
+        let fieldValue = formFields[fieldName];
+        let afterFieldValue = formFields[afterFieldName];
+
+        if(this.validateDate(fieldValue) && this.validateDate(afterFieldValue)) {
+            return this._compareDates(fieldValue, afterFieldValue) === 1;
+        };
+
+        return false;
+    }
+
+    /**
+     * Validate that a field's date value is before another's.
+     *
+     * @param {string} fieldName 
+     * @param {string} beforeFieldName 
+     * @param {object} formFields 
+     * @return {boolean}
+     */
+    validateBefore(fieldName, beforeFieldName, formFields)
+    {
+        let fieldValue = formFields[fieldName];
+        let beforeFieldValue = formFields[beforeFieldName];
+
+        if(this.validateDate(fieldValue) && this.validateDate(beforeFieldValue)) {
+            return this._compareDates(fieldValue, beforeFieldValue) === -1;
+        };
+
+        return false;
+    }
+
+    /**
+     * Compare two dates.
+     *
+     * @param {mixed} first The first date value to be compared.
+     * @param {mixed} second The second date value to be compared.
+     * @return {integer}
+     */
+    _compareDates(first, second)
+    {
+        let firstDate = (new Date(first)).valueOf();
+        let secondDate = (new Date(second)).valueOf();
+
+        return Math.sign(firstDate - secondDate);
+    }
     
     /**
      * Validate if value is boolean.
@@ -9,7 +64,8 @@ class Rules {
      * @param {mixed} value 
      * @return {boolean}
      */
-    validateBoolean(value) {
+    validateBoolean(value)
+    {
         let acceptable = [true, false, 1, 0, '1', '0'];
         return acceptable.includes(value);
     }
@@ -57,10 +113,16 @@ class Rules {
     validateFile(fieldName, formData)
     {
         let field = formData[fieldName];
-        let extension = this._getFileExtension(field);
+        // let extension = this._getFileExtension(field);
         return field instanceof File;
     }
 
+    /**
+     * Get extension from filename string.
+     *
+     * @param {string} file 
+     * @return {string}
+     */
     _getFileExtension(file)
     {
         return file.name.split('.').pop();
@@ -419,9 +481,10 @@ class Rules {
     validateConfirmed(fieldName, formFields)
     {
         let keys = Object.keys(formFields);
-        let confirm_name = `${fieldName}_confirmation`;
+        let confirmFieldName = `${fieldName}_confirmation`;
 
-        return keys.includes(confirm_name);
+        return  keys.includes(confirmFieldName) &&
+                formFields[fieldName] == formFields[confirmFieldName];
     }
 
     /**
@@ -439,6 +502,80 @@ class Rules {
                 // Boolean and numbers should still be permitted so we exclude `0` and `false`
                 formFields[fieldName] !== null && 
                 formFields[fieldName] !== ''
+    }
+
+    /**
+     * Validate that a value is a valid JSON string.
+     * 
+     * @param {string} value
+     * @return {boolean}
+     */
+    validateJson(value)
+    {
+        // let fieldValue = formFields[fieldName];
+
+        if(typeof(value) !== 'string') {
+            return false;
+        };
+
+        try {
+            JSON.parse(value);
+            return true;
+        } catch(e) {
+            return false;
+        };
+    }
+
+    /**
+     * Validate that a value is a valid IP address ahering to IPv4 or IPv6 standard.
+     *
+     * @param {string} value 
+     * @return {boolean}
+     */
+    validateIp(value)
+    {
+        if(typeof value !== 'string') {
+            return false
+        };
+
+        return this.validateIpv4(value) || this.validateIpv6(value);
+    }
+
+    /**
+     * Validate that a value is a valid IPv4 string.
+     *
+     * @see https://stackoverflow.com/questions/5284147/validating-ipv4-addresses-with-regexp
+     * @param {string} value 
+     * @return {boolean}
+     */
+    validateIpv4(value)
+    {
+        if(typeof value !== 'string') {
+            return false
+        };
+
+        let matches = value.match(/^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/);
+
+        return matches && matches.length;
+    }
+
+    /**
+     * Validate that a value is a valid IPv6 string.
+     *
+     * @see https://www.ibm.com/support/knowledgecenter/en/STCMML8/com.ibm.storage.ts3500.doc/opg_3584_IPv4_IPv6_addresses.html
+     * @see https://stackoverflow.com/questions/53497/regular-expression-that-matches-valid-ipv6-addresses
+     * @param {string} value
+     * @return {boolean}
+     */
+    validateIpv6(value)
+    {
+        if(typeof value !== 'string') {
+            return false
+        };
+
+        let matches = value.match(/(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/);
+        
+        return matches && matches.length ? true : false;
     }
 
     /**
