@@ -64,6 +64,15 @@ describe('Validator', () => {
             other_field: '11 May 1992'
         }).valid).toBeTruthy();
 
+        // Alpha
+        expect(validator.validate('field_name', ['alpha'], {field_name: 'hello world'}).valid).toBeTruthy();
+
+        // AlphaDash
+        expect(validator.validate('field_name', ['alpha_dash'], {field_name: 'hello-world'}).valid).toBeTruthy();
+
+        // AlphaNum
+        expect(validator.validate('field_name', ['alpha_num'], {field_name: 'hello world 123'}).valid).toBeTruthy();
+
         // Array
         expect(validator.validate('field_name', ['array'], {field_name: [1,2]}).valid).toBeTruthy();
 

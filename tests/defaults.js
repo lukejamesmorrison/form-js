@@ -202,6 +202,9 @@ export const INVALID_IPV4 = [
     '1..3.4',
 ];
 
+/**
+ * Valid IPv6 addresses.
+ */
 export const VALID_IPV6 = [
     '::', // 0:0:0:0:0:0:0:0
     '2001:db8::', // 2001:db8:0:0:0:0:0:0
@@ -213,6 +216,9 @@ export const VALID_IPV6 = [
     '2001:0db8:0001:0000:0000:0ab9:C0A8:0102'
 ]
 
+/**
+ * Invalid IPv6 addresses.
+ */
 export const INVALID_IPV6 = [
     '',
     ':',
@@ -223,4 +229,63 @@ export const INVALID_IPV6 = [
     '1234:5678:1234:5678:1234',
     '1234:5678:1234:5678:1234:5678',
     '1234:5678:1234:5678:1234:5678:1234',
+]
+
+/**
+ * Valid alphabetic strings.
+ */
+export const VALID_ALPHA = [
+    'valid'
+]
+
+/**
+ * Invalid alphabetic strings.
+ */
+export const INVALID_ALPHA = [
+    '123asd',
+    'dsfds-dsfsd',
+    'dsfds dsfsd'
+]
+
+/**
+ * Valid alphabetic strings containing hyphens and underscores.
+ */
+export const VALID_ALPHADASH = [
+    'valid',
+    'val-id',
+    'val_id'
+]
+
+/**
+ * Inalid alphabetic strings containing hyphens and underscores.
+ */
+export const INVALID_ALPHADASH = [
+    '123asd',
+    'dsfds-dsfsd1',
+    'dsfds_dsfsd1',
+    'asd/sas',
+    'asdsa$asdfs',
+    'asdas&dsds',
+    'dsfds dsfsd'
+]
+
+/**
+ * Valid alphabetic strings containing hyphens and underscores.
+ */
+export const VALID_ALPHANUM = [
+    'valid',
+    'valid123',
+    '123'
+]
+
+/**
+ * Inalid alphabetic strings containing hyphens and underscores.
+ */
+export const INVALID_ALPHANUM = [
+    'dsfds-dsfsd1',
+    'dsfds_dsfsd1',
+    'asd/sas',
+    'asdsa$asdfs',
+    'asdas&dsds',
+    'dsfds dsfsd'
 ]

@@ -6,6 +6,12 @@ export default {
 
     after: 'The :field field must be a date after the :param0 field date.',
 
+    alpha: 'The :field field must only contain alphabetic characters.',
+
+    alpha_dash: 'The :field field must only contain alphabetic characters, hypens and underscores.',
+
+    alpha_num: 'The :field field must only contain alphanumeric characters.',
+
     array: 'The :field field must be of type Array.',
 
     before: 'The :field field must be a date before the :param0 field date.',

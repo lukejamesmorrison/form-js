@@ -175,6 +175,15 @@ Validation rules are influenced by many of [Laravel's validation rules](https://
 #### after:*field*
 The field under validation must be after the date value of `field`.
 
+#### alpha
+The field under validation must only contain alphabetic characters.
+
+#### alpha_dash
+The field under validation must only contain alpha-numeric characters, hyphens and underscores.
+
+#### alpha_num
+The field under validation must only contain alpha-numeric characters.
+
 #### array
 The field under validation must be a Javascript `array`.
 
@@ -362,21 +371,28 @@ let errors = form.errors.all(); // Object
 
 Form-js supports distinct sections, each capable of validation on their own. Validation can be conducted per section for instances where form progress is dependant on fields being valid prior to moving to next section.
 
+- [Validation](#section-validation)
+- [Progress](#progress)
+
 ### Definition
 
-**On Instantiation**
+**Instantiation**
+
+Each field can be assigned to a section when the form is instantiated:
 
 ```javascript
 let Form = new Form({
-    street: {
+    first_name: {
         value: '',
         rules: 'string|required',
-        section: 'address'
+        section: 'general'
     }
 });
 ```
 
 **Method**
+
+You may also explicitly define which fields belong to a specific section:
 
 ```javascript
 // The array of field names belonging to the section
@@ -386,7 +402,15 @@ let fields = ['street', 'city', 'state', 'country', 'postalCode'];
 form.defineSection('address', fields);
 ```
 
-### Validation
+If a form has one or more sections defined then their order will be determine by the order in which they are assigned:
+
+```javascript
+let order = form.getSections(); // ['general', 'address']
+```
+
+See [Progress](#progress) for more on section orders.
+
+### Section Validation
 
 You may validate a section on its own:
 
@@ -402,6 +426,37 @@ form.sectionIsValid('address') // Boolean
 
 **Note**: All fields will be validated on form submission even if section is currently valid.
 
+### Progress
+
+Form-js supports the ability to progress a multi-section form. This is useful when you want to ease a user along through multiple form views.
+
+To get the current section:
+```javascript
+    form.currentSection // `firstSection`
+```
+To list or change sections:
+```javascript
+    // List sections
+form.getSections() // ['firstSection', 'secondSection']
+
+// Move to next section
+form.nextSection();
+form.currentSection; // 'secondSection'
+
+// Move to previous section
+form.previousSection();
+form.currentSection; // 'firstSection'
+```
+
+You may also get a form's progress should you want to display it as a `percentage` value to the user:
+```javascript
+form.getSections() // ['firstSection', 'secondSection']
+form.currentSection; // 'secondSection'
+form.progress // 50.00
+```
+
+Note: Progress depends on the `finalSectionForReview` option. This assumes that a multi-section form will have a final section that may be used to review the form data, but should not be considered when calculating the overall completion progress of the form. See [Options](#options) for more details.
+
 ## Flags and Hooks
 
 Several parameters are available to get and change form states:
@@ -410,6 +465,8 @@ Several parameters are available to get and change form states:
 | -----                     | --------             | -------------                                                     |
 | `form.submitting`         | `(bool) False`       | `True` when form is submitting an HTTP request                    |
 | `form.submittable`        | `(bool) True`        | Can the current form be submitted?                                |
+| `form.isValid`            | `(bool) False`       | Is the form currently valid?                                      |
+
 
 Several hooks are available based on form state.  A `callback` should be passed as a parameter.
 
@@ -442,6 +499,7 @@ The following options are supported:
 | -----                      | --------             | -------------                                                      |
 | `validateOnSubmit`         | `(bool) true`        | Should form conduct a field validation prior to submitting?  The form will not be validated when submitted if set to `false`. |
 | `strictSections`           | `(bool) false`       | Should all form fields belong to form sections? Form validation will fail if set to `true` when fields do not belong to [Sections](#sections). |
+| `finalSectionForReview`    | `(bool) false`       | When `true`, form progress will be `100%` on the final section as it does not count towards the form completion progress. |
 
 By defining an `axios` key, you are able to use all of the available [Axios Request Configurations](https://github.com/axios/axios#request-config).
 
@@ -470,11 +528,11 @@ let form = new Form(
     }
 )
 
-form.post('/users')
-    .beforeSubmitting(() => console.log('beforeSubmit'))
+form.beforeSubmitting(() => console.log('beforeSubmit'))
     .afterSubmitting(() => console.log('afterSubmit'))
     .afterSuccess(() => console.log('afterSuccess'))
     .afterFail(() => console.log('afterFail'))
+    .post('/users')
     .then(response => {
         console.log('response')
     })

@@ -6,6 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2020-11-XX
+
+### Added
+- Added rules: `alpha`, `alpha_dash`, `alpha_num`.
+- Added `getCurrentSection()` and `setCurrentSection()` methods on `Form`. Returns the section's name as a `string`.
+- Added `orderSections()` method on `Form` to allow custom order of sections to be defined. They will otherwise be recorded in the order that they are assigned to the form.
+- Added `nextSection()` and `previousSection()` methods allow `Form` section to move forwards and backwards (progress is updated as well).
+- Added `updateProgress()` method will be called when the form's current section changes.
+- Added `progress` property gives access to form's current completion progress.
+- Added `finalSectionForReview` option will determine whether final section should be considered for form completion progress.
+- Added `InvalidSectionOrderException` to be thrown when the `sectionOrder()` on the `Form` is called with non-existance section(s).
+- Added `SectionNotDefinedException` to be thrown when a section is referenced but does not currently exist on the `Form` object.
+
+### Fixed
+- Validator now returns `false` (by default) if rule method does not exist on `Rule` object.
+- Validator now correctly calls `date` and `date_equals` rules.
+- Fixed `_isAdvancedObject()` on `Form` returning opposite boolean value expected.
+- Documentation now show correct method chaining in `Complete Example` section.
+
 ## [0.4.1] - 2020-10-22
 
 ### Added
@@ -114,7 +133,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Form can now accept simple default values of types: `string`, `number`, `boolean` as well as an `array` or `object`. Objects may be set as data however *MUST NOT* contain a `value` key. This key is reserved to identify fields with default values and validation logic.
 - Files can now be added correctly using native HTML file input onChange event.
 
-[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/lukejamesmorrison/form-js/compare/v0.4.1...0.4.2
 [0.4.1]: https://github.com/lukejamesmorrison/form-js/compare/v0.4.0...0.4.1
 [0.4.0]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.9...0.4.0
 [0.3.9]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.8...0.3.9

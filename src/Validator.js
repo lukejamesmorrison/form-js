@@ -6,6 +6,9 @@ import DefaultMessages from './Messages';
  * Rules not in this list should evaluate false.
  */
 const INDEPENDENT_RULES = [
+    'Alpha',
+    'AlphaDash',
+    'AlphaNum',
     'Array',
     'Boolean',
     'Date',
@@ -201,6 +204,12 @@ class Validator {
         switch (ruleName) {
             case 'after':
                 return this.rules.validateAfter(fieldName, ruleParameters[0], formData);
+            case 'alpha':
+                return this.rules.validateAlpha(value);
+            case 'alpha_dash':
+                return this.rules.validateAlphaDash(value);
+            case 'alpha_num':
+                return this.rules.validateAlphaNum(value);
             case 'array':
                 return this.rules.validateArray(value);
             case 'before':
@@ -211,6 +220,10 @@ class Validator {
                 return this.rules.validateBoolean(value);
             case 'confirmed':
                 return this.rules.validateConfirmed(fieldName, formData);
+            case 'date':
+                return this.rules.validateDate(value);
+            case 'date_equals':
+                return this.rules.validateDateEquals(fieldName, ruleParameters[0], formData);
             case 'different':
                 return this.rules.validateDifferent(fieldName, ruleParameters[0], formData);
             case 'email':
@@ -268,6 +281,8 @@ class Validator {
                 return this.rules.validateString(value);
             case 'url':
                 return this.rules.validateUrl(value);
+            default:
+                return false;
         }
     }
 

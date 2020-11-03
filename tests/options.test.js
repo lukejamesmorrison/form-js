@@ -64,4 +64,42 @@ describe('options', () => {
         expect(form.isValid).toBeFalsy();
     })
 
+    test('it will not count final section towards progress if finalSectionForReview is false', () => {
+        let form = new Form({
+            firsName: {
+                value: 'John',
+                section: 'first'
+            },
+            address: {
+                value: '123 Street',
+                section: 'second'
+            }
+        },
+        {
+            finalSectionForReview: false
+        });
+
+        form.setCurrentSection('second');
+        expect(form.getProgress()).toBe(50.00);
+    });
+
+    test('it will count final section towards progress if finalSectionForReview is true', () => {
+        let form = new Form({
+            firsName: {
+                value: 'John',
+                section: 'first'
+            },
+            address: {
+                value: '123 Street',
+                section: 'second'
+            }
+        },
+        {
+            finalSectionForReview: true
+        });
+
+        form.setCurrentSection('second');
+        expect(form.getProgress()).toBe(100.00);
+    });
+
 })

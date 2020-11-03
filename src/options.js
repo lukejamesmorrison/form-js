@@ -13,4 +13,11 @@ export default {
      */
     strictSections: false,
 
+    /**
+     * Does the form have a final section which should not count towards completion progress?  
+     * If False, the final section will not indicate 100% completion.  If True, the final
+     * section will not be considered towards form completion progress.
+     */
+    finalSectionForReview: false,
+
 }

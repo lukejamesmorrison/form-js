@@ -29,6 +29,45 @@ describe('Rules', () => {
     });
 
     /**
+     * Alpha
+     */
+    test('it can validate an alpha string', () => {
+        DEFAULTS.VALID_ALPHA.forEach(value => {
+            expect(rules.validateAlpha(value)).toBeTruthy();
+        });
+
+        DEFAULTS.INVALID_ALPHA.forEach(value => {
+            expect(rules.validateAlpha(value)).toBeFalsy();
+        });
+    })
+
+    /**
+     * AlphaDash
+     */
+    test('it can validate an alpha string containing hyphens and underscores', () => {
+        DEFAULTS.VALID_ALPHADASH.forEach(value => {
+            expect(rules.validateAlphaDash(value)).toBeTruthy();
+        });
+
+        DEFAULTS.INVALID_ALPHADASH.forEach(value => {
+            expect(rules.validateAlphaDash(value)).toBeFalsy();
+        });
+    })
+
+    /**
+     * AlphaNum
+     */
+    test('it can validate an alphanumeric string', () => {
+        DEFAULTS.VALID_ALPHANUM.forEach(value => {
+            expect(rules.validateAlphaNum(value)).toBeTruthy();
+        });
+
+        DEFAULTS.INVALID_ALPHANUM.forEach(value => {
+            expect(rules.validateAlphaNum(value)).toBeFalsy();
+        });
+    })
+
+    /**
      * Array
      */
     test('it can validate an array', () => {

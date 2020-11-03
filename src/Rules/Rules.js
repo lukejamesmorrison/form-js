@@ -24,6 +24,54 @@ class Rules {
     }
 
     /**
+     * Validate that a value contains only alphabetic characters.
+     *
+     * @param {string} value 
+     * @return {boolean}
+     */
+    validateAlpha(value)
+    {
+        return typeof(value) === 'string' && value.match(/^[a-z]+$/i);
+    }
+
+    /**
+     * Validate that a value contains only alphabetic characters, hyphens and underscores.
+     *
+     * @param {string} value 
+     * @return {boolean}
+     */
+    validateAlphaDash(value)
+    {
+        return  typeof(value) === 'string' && 
+                typeof(value) !== 'number' &&
+                value.match(/^[a-z\-\_]+$/i);
+    }
+
+    /**
+     * Validate that a value contains only alphanumeric characters.
+     *
+     * @param {string} value 
+     * @return {boolean}
+     */
+    validateAlphaNum(value)
+    {
+        return  typeof(value) === 'string' && 
+                typeof(value) !== 'number' &&
+                value.match(/^[a-z0-9]+$/i);
+    }
+
+    /**
+     * Validate if value is an array.
+     *
+     * @param {mixed} value 
+     * @return {boolean}
+     */
+    validateArray(value)
+    {
+        return Array.isArray(value);
+    }
+
+    /**
      * Validate that a field's date value is before another's.
      *
      * @param {string} fieldName 
@@ -340,17 +388,6 @@ class Rules {
     validateLength(value, length) 
     {
         return value.length == length;
-    }
-
-    /**
-     * Validate if value is an array.
-     *
-     * @param {mixed} value 
-     * @return {boolean}
-     */
-    validateArray(value)
-    {
-        return Array.isArray(value);
     }
 
     /**

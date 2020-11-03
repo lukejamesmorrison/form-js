@@ -1,8 +1,10 @@
 import axios from 'axios';
 import Errors from './Errors';
 import Validator from './Validator';
-import ErrorsParser from './ErrorsParser';
 import DefaultOptions from './options';
+import ErrorsParser from './ErrorsParser';
+import SectionNotDefinedException from './Exceptions/SectionNotDefinedException';
+import InvalidSectionOrderException from './Exceptions/InvalidSectionOrderException';
 
 /**
  * This class is responsible for managing form data and initiation HTTP 
@@ -53,6 +55,22 @@ class Form {
 		 * @property {object} The form's section definitions.
 		 */
 		this.sections = {};
+
+		/**
+		 * @property {array} The custom defined order of form sections.
+		 */
+		this.sectionOrder = [];
+		/**
+		 * @property {string} The form's currently active section.  
+		 * This is for use when a form has sections.
+		 */
+		this.currentSection = '';
+
+		/**
+		 * @property {number} The form's current completion progress.
+		 */
+		this.progress = 0;
+		
 		/**
 		 * @property {object} The form's original data from instantiation.
 		 */
@@ -162,7 +180,7 @@ class Form {
 	 */
 	_setPropertyFromObject(name, field)
 	{
-		if(this._isEmptyObject(field) || this._isAdvancedObject(field)) {
+		if(this._isEmptyObject(field) || !this._isAdvancedObject(field)) {
 			this.originalData[name] = this[name] = field;
 			return;
 		};
@@ -191,7 +209,7 @@ class Form {
 	 */
 	_isAdvancedObject(obj)
 	{
-		return !Object.keys(obj).includes('value');
+		return Object.keys(obj).includes('value');
 	}
 
 	/**
@@ -239,6 +257,12 @@ class Form {
 			};
 
 			this.sections[sectionName].fields.push(name);
+
+			// Set as current section if not already defined
+			if(!this.currentSection) {
+				this.currentSection = sectionName; 
+			};
+			
 		};
 	}
 
@@ -286,8 +310,8 @@ class Form {
 	};
 
 	/**
-    * Add file to FormData object. Required for each form input 
-	* in form triggered by a 'change' DOM event.
+	* Add file to FormData object. Required for each form input in form triggered by 
+	* a 'change' DOM event. Each file input element MUST have a name attribute.
 	*
 	* For Vue: @change="addFile"
 	* For HTML: onChange="addFile(this)"
@@ -577,6 +601,39 @@ class Form {
 	};
 
 	/**
+	 * List current sections in order.
+	 *
+	 * @return {array}
+	 */
+	getSections()
+	{
+		return this.sectionOrder.length ? this.sectionOrder : Object.keys(this.sections);
+	}
+
+	/**
+	 * 
+	 * @param {array} sections An array containing the form section names in order.
+	 */
+	orderSections(sections)
+	{
+		// Check if new order equals current order
+		if(this.getSections() === sections) {
+			return;
+		};
+
+		// Ensure all sections are present
+		let difference = sections.filter(section => !this.getSections().includes(section));
+		let differenceString = difference.join(',');
+
+		if(difference.length) {
+			throw new InvalidSectionOrderException(`Cannot set new section order. The form does not currently have the following sections defined: ${differenceString}`);
+		};
+
+		// Set new section order
+		return this.sectionOrder = sections;
+	}
+
+	/**
 	 * Validate form fields.
 	 *
 	 * @return {object}
@@ -719,6 +776,97 @@ class Form {
 	sectionIsValid(name)
 	{
 		return this.sections[name] && this.sections[name].valid;
+	}
+
+	/**
+	 * Get the current form section.
+	 *
+	 * @return {string}
+	 */
+	getCurrentSection()
+	{
+		return this.currentSection;
+	}
+
+	/**
+	 * Set current section to next section if it exists.
+	 *
+	 * @return {string} 
+	 */
+	nextSection()
+	{
+		let currentIndex = this.getSections().indexOf(this.getCurrentSection());
+		let nextIndex = currentIndex + 1;
+
+		currentIndex = 	nextIndex < this.getSections().length ? nextIndex  : currentIndex
+
+		this.currentSection = this.getSections()[currentIndex];
+		this.updateProgress();
+
+		return this.currentSection;
+	}
+
+	/**
+	 * Set current section to previous section if it exists.
+	 *
+	 * @return {string} 
+	 */
+	previousSection()
+	{
+		let currentIndex = this.getSections().indexOf(this.getCurrentSection());
+		let nextIndex = currentIndex - 1;
+
+		currentIndex = 	nextIndex >= 0 ? nextIndex : currentIndex;
+
+		this.currentSection = this.getSections()[currentIndex];
+		this.updateProgress();
+
+		return this.currentSection;
+	}
+	
+	/**
+	 * Set the current form section.
+	 *
+	 * @param {string} name The section name to be set.
+	 * @return {string}
+	 */
+	setCurrentSection(name)
+	{
+		if(!this.getSections().includes(name)) {
+			throw new SectionNotDefinedException(`The '${name}' section is not currently defined on the form.`);
+		};
+
+		this.currentSection = name;
+		this.updateProgress();
+		return name;
+	}
+
+	/**
+	 * Get form progress through sections. This should only be used when form sections are completed in order.
+	 *
+	 * @return {number}
+	 */
+	updateProgress()
+	{
+
+		let sectionsLength = this.getSections().length;
+
+		if(sectionsLength === 0) {
+			throw new Error('Cannot get progress, form does not have any sections defined');
+		};
+
+		let currentIndex = this.getSections().indexOf(this.currentSection);
+
+		// If final section is for review, we will reduce section length by 
+		// one so that is is considered for form progress.
+		this.options.finalSectionForReview ? sectionsLength-- : sectionsLength;
+
+		return this.progress = Math.round(currentIndex/sectionsLength * 100, 2);
+	}
+
+	getProgress()
+	{
+		return this.progress;
 	}
 
 	/**

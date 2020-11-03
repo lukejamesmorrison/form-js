@@ -4,6 +4,8 @@ import Errors from 'Errors';
 import moxios from 'moxios';
 import Validator from 'Validator';
 import laravelResponse from './ResponseStubs/Errors/laravel';
+import SectionNotDefinedException from '../src/Exceptions/SectionNotDefinedException';
+import InvalidSectionOrderException from '../src/Exceptions/InvalidSectionOrderException';
 
 
 describe('Form', () => {
@@ -665,5 +667,176 @@ describe('Form', () => {
         expect(form.firstName).toBeNull();
         expect(form.errors.any()).toBeFalsy();
     })
+
+    test('a current section is defined on instantiation', () => {
+        let form = new Form({
+            firsName: {
+                value: 'John',
+                section: 'first'
+            },
+            address: {
+                value: '123 Street',
+                section: 'second'
+            }
+        });
+
+        expect(form.currentSection).toBe('first');
+    })
+
+    test('it can set the current section', () => {
+        let form = new Form({
+            firsName: {
+                value: 'John',
+                section: 'first'
+            },
+            address: {
+                value: '123 Street',
+                section: 'second'
+            }
+        });
+
+        form.setCurrentSection('second');
+        expect(form.currentSection).toBe('second');
+
+        // Expect exception if section is not defined
+        expect(() => form.setCurrentSection('third')).toThrow(SectionNotDefinedException);
+        expect(form.currentSection).toBe('second');
+    })
+
+    test('it can get the current section', () => {
+        let form = new Form({
+            firsName: {
+                value: 'John',
+                section: 'first'
+            },
+            address: {
+                value: '123 Street',
+                section: 'second'
+            }
+        });
+
+        expect(form.getCurrentSection('second')).toBe('first');
+    })
+
+    test("it can get the form's sections", () => {
+        let form = new Form({
+            firsName: {
+                value: 'John',
+                section: 'first'
+            },
+            address: {
+                value: '123 Street',
+                section: 'second'
+            }
+        });
+
+        expect(form.getSections()).toEqual(['first', 'second']);
+    })
+
+    test('it can get the section order', () => {
+        let form = new Form({
+            firsName: {
+                value: 'John',
+                section: 'first'
+            },
+            address: {
+                value: '123 Street',
+                section: 'second'
+            }
+        });
+
+        // Order should be defined on instantiation
+        expect(form.getSections()).toEqual(['first', 'second']);
+    })
+
+    test('it can set a section order', () => {
+        let form = new Form({
+            firsName: {
+                value: 'John',
+                section: 'first'
+            },
+            address: {
+                value: '123 Street',
+                section: 'second'
+            }
+        });
+
+        form.orderSections(['second', 'first']);
+        expect(form.getSections()).toEqual(['second', 'first']);
+
+        // Check that exception is thrown in non-existant sections are provided.
+        expect(() => form.orderSections(['second', 'first', 'third'])).toThrow(InvalidSectionOrderException);
+        expect(form.getSections()).toEqual(['second', 'first']);
+    });
+
+    test('it can get section progress', () => {
+        let form = new Form({
+            firsName: {
+                value: 'John',
+                section: 'first'
+            },
+            address: {
+                value: '123 Street',
+                section: 'second'
+            }
+        });
+
+        form.setCurrentSection('second');
+        expect(form.progress).toBe(50.00);
+        expect(form.getProgress()).toBe(50.00);
+    });
+
+    test('it can move to next section', () => {
+        let form = new Form({
+            firsName: {
+                value: 'John',
+                section: 'first'
+            },
+            address: {
+                value: '123 Street',
+                section: 'second'
+            }
+        });
+
+        // verify initial state
+        expect(form.getCurrentSection()).toBe('first');
+        expect(form.getSections()).toEqual(['first', 'second']);
+        expect(form.progress).toBe(0);
+
+        form.nextSection();
+        expect(form.getCurrentSection()).toBe('second');
+        expect(form.progress).toBe(50.00);
+
+        form.nextSection();
+        expect(form.getCurrentSection()).toBe('second');
+        expect(form.progress).toBe(50.00);
+    });
+
+    test('it can move to previous section', () => {
+        let form = new Form({
+            firsName: {
+                value: 'John',
+                section: 'first'
+            },
+            address: {
+                value: '123 Street',
+                section: 'second'
+            }
+        });
+
+        // verify initial state
+        expect(form.getSections()).toEqual(['first', 'second']);
+        form.nextSection();
+        expect(form.getCurrentSection()).toBe('second');
+        expect(form.progress).toBe(50.00);
+
+        form.previousSection();
+        expect(form.getCurrentSection()).toBe('first');
+        expect(form.progress).toBe(0);
+
+        form.previousSection();
+        expect(form.getCurrentSection()).toBe('first');
+        expect(form.progress).toBe(0);
+    });
 
 });
