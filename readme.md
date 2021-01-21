@@ -2,7 +2,7 @@
 A form package supporting files and HTTP requests with client and server-side validation.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-![npm (scoped)](https://img.shields.io/npm/v/@lukejm/form-js.svg)
+[![npm (scoped)](https://img.shields.io/npm/v/@lukejm/form-js.svg)](https://www.npmjs.com/package/@lukejm/form-js)
 ![CircleCI](https://img.shields.io/circleci/build/github/lukejamesmorrison/form-js)
 ![npm](https://img.shields.io/npm/dt/@lukejm/form-js)
 

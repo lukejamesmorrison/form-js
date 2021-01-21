@@ -6,7 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.4.2] - 2020-11-XX
+## [1.0.0] - 2021-01-21
+
+### Changed
+
+- Axios updated to version 
+
+## [0.4.2] - 2020-11-02
 
 ### Added
 - Added rules: `alpha`, `alpha_dash`, `alpha_num`.
