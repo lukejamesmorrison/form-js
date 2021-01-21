@@ -8,9 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2021-01-21
 
+The first offically stable release of Form-js!
+
 ### Changed
 
-- Axios updated to version 
+- Bump axios from 0.19.2 to 0.21.1 
+- Bump ini from 1.3.5 to 1.3.8
 
 ## [0.4.2] - 2020-11-02
 
