@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The first offically stable release of Form-js!
 
 ### Changed
-
 - Bump axios from 0.19.2 to 0.21.1 
 - Bump ini from 1.3.5 to 1.3.8
 
@@ -142,7 +141,8 @@ The first offically stable release of Form-js!
 - Form can now accept simple default values of types: `string`, `number`, `boolean` as well as an `array` or `object`. Objects may be set as data however *MUST NOT* contain a `value` key. This key is reserved to identify fields with default values and validation logic.
 - Files can now be added correctly using native HTML file input onChange event.
 
-[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/lukejamesmorrison/form-js/compare/v0.4.2...1.0.0
 [0.4.2]: https://github.com/lukejamesmorrison/form-js/compare/v0.4.1...0.4.2
 [0.4.1]: https://github.com/lukejamesmorrison/form-js/compare/v0.4.0...0.4.1
 [0.4.0]: https://github.com/lukejamesmorrison/form-js/compare/v0.3.9...0.4.0
