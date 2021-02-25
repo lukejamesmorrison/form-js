@@ -195,6 +195,27 @@ describe('Form', () => {
         expect(form.validate().valid).toBeTruthy();
     })
 
+    test('it can validate the form then call a callable', () => {
+
+        let full_name = '';
+        let form = new Form({
+            first_name: {
+                value: 'Johnny',
+                rules: 'string'
+            },
+            last_name: {
+                value: 'Appleseed',
+                rules: 'string'
+            }
+        });
+
+        form.validateThen((data) => {
+            full_name = `${data.first_name} ${data.last_name}`
+        });
+
+        expect(full_name).toBe('Johnny Appleseed');
+    })
+
 
     /**
      * The form has a Validator object.

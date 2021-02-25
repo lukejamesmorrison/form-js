@@ -671,6 +671,23 @@ class Form {
 	}
 
 	/**
+	 * Validate form fields then call function.
+	 * 
+	 * This method can be used in order to further aid in 
+	 * streamlining application flow.
+	 * 
+	 * @param {callback} callback 
+	 */
+	validateThen(callback)
+	{
+		this.validate();
+
+		if(this.isValid) {
+			callback(this.data());
+		};
+	}
+
+	/**
 	 * Validate a form section.
 	 * 
 	 * @param {string} name The name of the section.

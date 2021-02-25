@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2021-02-25
+
+### Added
+- `validateThen()` method for streamlining application flow.
+
 ## [1.0.0] - 2021-01-21
 
 The first offically stable release of Form-js!
@@ -141,7 +146,8 @@ The first offically stable release of Form-js!
 - Form can now accept simple default values of types: `string`, `number`, `boolean` as well as an `array` or `object`. Objects may be set as data however *MUST NOT* contain a `value` key. This key is reserved to identify fields with default values and validation logic.
 - Files can now be added correctly using native HTML file input onChange event.
 
-[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/lukejamesmorrison/form-js/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/lukejamesmorrison/form-js/compare/v1.0.0...1.0.1
 [1.0.0]: https://github.com/lukejamesmorrison/form-js/compare/v0.4.2...1.0.0
 [0.4.2]: https://github.com/lukejamesmorrison/form-js/compare/v0.4.1...0.4.2
 [0.4.1]: https://github.com/lukejamesmorrison/form-js/compare/v0.4.0...0.4.1
