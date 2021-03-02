@@ -120,6 +120,7 @@ describe('Validator', () => {
 
         // Email
         expect(validator.validate('field_name', ['email'], {field_name: 'email@example.com'}).valid).toBeTruthy();
+        expect(validator.validate('field_name', ['email'], {field_name: null}).valid).toBeFalsy();
 
         // Equals
         expect(validator.validate('field_name', ['equal:2'], {field_name: 2}).valid).toBeTruthy();

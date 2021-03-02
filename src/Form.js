@@ -673,8 +673,8 @@ class Form {
 	/**
 	 * Validate form fields then call function.
 	 * 
-	 * This method can be used in order to further aid in 
-	 * streamlining application flow.
+	 * This method can be used in order to further streamlining 
+	 * application flow.
 	 * 
 	 * @param {callback} callback 
 	 */

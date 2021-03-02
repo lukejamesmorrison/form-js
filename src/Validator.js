@@ -193,12 +193,18 @@ class Validator {
         let ruleNameCapitalized = this._getPascalCaseRuleName(ruleName);
         let value = formData[fieldName];
 
+        // If field is null but is not expected to be then return early
+        if(ruleName !== 'null' && value == null)
+        {
+            return false;
+        };
+
         if(!this._getSupportedRules().includes(ruleNameCapitalized))
         {
             console.warn(`Formjs does not currently support the '${ruleName}' rule.`)
             return false;
         };
-        
+
         let ruleParameters = this._getRuleParameters(rule);
 
         switch (ruleName) {
