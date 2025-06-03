@@ -590,6 +590,25 @@ describe('Rules', () => {
 
     });
 
+    /**
+     * Same
+     */
+    // test('it can determine if a value is same as field', () => {
+        // Number
+        // expect(rules.validateSame(2, 2)).toBeTruthy();
+
+        // expect(rules.validateEquals(2, 2)).toBeTruthy();
+        // expect(rules.validateEquals(2, 3)).toBeFalsy();
+        
+        // // String
+        // expect(rules.validateEquals('t', 't')).toBeTruthy();
+        // expect(rules.validateEquals('t', 'test')).toBeFalsy();
+
+        // // Array
+        // expect(rules.validateEquals(['t'], ['t'])).toBeTruthy();
+        // expect(rules.validateEquals(['t'], ['t', 'e', 's', 't'])).toBeFalsy();
+    // })
+
     test('it can validate a url', () => {
         DEFAULTS.VALID_URLS.forEach(url => {
             expect(rules.validateUrl(url)).toBeTruthy();

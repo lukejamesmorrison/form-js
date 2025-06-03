@@ -10,18 +10,18 @@
     "prep": "npm run test; npm run build;"
   },
   "dependencies": {
-    "axios": "^0.21.1"
+    "axios": "^1.9.0"
   },
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "@babel/preset-env": "^7.11.5",
-    "babel-jest": "^25.5.1",
+    "babel-jest": "^30.0.0-beta.3",
     "babel-loader": "^8.1.0",
-    "jest": "^24.9.0",
+    "jest": "^29.7.0",
     "moxios": "^0.4.0",
     "sinon": "^9.2.0",
-    "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12"
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
   },
   "files": [
     "dist/**/*"

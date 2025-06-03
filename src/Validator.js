@@ -237,6 +237,7 @@ class Validator {
             case 'equal':
             case 'same':
                 return this.rules.validateEquals(value, ruleParameters[0]);
+                // return this.rules.validateSame(fieldName, formData);
             case 'file':
                 return this.rules.validateFile(fieldName, formData);
             case 'filled':
